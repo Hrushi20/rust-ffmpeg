@@ -1,4 +1,5 @@
-use ffi::*;
+use format::generated::{avformat_close_input};
+use format::types::*;
 
 #[derive(Copy, Clone, Debug)]
 pub enum Mode {

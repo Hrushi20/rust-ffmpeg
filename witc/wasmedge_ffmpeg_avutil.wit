@@ -1,0 +1,3 @@
+av-strerror: func(errno:s32,buf:list<u8>)-> s32
+AVERROR: func(errno:s32)-> s32
+AVUNERROR: func(errno:s32)-> s32

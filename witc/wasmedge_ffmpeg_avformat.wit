@@ -1,0 +1,9 @@
+avformat-open-input : func(avFormatCtxPtr:u32,urlPtr:list<u8>,avInputFormatPtr:u32,avDictionaryPtr:u32) -> s32
+avformat-find-stream-info : func(avFormatCtxPtr:u32,avDictionaryPtr:u32) -> s32
+avformat-close-input : func(avFormatCtxPtr:u32) -> unit
+av-read-play : func(avFormatCtxPtr:u32) -> s32
+av-read-pause : func(avFormatCtxPtr:u32) -> s32
+av-dump-format : func(avFormatCtxPtr:u32,idx:s32,urlPtr:list<u8>,isOutput:s32) -> unit
+
+avformatCtxIFormat : func(avFormatCtxPtr:u32,avInputFormatPtr:u32) -> s32
+avformatProbeScope : func(avFormatCtxPtr:u32) -> s32

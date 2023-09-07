@@ -1,14 +1,16 @@
 use std::ffi::CString;
 use std::mem;
+use std::mem::MaybeUninit;
 use std::ops::{Deref, DerefMut};
 
 use super::common::Context;
 use super::destructor;
-use ffi::*;
 use util::range::Range;
-#[cfg(not(feature = "ffmpeg_5_0"))]
-use Codec;
+// #[cfg(not(feature = "ffmpeg_5_0"))]
+// use Codec;
 use {format, Error, Packet, Stream};
+use format::types::{AVFormatContext, AVInputFormat};
+use format::generated::{av_dump_format, av_read_pause, av_read_play, avformatCtxIFormat, avformatProbeScope};
 
 pub struct Input {
     ptr: *mut AVFormatContext,
@@ -36,63 +38,71 @@ impl Input {
 
 impl Input {
     pub fn format(&self) -> format::Input {
-        unsafe { format::Input::wrap((*self.as_ptr()).iformat as *mut AVInputFormat) }
-    }
-
-    #[cfg(not(feature = "ffmpeg_5_0"))]
-    pub fn video_codec(&self) -> Option<Codec> {
         unsafe {
-            let ptr = (*self.as_ptr()).video_codec;
+            let avInputFormat = MaybeUninit::<AVInputFormat>::uninit();
+            avformatCtxIFormat(self.ptr as u32,avInputFormat.as_ptr() as u32);
 
-            if ptr.is_null() {
-                None
-            } else {
-                Some(Codec::wrap(ptr))
-            }
+            let avInputFormat = avInputFormat.assume_init();
+            format::Input::wrap(avInputFormat)
         }
     }
 
-    #[cfg(not(feature = "ffmpeg_5_0"))]
-    pub fn audio_codec(&self) -> Option<Codec> {
-        unsafe {
-            let ptr = (*self.as_ptr()).audio_codec;
-
-            if ptr.is_null() {
-                None
-            } else {
-                Some(Codec::wrap(ptr))
-            }
-        }
-    }
-
-    #[cfg(not(feature = "ffmpeg_5_0"))]
-    pub fn subtitle_codec(&self) -> Option<Codec> {
-        unsafe {
-            let ptr = (*self.as_ptr()).subtitle_codec;
-
-            if ptr.is_null() {
-                None
-            } else {
-                Some(Codec::wrap(ptr))
-            }
-        }
-    }
-
-    #[cfg(not(feature = "ffmpeg_5_0"))]
-    pub fn data_codec(&self) -> Option<Codec> {
-        unsafe {
-            let ptr = (*self.as_ptr()).data_codec;
-
-            if ptr.is_null() {
-                None
-            } else {
-                Some(Codec::wrap(ptr))
-            }
-        }
-    }
+    // #[cfg(not(feature = "ffmpeg_5_0"))]
+    // pub fn video_codec(&self) -> Option<Codec> {
+    //     unsafe {
+    //         let ptr = (*self.as_ptr()).video_codec;
+    //
+    //         if ptr.is_null() {
+    //             None
+    //         } else {
+    //             Some(Codec::wrap(ptr))
+    //         }
+    //     }
+    // }
+    //
+    // #[cfg(not(feature = "ffmpeg_5_0"))]
+    // pub fn audio_codec(&self) -> Option<Codec> {
+    //     unsafe {
+    //         let ptr = (*self.as_ptr()).audio_codec;
+    //
+    //         if ptr.is_null() {
+    //             None
+    //         } else {
+    //             Some(Codec::wrap(ptr))
+    //         }
+    //     }
+    // }
+    //
+    // #[cfg(not(feature = "ffmpeg_5_0"))]
+    // pub fn subtitle_codec(&self) -> Option<Codec> {
+    //     unsafe {
+    //         let ptr = (*self.as_ptr()).subtitle_codec;
+    //
+    //         if ptr.is_null() {
+    //             None
+    //         } else {
+    //             Some(Codec::wrap(ptr))
+    //         }
+    //     }
+    // }
+    //
+    // #[cfg(not(feature = "ffmpeg_5_0"))]
+    // pub fn data_codec(&self) -> Option<Codec> {
+    //     unsafe {
+    //         let ptr = (*self.as_ptr()).data_codec;
+    //
+    //         if ptr.is_null() {
+    //             None
+    //         } else {
+    //             Some(Codec::wrap(ptr))
+    //         }
+    //     }
+    // }
 
     pub fn probe_score(&self) -> i32 {
-        unsafe { (*self.as_ptr()).probe_score }
+        unsafe {
+            avformatProbeScope(self.ptr as u32)
+        }
     }
 
     pub fn packets(&mut self) -> PacketIter {
@@ -101,7 +111,7 @@ impl Input {
 
     pub fn pause(&mut self) -> Result<(), Error> {
         unsafe {
-            match av_read_pause(self.as_mut_ptr()) {
+            match av_read_pause(self.as_mut_ptr() as u32) {
                 0 => Ok(()),
                 e => Err(Error::from(e)),
             }
@@ -110,7 +120,7 @@ impl Input {
 
     pub fn play(&mut self) -> Result<(), Error> {
         unsafe {
-            match av_read_play(self.as_mut_ptr()) {
+            match av_read_play(self.as_mut_ptr() as u32) {
                 0 => Ok(()),
                 e => Err(Error::from(e)),
             }
@@ -158,37 +168,38 @@ impl<'a> PacketIter<'a> {
     }
 }
 
-impl<'a> Iterator for PacketIter<'a> {
-    type Item = (Stream<'a>, Packet);
-
-    fn next(&mut self) -> Option<<Self as Iterator>::Item> {
-        let mut packet = Packet::empty();
-
-        loop {
-            match packet.read(self.context) {
-                Ok(..) => unsafe {
-                    return Some((
-                        Stream::wrap(mem::transmute_copy(&self.context), packet.stream()),
-                        packet,
-                    ));
-                },
-
-                Err(Error::Eof) => return None,
-
-                Err(..) => (),
-            }
-        }
-    }
-}
+// impl<'a> Iterator for PacketIter<'a> {
+//     type Item = (Stream<'a>, Packet);
+//
+//     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
+//         let mut packet = Packet::empty();
+//
+//         loop {
+//             match packet.read(self.context) {
+//                 Ok(..) => unsafe {
+//                     return Some((
+//                         Stream::wrap(mem::transmute_copy(&self.context), packet.stream()),
+//                         packet,
+//                     ));
+//                 },
+//
+//                 Err(Error::Eof) => return None,
+//
+//                 Err(..) => (),
+//             }
+//         }
+//     }
+// }
 
 pub fn dump(ctx: &Input, index: i32, url: Option<&str>) {
     let url = url.map(|u| CString::new(u).unwrap());
 
     unsafe {
         av_dump_format(
-            ctx.as_ptr() as *mut _,
+            ctx.as_ptr() as u32,
             index,
-            url.unwrap_or_else(|| CString::new("").unwrap()).as_ptr(),
+            url.unwrap_or_else(|| CString::new("").unwrap()).as_ptr() as *const u8,
+            kljkl,
             0,
         );
     }
