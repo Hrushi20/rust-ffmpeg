@@ -14,6 +14,7 @@ mod generated;
 // pub mod option;
 // pub mod picture;
 pub mod range;
+pub mod types;
 // pub mod rational;
 // pub mod time;
 //

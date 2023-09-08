@@ -1,5 +1,5 @@
-use format::generated::{avformat_close_input};
-use format::types::*;
+use format::generated::{avformat_close_input, avformat_free_context, avio_close};
+use format::types::AVFormatContext;
 
 #[derive(Copy, Clone, Debug)]
 pub enum Mode {
@@ -22,11 +22,11 @@ impl Drop for Destructor {
     fn drop(&mut self) {
         unsafe {
             match self.mode {
-                Mode::Input => avformat_close_input(&mut self.ptr),
+                Mode::Input => avformat_close_input( self.ptr as u32),
 
                 Mode::Output => {
-                    avio_close((*self.ptr).pb);
-                    avformat_free_context(self.ptr);
+                    avio_close(self.ptr as u32);
+                    avformat_free_context(self.ptr as u32);
                 }
             }
         }

@@ -11,13 +11,15 @@ mod generated;
 pub mod context;
 // pub use self::context::Context;
 //
-// pub mod format;
-mod types;
 
+mod types;
+use util::types::AVDictionary;
+
+pub mod format;
 // #[cfg(not(feature = "ffmpeg_5_0"))]
 // pub use self::format::list;
 // pub use self::format::{flag, Flags};
-// pub use self::format::{Input, Output};
+pub use self::format::{Input};
 //
 // pub mod network;
 //
@@ -164,7 +166,7 @@ pub fn input<P: AsRef<Path>>(path: &P) -> Result<context::Input, Error> {
         let path = from_path(path);
 
         let avInputFormat = ptr::null() as *const AVInputFormat;
-        let avDictionary = ptr::null() as *const u32;
+        let avDictionary = ptr::null() as *const AVDictionary;
         match avformat_open_input(avFormatCtx.as_mut_ptr() as u32, path.as_ptr() ,path.len(), avInputFormat as u32, avDictionary as u32) {
             0 => match avformat_find_stream_info(avFormatCtx.as_ptr() as u32, avDictionary as u32) {
                 r if r >= 0 => Ok(context::Input::wrap(avFormatCtx.assume_init_mut())),

@@ -1,8 +1,8 @@
 // pub mod flag;
 // pub use self::flag::Flags;
 //
-// mod input;
-// pub use self::input::Input;
+mod input;
+pub use self::input::Input;
 //
 // mod output;
 // pub use self::output::Output;
@@ -11,11 +11,11 @@
 // mod iter;
 // #[cfg(not(feature = "ffmpeg_5_0"))]
 // pub use self::iter::Iter;
-//
-// pub enum Format {
-//     Input(Input),
-//     Output(Output),
-// }
+
+pub enum Format {
+    Input(Input),
+    // Output(Output),
+}
 //
 // impl Format {
 //     pub fn name(&self) -> &str {
