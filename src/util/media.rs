@@ -1,5 +1,4 @@
-use ffi::AVMediaType::*;
-use ffi::*;
+use util::types::AVMediaType;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Type {
@@ -15,13 +14,14 @@ impl From<AVMediaType> for Type {
     #[inline(always)]
     fn from(value: AVMediaType) -> Self {
         match value {
-            AVMEDIA_TYPE_UNKNOWN => Type::Unknown,
-            AVMEDIA_TYPE_VIDEO => Type::Video,
-            AVMEDIA_TYPE_AUDIO => Type::Audio,
-            AVMEDIA_TYPE_DATA => Type::Data,
-            AVMEDIA_TYPE_SUBTITLE => Type::Subtitle,
-            AVMEDIA_TYPE_ATTACHMENT => Type::Attachment,
-            AVMEDIA_TYPE_NB => Type::Unknown,
+            -1 => Type::Unknown,
+            0 => Type::Video,
+            1 => Type::Audio,
+            2 => Type::Data,
+            3 => Type::Subtitle,
+            4 => Type::Attachment,
+            5 => Type::Unknown,
+            _ => Type::Unknown
         }
     }
 }
@@ -30,12 +30,12 @@ impl From<Type> for AVMediaType {
     #[inline(always)]
     fn from(value: Type) -> AVMediaType {
         match value {
-            Type::Unknown => AVMEDIA_TYPE_UNKNOWN,
-            Type::Video => AVMEDIA_TYPE_VIDEO,
-            Type::Audio => AVMEDIA_TYPE_AUDIO,
-            Type::Data => AVMEDIA_TYPE_DATA,
-            Type::Subtitle => AVMEDIA_TYPE_SUBTITLE,
-            Type::Attachment => AVMEDIA_TYPE_ATTACHMENT,
+            Type::Unknown => -1,
+            Type::Video => 0,
+            Type::Audio => 1,
+            Type::Data => 2,
+            Type::Subtitle => 3,
+            Type::Attachment => 4,
         }
     }
 }

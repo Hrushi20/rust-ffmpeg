@@ -3,8 +3,8 @@ mod generated;
 // pub use util::format::{pixel, Pixel};
 // pub use util::format::{sample, Sample};
 // use util::interrupt;
-//
-// pub mod stream;
+
+pub mod stream;
 //
 // pub mod chapter;
 //
@@ -25,7 +25,7 @@ pub use self::format::{Input};
 //
 // use std::ffi::{CStr, CString};
 use std::path::Path;
-use std::ptr;
+use std::{mem, ptr};
 use std::str::from_utf8_unchecked;
 use format::generated::*;
 
@@ -161,17 +161,19 @@ fn from_path<P: AsRef<Path>>(path: &P) -> &str {
 //
 pub fn input<P: AsRef<Path>>(path: &P) -> Result<context::Input, Error> {
     unsafe {
-        let mut avFormatCtx = MaybeUninit::<AVFormatContext>::uninit();
+
+        let mut avFormatCtx = ptr::null() as *const AVFormatContext;
+        let avFormatCtx = ptr::NonNull::<AVFormatContext>::dangling();
         // let mut ps = ptr::null_mut();
         let path = from_path(path);
 
         let avInputFormat = ptr::null() as *const AVInputFormat;
         let avDictionary = ptr::null() as *const AVDictionary;
-        match avformat_open_input(avFormatCtx.as_mut_ptr() as u32, path.as_ptr() ,path.len(), avInputFormat as u32, avDictionary as u32) {
+        match avformat_open_input(avFormatCtx.as_ptr() as u32, path.as_ptr() ,path.len(), avInputFormat as u32, avDictionary as u32) {
             0 => match avformat_find_stream_info(avFormatCtx.as_ptr() as u32, avDictionary as u32) {
-                r if r >= 0 => Ok(context::Input::wrap(avFormatCtx.assume_init_mut())),
+                r if r >= 0 => Ok(context::Input::wrap(avFormatCtx.as_ptr() as *mut u32)),
                 e => {
-                    avformat_close_input( avFormatCtx.as_mut_ptr() as u32);
+                    avformat_close_input( avFormatCtx.as_ptr() as u32);
                     Err(Error::from(e))
                 }
             },

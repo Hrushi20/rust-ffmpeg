@@ -61,6 +61,9 @@ pub enum Error {
     HttpOther4xx,
     HttpServerError,
 
+    // WasmEdge ERRORS
+    // Add them into from block
+
     /// For AVERROR(e) wrapping POSIX error codes, e.g. AVERROR(EAGAIN).
     Other {
         errno: i32,
@@ -132,7 +135,14 @@ enum ErrorCode {
     AVERROR_HTTP_NOT_FOUND = compute_error_code(0xF8 as u8 as char, '4','0','4'),
     AVERROR_HTTP_OTHER_4XX = compute_error_code(0xF8 as u8 as char, '4','X','X'),
     AVERROR_HTTP_SERVER_ERROR = compute_error_code(0xF8 as u8 as char, '5','X','X'),
-    AV_ERROR_MAX_STRING_SIZE  = 64
+    AV_ERROR_MAX_STRING_SIZE  = 64,
+
+    // WASMEDGE ERROR CODES BELOW
+    SUCCESS = 0,
+    INVALID_ARGUMENT = -200,
+    MISSING_MEMORY = -202,
+    BUSY = -203,
+    RUNTIME_ERROR = -204
 }
 
 impl From<Error> for c_int {

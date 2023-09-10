@@ -8,9 +8,11 @@ use std::time::Duration;
 use super::destructor::{self, Destructor};
 use libc::{c_int, c_uint};
 use format::types::AVFormatContext;
+use { media };
 // use {media, Chapter, ChapterMut, DictionaryRef, Stream, StreamMut};
 use format::generated;
-use format::generated::{avformatContext_bit_rate, avformatContext_duration, avformatContext_nb_chapters, avformatContext_nb_streams};
+use format::generated::{av_find_best_stream, avformatContext_bit_rate, avformatContext_duration, avformatContext_nb_chapters, avformatContext_nb_streams};
+use format::stream::Stream;
 
 pub struct Context {
     ptr: *mut AVFormatContext,
@@ -28,7 +30,7 @@ impl Context {
     }
 
     pub unsafe fn as_ptr(&self) -> *const AVFormatContext {
-        self.ptr as *const _
+        self.ptr as *const AVFormatContext
     }
 
     pub unsafe fn as_mut_ptr(&mut self) -> *mut AVFormatContext {
@@ -44,7 +46,7 @@ impl Context {
     #[inline]
     pub fn nb_streams(&self) -> u32 {
         unsafe {
-            avformatContext_nb_streams(*self.as_ptr() as u32)
+            avformatContext_nb_streams(self.ptr as u32)
         }
     }
 
@@ -60,7 +62,7 @@ impl Context {
     //         }
     //     }
     // }
-    //
+
     // pub fn stream_mut<'a, 'b>(&'a mut self, index: usize) -> Option<StreamMut<'b>>
     // where
     //     'a: 'b,
@@ -74,30 +76,30 @@ impl Context {
     //     }
     // }
 
-    // pub fn streams(&self) -> StreamIter {
-    //     StreamIter::new(self)
-    // }
-    //
+    pub fn streams(&self) -> StreamIter {
+        StreamIter::new(self)
+    }
+
     // pub fn streams_mut(&mut self) -> StreamIterMut {
     //     StreamIterMut::new(self)
     // }
 
     pub fn bit_rate(&self) -> i64 {
         unsafe {
-            avformatContext_bit_rate(*self.as_ptr() as u32)
+            avformatContext_bit_rate(self.as_ptr() as u32)
         }
     }
 
     pub fn duration(&self) -> i64 {
         unsafe {
-            avformatContext_duration(*self.as_ptr() as u32)
+            avformatContext_duration(self.as_ptr() as u32)
         }
     }
 
     #[inline]
     pub fn nb_chapters(&self) -> u32 {
         unsafe {
-            avformatContext_nb_chapters(*self.as_ptr() as u32)
+            avformatContext_nb_chapters(self.as_ptr() as u32)
         }
     }
 
@@ -146,123 +148,126 @@ pub struct Best<'a> {
     wanted: i32,
     related: i32,
 }
-//
-// impl<'a> Best<'a> {
-//     pub unsafe fn new<'b, 'c: 'b>(context: &'c Context) -> Best<'b> {
-//         Best {
-//             context,
-//
-//             wanted: -1,
-//             related: -1,
-//         }
-//     }
-//
-//     pub fn wanted<'b>(mut self, stream: &'b Stream) -> Best<'a>
-//     where
-//         'a: 'b,
-//     {
-//         self.wanted = stream.index() as i32;
-//         self
-//     }
-//
-//     pub fn related<'b>(mut self, stream: &'b Stream) -> Best<'a>
-//     where
-//         'a: 'b,
-//     {
-//         self.related = stream.index() as i32;
-//         self
-//     }
-//
-//     pub fn best<'b>(self, kind: media::Type) -> Option<Stream<'b>>
-//     where
-//         'a: 'b,
-//     {
-//         unsafe {
-//             let decoder = ptr::null_mut();
-//             let index = av_find_best_stream(
-//                 self.context.ptr,
-//                 kind.into(),
-//                 self.wanted as c_int,
-//                 self.related as c_int,
-//                 decoder,
-//                 0,
-//             );
-//
-//             if index >= 0 {
-//                 Some(Stream::wrap(self.context, index as usize))
-//             } else {
-//                 None
-//             }
-//         }
-//     }
-// }
-//
-// pub struct StreamIter<'a> {
-//     context: &'a Context,
-//     current: c_uint,
-// }
-//
-// impl<'a> StreamIter<'a> {
-//     pub fn new<'s, 'c: 's>(context: &'c Context) -> StreamIter<'s> {
-//         StreamIter {
-//             context,
-//             current: 0,
-//         }
-//     }
-// }
-//
-// impl<'a> StreamIter<'a> {
-//     pub fn wanted<'b, 'c>(&self, stream: &'b Stream) -> Best<'c>
-//     where
-//         'a: 'b,
-//         'a: 'c,
-//     {
-//         unsafe { Best::new(self.context).wanted(stream) }
-//     }
-//
-//     pub fn related<'b, 'c>(&self, stream: &'b Stream) -> Best<'c>
-//     where
-//         'a: 'b,
-//         'a: 'c,
-//     {
-//         unsafe { Best::new(self.context).related(stream) }
-//     }
-//
-//     pub fn best<'b>(&self, kind: media::Type) -> Option<Stream<'b>>
-//     where
-//         'a: 'b,
-//     {
-//         unsafe { Best::new(self.context).best(kind) }
-//     }
-// }
-//
-// impl<'a> Iterator for StreamIter<'a> {
-//     type Item = Stream<'a>;
-//
-//     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
-//         unsafe {
-//             if self.current >= self.context.nb_streams() {
-//                 return None;
-//             }
-//
-//             self.current += 1;
-//
-//             Some(Stream::wrap(self.context, (self.current - 1) as usize))
-//         }
-//     }
-//
-//     fn size_hint(&self) -> (usize, Option<usize>) {
-//         let length = self.context.nb_streams() as usize;
-//
-//         (
-//             length - self.current as usize,
-//             Some(length - self.current as usize),
-//         )
-//     }
-// }
-//
+
+impl<'a> Best<'a> {
+    pub unsafe fn new<'b, 'c: 'b>(context: &'c Context) -> Best<'b> {
+        Best {
+            context,
+
+            wanted: -1,
+            related: -1,
+        }
+    }
+
+    pub fn wanted<'b>(mut self, stream: &'b Stream) -> Best<'a>
+    where
+        'a: 'b,
+    {
+        self.wanted = stream.index() as i32;
+        self
+    }
+
+    pub fn related<'b>(mut self, stream: &'b Stream) -> Best<'a>
+    where
+        'a: 'b,
+    {
+        self.related = stream.index() as i32;
+        self
+    }
+
+    pub fn best<'b>(self, kind: media::Type) -> Option<Stream<'b>>
+    where
+        'a: 'b,
+    {
+        unsafe {
+            let decoder = ptr::null_mut();
+
+            let index = av_find_best_stream(
+                self.context.as_ptr() as u32,
+                kind.into(),
+                self.wanted,
+                self.related,
+                decoder as *const u32 as u32,
+                0,
+            );
+            if index >= 0 {
+                Some(Stream::wrap(self.context, index as usize))
+            } else {
+                None
+            }
+        }
+    }
+}
+
+pub struct StreamIter<'a> {
+    context: &'a Context,
+    current: c_uint,
+}
+
+impl<'a> StreamIter<'a> {
+    pub fn new<'s, 'c: 's>(context: &'c Context) -> StreamIter<'s> {
+        StreamIter {
+            context,
+            current: 0,
+        }
+    }
+}
+
+impl<'a> StreamIter<'a> {
+    pub fn wanted<'b, 'c>(&self, stream: &'b Stream) -> Best<'c>
+    where
+        'a: 'b,
+        'a: 'c,
+    {
+        unsafe { Best::new(self.context).wanted(stream) }
+    }
+
+    pub fn related<'b, 'c>(&self, stream: &'b Stream) -> Best<'c>
+    where
+        'a: 'b,
+        'a: 'c,
+    {
+        unsafe { Best::new(self.context).related(stream) }
+    }
+
+    pub fn best<'b>(&self, kind: media::Type) -> Option<Stream<'b>>
+    where
+        'a: 'b,
+    {
+        unsafe {
+            println!("Best: {:?}",ptr::read(self.context.ptr as *const u32));
+            Best::new(self.context).best(kind)
+        }
+    }
+ }
+
+impl<'a> Iterator for StreamIter<'a> {
+    type Item = Stream<'a>;
+
+    fn next(&mut self) -> Option<<Self as Iterator>::Item> {
+        unsafe {
+            if self.current >= self.context.nb_streams() {
+                return None;
+            }
+
+            self.current += 1;
+
+            Some(Stream::wrap(self.context, (self.current - 1) as usize))
+        }
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let length = self.context.nb_streams() as usize;
+
+        (
+            length - self.current as usize,
+            Some(length - self.current as usize),
+        )
+    }
+}
+
 // impl<'a> ExactSizeIterator for StreamIter<'a> {}
-//
+
 // pub struct StreamIterMut<'a> {
 //     context: &'a mut Context,
 //     current: c_uint,

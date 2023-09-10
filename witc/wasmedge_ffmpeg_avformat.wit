@@ -7,6 +7,7 @@ av-read-pause : func(avFormatCtxPtr:u32) -> s32
 av-dump-format : func(avFormatCtxPtr:u32,idx:s32,urlPtr:list<u8>,isOutput:s32) -> unit
 avformat-seek-file : func(avFormatCtxPtr:u32,streamIdx:s32,min-ts:s64,ts:s64,max-ts:s64,flags:s32) -> s32
 avformat-free-context : func(avFormatCtxPtr:u32) -> unit
+av-find-best-stream : func(avFormatCtxPtr:u32,avMediaType:s32,wanted-stream-nb:s32,releated-stream:s32,avCodecPtr:u32,flags:s32) -> s32
 
 // Functions to fetch avFormatContext data fields
 avformatContext-iformat : func(avFormatCtxPtr:u32,avInputFormatPtr:u32) -> s32
@@ -15,6 +16,7 @@ avformatContext-nb-streams : func(avFormatCtxPtr:u32) -> u32
 avformatContext-duration : func(avFormatCtxPtr:u32) -> s64
 avformatContext-bit-rate : func(avFormatCtxPtr:u32) -> s64
 avformatContext-nb-chapters : func(avFormatCtxPtr:u32) -> u32
+avformatContext-avstream: func(avFormatCtxPtr:u32,avStreamPtr:u32) -> unit
 
 // Functions to fetch avInputFormat data fields.
 avInputFormat-name : func(avInputFormatPtr:u32,name:u32) -> s32
@@ -24,4 +26,8 @@ avInputFormat-mime-type : func(avInputFormatPtr:u32) -> s32
 
 // avio.h
 avio-close : func(avFormatCtxPtr:u32) -> unit
+
+// Functions to fetch avStream data fields.
+avStream-id : func(avStreamPtr:u32,streamIdx:u32) -> s32
+avStream-index : func(avStreamPtr:u32, streamIdx:u32) -> s32
 

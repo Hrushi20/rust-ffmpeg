@@ -10,7 +10,7 @@ mod generated;
 // pub mod interrupt;
 // pub mod log;
 // pub mod mathematics;
-// pub mod media;
+pub mod media;
 // pub mod option;
 // pub mod picture;
 pub mod range;

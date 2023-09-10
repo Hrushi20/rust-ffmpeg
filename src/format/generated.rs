@@ -3,6 +3,8 @@
 extern "C" {    
                 #[link_name = "wasmedge_ffmpeg_avformat_av_dump_format"] 
                 pub fn av_dump_format(avFormatCtxPtr: u32, idx: i32, urlPtr_ptr: *const u8, urlPtr_len: usize, isOutput: i32) -> ();
+                #[link_name = "wasmedge_ffmpeg_avformat_av_find_best_stream"] 
+                pub fn av_find_best_stream(avFormatCtxPtr: u32, avMediaType: i32, wanted_stream_nb: i32, releated_stream: i32, avCodecPtr: u32, flags: i32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avformat_av_read_pause"] 
                 pub fn av_read_pause(avFormatCtxPtr: u32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avformat_av_read_play"] 
@@ -15,6 +17,10 @@ extern "C" {
                 pub fn avInputFormat_mime_type(avInputFormatPtr: u32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avformat_avInputFormat_name"] 
                 pub fn avInputFormat_name(avInputFormatPtr: u32, name: u32) -> i32;
+                #[link_name = "wasmedge_ffmpeg_avformat_avStream_id"] 
+                pub fn avStream_id(avStreamPtr: u32, streamIdx: u32) -> i32;
+                #[link_name = "wasmedge_ffmpeg_avformat_avStream_index"] 
+                pub fn avStream_index(avStreamPtr: u32, streamIdx: u32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avformat_avformat_close_input"] 
                 pub fn avformat_close_input(avFormatCtxPtr: u32) -> ();
                 #[link_name = "wasmedge_ffmpeg_avformat_avformat_find_stream_info"] 
@@ -25,6 +31,8 @@ extern "C" {
                 pub fn avformat_open_input(avFormatCtxPtr: u32, urlPtr_ptr: *const u8, urlPtr_len: usize, avInputFormatPtr: u32, avDictionaryPtr: u32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avformat_avformat_seek_file"] 
                 pub fn avformat_seek_file(avFormatCtxPtr: u32, streamIdx: i32, min_ts: i64, ts: i64, max_ts: i64, flags: i32) -> i32;
+                #[link_name = "wasmedge_ffmpeg_avformat_avformatContext_avstream"] 
+                pub fn avformatContext_avstream(avFormatCtxPtr: u32, avStreamPtr: u32) -> ();
                 #[link_name = "wasmedge_ffmpeg_avformat_avformatContext_bit_rate"] 
                 pub fn avformatContext_bit_rate(avFormatCtxPtr: u32) -> i64;
                 #[link_name = "wasmedge_ffmpeg_avformat_avformatContext_duration"] 

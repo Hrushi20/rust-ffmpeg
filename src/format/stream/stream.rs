@@ -1,9 +1,11 @@
-use super::Disposition;
-use codec::{self, packet};
-use ffi::*;
+use std::mem::MaybeUninit;
+// use super::Disposition;
+// use codec::{self, packet};
 use format::context::common::Context;
 use libc::c_int;
-use {DictionaryRef, Discard, Rational};
+use format::generated::{avformatContext_avstream, avStream_id, avStream_index};
+// use {DictionaryRef, Discard, Rational};
+use format::types::AVStream;
 
 #[derive(Debug)]
 pub struct Stream<'a> {
@@ -17,119 +19,126 @@ impl<'a> Stream<'a> {
     }
 
     pub unsafe fn as_ptr(&self) -> *const AVStream {
-        *(*self.context.as_ptr()).streams.add(self.index)
+
+        let avStream = MaybeUninit::<AVStream>::uninit();
+        avformatContext_avstream(self.context.as_ptr() as u32,avStream.as_ptr() as u32);
+        return avStream.as_ptr()
     }
 }
 
 impl<'a> Stream<'a> {
     pub fn id(&self) -> i32 {
-        unsafe { (*self.as_ptr()).id }
-    }
-
-    #[cfg(not(feature = "ffmpeg_5_0"))]
-    pub fn codec(&self) -> codec::Context {
-        unsafe { codec::Context::wrap((*self.as_ptr()).codec, Some(self.context.destructor())) }
-    }
-
-    pub fn parameters(&self) -> codec::Parameters {
         unsafe {
-            codec::Parameters::wrap((*self.as_ptr()).codecpar, Some(self.context.destructor()))
+            avStream_id(self.as_ptr() as u32,self.index() as u32)
         }
     }
 
+    // #[cfg(not(feature = "ffmpeg_5_0"))]
+    // pub fn codec(&self) -> codec::Context {
+    //     unsafe { codec::Context::wrap((*self.as_ptr()).codec, Some(self.context.destructor())) }
+    // }
+    //
+    // pub fn parameters(&self) -> codec::Parameters {
+    //     unsafe {
+    //         codec::Parameters::wrap((*self.as_ptr()).codecpar, Some(self.context.destructor()))
+    //     }
+    // }
+    //
     pub fn index(&self) -> usize {
-        unsafe { (*self.as_ptr()).index as usize }
-    }
-
-    pub fn time_base(&self) -> Rational {
-        unsafe { Rational::from((*self.as_ptr()).time_base) }
-    }
-
-    pub fn start_time(&self) -> i64 {
-        unsafe { (*self.as_ptr()).start_time }
-    }
-
-    pub fn duration(&self) -> i64 {
-        unsafe { (*self.as_ptr()).duration }
-    }
-
-    pub fn frames(&self) -> i64 {
-        unsafe { (*self.as_ptr()).nb_frames }
-    }
-
-    pub fn disposition(&self) -> Disposition {
-        unsafe { Disposition::from_bits_truncate((*self.as_ptr()).disposition) }
-    }
-
-    pub fn discard(&self) -> Discard {
-        unsafe { Discard::from((*self.as_ptr()).discard) }
-    }
-
-    pub fn side_data(&self) -> SideDataIter {
-        SideDataIter::new(self)
-    }
-
-    pub fn rate(&self) -> Rational {
-        unsafe { Rational::from((*self.as_ptr()).r_frame_rate) }
-    }
-
-    pub fn avg_frame_rate(&self) -> Rational {
-        unsafe { Rational::from((*self.as_ptr()).avg_frame_rate) }
-    }
-
-    pub fn metadata(&self) -> DictionaryRef {
-        unsafe { DictionaryRef::wrap((*self.as_ptr()).metadata) }
-    }
-}
-
-impl<'a> PartialEq for Stream<'a> {
-    fn eq(&self, other: &Self) -> bool {
-        unsafe { self.as_ptr() == other.as_ptr() }
-    }
-}
-
-impl<'a> Eq for Stream<'a> {}
-
-pub struct SideDataIter<'a> {
-    stream: &'a Stream<'a>,
-    current: c_int,
-}
-
-impl<'a> SideDataIter<'a> {
-    pub fn new<'sd, 's: 'sd>(stream: &'s Stream) -> SideDataIter<'sd> {
-        SideDataIter { stream, current: 0 }
-    }
-}
-
-impl<'a> Iterator for SideDataIter<'a> {
-    type Item = packet::SideData<'a>;
-
-    fn next(&mut self) -> Option<<Self as Iterator>::Item> {
         unsafe {
-            if self.current >= (*self.stream.as_ptr()).nb_side_data {
-                return None;
-            }
-
-            self.current += 1;
-
-            Some(packet::SideData::wrap(
-                (*self.stream.as_ptr())
-                    .side_data
-                    .offset((self.current - 1) as isize),
-            ))
+            avStream_index(*self.as_ptr(),self.index as u32) as usize
         }
     }
 
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        unsafe {
-            let length = (*self.stream.as_ptr()).nb_side_data as usize;
+    // pub fn time_base(&self) -> Rational {
+    //     unsafe { Rational::from((*self.as_ptr()).time_base) }
+    // }
 
-            (
-                length - self.current as usize,
-                Some(length - self.current as usize),
-            )
-        }
-    }
+    // pub fn start_time(&self) -> i64 {
+    //     unsafe { (*self.as_ptr()).start_time }
+    // }
+    //
+    // pub fn duration(&self) -> i64 {
+    //     unsafe { (*self.as_ptr()).duration }
+    // }
+    //
+    // pub fn frames(&self) -> i64 {
+    //     unsafe { (*self.as_ptr()).nb_frames }
+    // }
+    //
+    // pub fn disposition(&self) -> Disposition {
+    //     unsafe { Disposition::from_bits_truncate((*self.as_ptr()).disposition) }
+    // }
+
+    // pub fn discard(&self) -> Discard {
+    //     unsafe { Discard::from((*self.as_ptr()).discard) }
+    // }
+
+    // pub fn side_data(&self) -> SideDataIter {
+    //     SideDataIter::new(self)
+    // }
+
+    // pub fn rate(&self) -> Rational {
+    //     unsafe { Rational::from((*self.as_ptr()).r_frame_rate) }
+    // }
+
+    // pub fn avg_frame_rate(&self) -> Rational {
+    //     unsafe { Rational::from((*self.as_ptr()).avg_frame_rate) }
+    // }
+
+    // pub fn metadata(&self) -> DictionaryRef {
+    //     unsafe { DictionaryRef::wrap((*self.as_ptr()).metadata) }
+    // }
 }
 
-impl<'a> ExactSizeIterator for SideDataIter<'a> {}
+// impl<'a> PartialEq for Stream<'a> {
+//     fn eq(&self, other: &Self) -> bool {
+//         unsafe { self.as_ptr() == other.as_ptr() }
+//     }
+// }
+
+// impl<'a> Eq for Stream<'a> {}
+//
+// pub struct SideDataIter<'a> {
+//     stream: &'a Stream<'a>,
+//     current: c_int,
+// }
+
+// impl<'a> SideDataIter<'a> {
+//     pub fn new<'sd, 's: 'sd>(stream: &'s Stream) -> SideDataIter<'sd> {
+//         SideDataIter { stream, current: 0 }
+//     }
+// }
+//
+// impl<'a> Iterator for SideDataIter<'a> {
+//     type Item = packet::SideData<'a>;
+//
+//     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
+//         unsafe {
+//             if self.current >= (*self.stream.as_ptr()).nb_side_data {
+//                 return None;
+//             }
+//
+//             self.current += 1;
+//
+//             Some(packet::SideData::wrap(
+//                 (*self.stream.as_ptr())
+//                     .side_data
+//                     .offset((self.current - 1) as isize),
+//             ))
+//         }
+//     }
+//
+//     fn size_hint(&self) -> (usize, Option<usize>) {
+//         unsafe {
+//             let length = (*self.stream.as_ptr()).nb_side_data as usize;
+//
+//             (
+//                 length - self.current as usize,
+//                 Some(length - self.current as usize),
+//             )
+//         }
+//     }
+// }
+//
+// impl<'a> ExactSizeIterator for SideDataIter<'a> {}

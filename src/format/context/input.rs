@@ -103,7 +103,7 @@ impl Input {
 
     pub fn probe_score(&self) -> i32 {
         unsafe {
-            avformatContext_probescope(*self.as_ptr() as u32)
+            avformatContext_probescope(self.as_ptr() as u32)
         }
     }
 
@@ -113,7 +113,7 @@ impl Input {
 
     pub fn pause(&mut self) -> Result<(), Error> {
         unsafe {
-            match av_read_pause(*self.as_mut_ptr() as u32) {
+            match av_read_pause(self.as_mut_ptr() as u32) {
                 0 => Ok(()),
                 e => Err(Error::from(e)),
             }
@@ -122,7 +122,7 @@ impl Input {
 
     pub fn play(&mut self) -> Result<(), Error> {
         unsafe {
-            match av_read_play(*self.as_mut_ptr() as u32) {
+            match av_read_play(self.as_mut_ptr() as u32) {
                 0 => Ok(()),
                 e => Err(Error::from(e)),
             }
@@ -132,7 +132,7 @@ impl Input {
     pub fn seek<R: Range<i64>>(&mut self, ts: i64, range: R) -> Result<(), Error> {
         unsafe {
             match avformat_seek_file(
-                *self.as_mut_ptr() as u32,
+                self.as_mut_ptr() as u32,
                 -1,
                 range.start().cloned().unwrap_or(i64::MIN),
                 ts,
