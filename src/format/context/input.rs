@@ -14,27 +14,27 @@ use format::types::{AVFormatContext, AVInputFormat};
 use format::generated::{av_dump_format, av_read_pause, av_read_play, avformat_seek_file, avformatContext_iformat, avformatContext_probescope};
 
 pub struct Input {
-    ptr: *mut AVFormatContext,
+    ptr: AVFormatContext,
     ctx: Context,
 }
 
 unsafe impl Send for Input {}
 
 impl Input {
-    pub unsafe fn wrap(ptr: *mut AVFormatContext) -> Self {
+    pub unsafe fn wrap(ptr: AVFormatContext) -> Self {
         Input {
             ptr,
             ctx: Context::wrap(ptr, destructor::Mode::Input),
         }
     }
 
-    pub unsafe fn as_ptr(&self) -> *const AVFormatContext {
-        self.ptr as *const _
-    }
-
-    pub unsafe fn as_mut_ptr(&mut self) -> *mut AVFormatContext {
+    pub unsafe fn ptr(&self) -> AVFormatContext {
         self.ptr
     }
+
+    // pub unsafe fn as_mut_ptr(&mut self) -> *mut AVFormatContext {
+    //     self.ptr
+    // }
 }
 
 impl Input {
@@ -44,8 +44,7 @@ impl Input {
             avformatContext_iformat(self.ptr as u32,avInputFormat.as_ptr() as u32);
 
             // Should I use assume Init or read the value as ptr::read();
-            let mut avInputFormat = avInputFormat.assume_init();
-            format::Input::wrap(&mut avInputFormat)
+            format::Input::wrap(std::ptr::read(avInputFormat.as_ptr()))
         }
     }
 
@@ -103,7 +102,7 @@ impl Input {
 
     pub fn probe_score(&self) -> i32 {
         unsafe {
-            avformatContext_probescope(self.as_ptr() as u32)
+            avformatContext_probescope(self.ptr() as u32)
         }
     }
 
@@ -113,7 +112,7 @@ impl Input {
 
     pub fn pause(&mut self) -> Result<(), Error> {
         unsafe {
-            match av_read_pause(self.as_mut_ptr() as u32) {
+            match av_read_pause(self.ptr() as u32) {
                 0 => Ok(()),
                 e => Err(Error::from(e)),
             }
@@ -122,17 +121,18 @@ impl Input {
 
     pub fn play(&mut self) -> Result<(), Error> {
         unsafe {
-            match av_read_play(self.as_mut_ptr() as u32) {
+            match av_read_play(self.ptr() as u32) {
                 0 => Ok(()),
                 e => Err(Error::from(e)),
             }
         }
     }
 
+    // Need to test.
     pub fn seek<R: Range<i64>>(&mut self, ts: i64, range: R) -> Result<(), Error> {
         unsafe {
             match avformat_seek_file(
-                self.as_mut_ptr() as u32,
+                self.ptr() as u32,
                 -1,
                 range.start().cloned().unwrap_or(i64::MIN),
                 ts,
@@ -193,10 +193,11 @@ impl<'a> PacketIter<'a> {
 //     }
 // }
 
+// Need to test.
 pub fn dump(ctx: &Input, index: i32, url: Option<&str>) {
     unsafe {
         av_dump_format(
-            ctx.as_ptr() as u32,
+            ctx.ptr() as u32,
             index,
             url.unwrap_or_else(|| "").as_ptr(),
 

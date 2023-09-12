@@ -5,12 +5,10 @@
 
 #[macro_use]
 extern crate bitflags;
-// pub extern crate ffmpeg_sys_next as sys;
 #[cfg(feature = "image")]
 extern crate image;
 extern crate libc;
 
-// pub use sys as ffi;
 
 // #[macro_use]
 pub mod util;
@@ -41,11 +39,11 @@ pub use format::format::Format;
 pub use format::stream::{Stream, StreamMut};
 
 // #[cfg(feature = "codec")]
-// pub mod codec;
+pub mod codec;
 // #[cfg(feature = "codec")]
 // pub use codec::audio_service::AudioService;
 // #[cfg(feature = "codec")]
-// pub use codec::codec::Codec;
+pub use codec::codec::Codec;
 // #[cfg(feature = "codec")]
 // pub use codec::discard::Discard;
 // #[cfg(feature = "codec")]
@@ -71,6 +69,12 @@ pub use format::stream::{Stream, StreamMut};
 //
 // pub mod software;
 //
+
+// Types
+pub use format::types as avFormatTypes;
+pub use util::types as avUtilTypes;
+pub use codec::types as avCodecType;
+
 fn init_error() {
     util::error::register_all();
 }

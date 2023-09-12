@@ -1,11 +1,14 @@
 use std::mem::MaybeUninit;
+use std::ptr;
+use std::ptr::NonNull;
 // use super::Disposition;
+use codec::{self};
 // use codec::{self, packet};
 use format::context::common::Context;
 use libc::c_int;
-use format::generated::{avformatContext_avstream, avStream_id, avStream_index};
+use format::generated::{avformatContext_avstream, avStream_codecpar, avStream_id, avStream_index};
 // use {DictionaryRef, Discard, Rational};
-use format::types::AVStream;
+use format::types::{AVFormatContext, AVStream};
 
 #[derive(Debug)]
 pub struct Stream<'a> {
@@ -18,18 +21,18 @@ impl<'a> Stream<'a> {
         Stream { context, index }
     }
 
-    pub unsafe fn as_ptr(&self) -> *const AVStream {
-
-        let avStream = MaybeUninit::<AVStream>::uninit();
-        avformatContext_avstream(self.context.as_ptr() as u32,avStream.as_ptr() as u32);
-        return avStream.as_ptr()
+    // Using AVFormatContext as Ptr itself,
+    // Other functions will pass AVFormatContext Ptr along with index to WasmEdge plugin,
+    // In plugin, get the AVStream** pointer and iterate till the index
+    pub unsafe fn ptr(&self) -> AVFormatContext {
+        self.context.ptr()
     }
 }
 
 impl<'a> Stream<'a> {
     pub fn id(&self) -> i32 {
         unsafe {
-            avStream_id(self.as_ptr() as u32,self.index() as u32)
+            avStream_id(self.ptr() as u32,self.index() as u32)
         }
     }
 
@@ -38,15 +41,18 @@ impl<'a> Stream<'a> {
     //     unsafe { codec::Context::wrap((*self.as_ptr()).codec, Some(self.context.destructor())) }
     // }
     //
-    // pub fn parameters(&self) -> codec::Parameters {
-    //     unsafe {
-    //         codec::Parameters::wrap((*self.as_ptr()).codecpar, Some(self.context.destructor()))
-    //     }
-    // }
-    //
+    pub fn parameters(&self) -> codec::Parameters {
+        unsafe {
+            // Todo, update type
+            let codecParameter = MaybeUninit::<u32>::uninit();
+            avStream_codecpar(self.ptr(),self.index as u32,codecParameter.as_ptr() as u32);
+            codec::Parameters::wrap(ptr::read(codecParameter.as_ptr()), Some(self.context.destructor()))
+        }
+    }
+
     pub fn index(&self) -> usize {
         unsafe {
-            avStream_index(*self.as_ptr(),self.index as u32) as usize
+            avStream_index(self.ptr() as u32 ,self.index as u32) as usize
         }
     }
 

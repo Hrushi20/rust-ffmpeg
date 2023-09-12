@@ -28,6 +28,9 @@ avInputFormat-mime-type : func(avInputFormatPtr:u32) -> s32
 avio-close : func(avFormatCtxPtr:u32) -> unit
 
 // Functions to fetch avStream data fields.
-avStream-id : func(avStreamPtr:u32,streamIdx:u32) -> s32
-avStream-index : func(avStreamPtr:u32, streamIdx:u32) -> s32
+avStream-id : func(avFormatCtxPtr:u32,streamIdx:u32) -> s32
+avStream-index : func(avFormatCtxPtr:u32, streamIdx:u32) -> s32
+avStream-codecpar : func(avFormatCtxPtr:u32,streamIdx:u32,codecParameter:u32) -> s32
 
+
+// Need to update Parameter Names....

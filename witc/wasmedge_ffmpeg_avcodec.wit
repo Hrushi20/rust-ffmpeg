@@ -1,0 +1,24 @@
+avcodec-alloc-context3 : func(avCodecPtr:u32,avCodecCtxPtr:u32) -> s32
+avcodec-parameters-from-context : func(avCodecCtxId:u32,avCodecParamId: u32) -> s32
+avcodec-parameters-to-context : func(avCodecCtxId:u32,avCodecParamId:u32) -> s32
+avcodec-parameters-free : func(avCodecParamId:u32) -> s32
+avcodec-free-context : func(avCodecCtxId:u32) -> s32
+avcodec-parameters-alloc : func(avCodecParamPtr:u32) -> s32
+avcodec-get-type : func(avCodecIDIndex:u32) -> s32
+avcodec-open2 : func(avCodecCtxId:u32,avCodecId:u32,avDictionaryId:u32) -> s32
+avcodec-find-decoder : func(avCodecIDIndex:u32,avCodecPtr:u32) -> s32
+av-codec-is-encoder : func(avCodecId:u32) -> s32
+av-codec-is-decoder : func(avCodecId:u32) -> s32
+avcodec-close : func(avCodecCtxId:u32) -> s32
+
+// AVCodecContext struct fields
+avcodeccontext-codec-id : func(avCodecCtxId:u32) -> u32
+avcodeccontext-codec-type : func(avCodecCtxId:u32) -> s32
+
+// AVCodec struct fields
+avcodec-id : func(avCodec:u32) -> u32
+avcodec-type : func(avCodec:u32) -> s32
+
+// AVCodecParams struct fields.
+avcodecparam-codec-id : func(avCodecParams:u32) -> u32
+avcodecparam-codec-type : func(avCodecParams:u32) -> s32

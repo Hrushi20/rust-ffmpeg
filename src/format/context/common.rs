@@ -15,25 +15,21 @@ use format::generated::{av_find_best_stream, avformatContext_bit_rate, avformatC
 use format::stream::Stream;
 
 pub struct Context {
-    ptr: *mut AVFormatContext,
+    ptr: AVFormatContext,
     dtor: Rc<Destructor>,
 }
 
 unsafe impl Send for Context {}
 
 impl Context {
-    pub unsafe fn wrap(ptr: *mut AVFormatContext, mode: destructor::Mode) -> Self {
+    pub unsafe fn wrap(ptr: AVFormatContext, mode: destructor::Mode) -> Self {
         Context {
             ptr,
             dtor: Rc::new(Destructor::new(ptr, mode)),
         }
     }
 
-    pub unsafe fn as_ptr(&self) -> *const AVFormatContext {
-        self.ptr as *const AVFormatContext
-    }
-
-    pub unsafe fn as_mut_ptr(&mut self) -> *mut AVFormatContext {
+    pub unsafe fn ptr(&self) -> AVFormatContext {
         self.ptr
     }
 
@@ -46,7 +42,7 @@ impl Context {
     #[inline]
     pub fn nb_streams(&self) -> u32 {
         unsafe {
-            avformatContext_nb_streams(self.ptr as u32)
+            avformatContext_nb_streams(self.ptr())
         }
     }
 
@@ -86,20 +82,20 @@ impl Context {
 
     pub fn bit_rate(&self) -> i64 {
         unsafe {
-            avformatContext_bit_rate(self.as_ptr() as u32)
+            avformatContext_bit_rate(self.ptr())
         }
     }
 
     pub fn duration(&self) -> i64 {
         unsafe {
-            avformatContext_duration(self.as_ptr() as u32)
+            avformatContext_duration(self.ptr())
         }
     }
 
     #[inline]
     pub fn nb_chapters(&self) -> u32 {
         unsafe {
-            avformatContext_nb_chapters(self.as_ptr() as u32)
+            avformatContext_nb_chapters(self.ptr())
         }
     }
 
@@ -180,14 +176,14 @@ impl<'a> Best<'a> {
         'a: 'b,
     {
         unsafe {
-            let decoder = ptr::null_mut();
+            let decoder = mem::zeroed();
 
             let index = av_find_best_stream(
-                self.context.as_ptr() as u32,
+                self.context.ptr(),
                 kind.into(),
                 self.wanted,
                 self.related,
-                decoder as *const u32 as u32,
+                decoder,
                 0,
             );
             if index >= 0 {
@@ -235,7 +231,6 @@ impl<'a> StreamIter<'a> {
         'a: 'b,
     {
         unsafe {
-            println!("Best: {:?}",ptr::read(self.context.ptr as *const u32));
             Best::new(self.context).best(kind)
         }
     }

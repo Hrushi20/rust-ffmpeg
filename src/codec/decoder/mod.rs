@@ -4,29 +4,32 @@ pub use self::decoder::Decoder;
 pub mod video;
 pub use self::video::Video;
 
-pub mod audio;
-pub use self::audio::Audio;
+// pub mod audio;
+// pub use self::audio::Audio;
 
-pub mod subtitle;
-pub use self::subtitle::Subtitle;
+// pub mod subtitle;
+// pub use self::subtitle::Subtitle;
 
-pub mod slice;
-
-pub mod conceal;
-pub use self::conceal::Conceal;
-
-pub mod check;
-pub use self::check::Check;
-
+// pub mod slice;
+//
+// pub mod conceal;
+// pub use self::conceal::Conceal;
+//
+// pub mod check;
+// pub use self::check::Check;
+//
 pub mod opened;
 pub use self::opened::Opened;
 
 use std::ffi::CString;
+use std::mem::MaybeUninit;
+use std::ptr;
+use avCodecType::AVCodec;
 
 use codec::Context;
 use codec::Id;
-use ffi::*;
 use Codec;
+use codec::generated::avcodec_find_decoder;
 
 pub fn new() -> Decoder {
     Context::new().decoder()
@@ -34,25 +37,26 @@ pub fn new() -> Decoder {
 
 pub fn find(id: Id) -> Option<Codec> {
     unsafe {
-        let ptr = avcodec_find_decoder(id.into()) as *mut AVCodec;
+        let avCodec = MaybeUninit::<AVCodec>::uninit();
+        avcodec_find_decoder(id.into(),avCodec.as_ptr() as u32);
 
-        if ptr.is_null() {
+        if ptr::read(avCodec.as_ptr()) == 0 {
             None
         } else {
-            Some(Codec::wrap(ptr))
+            Some(Codec::wrap(ptr::read(avCodec.as_ptr())))
         }
     }
 }
 
-pub fn find_by_name(name: &str) -> Option<Codec> {
-    unsafe {
-        let name = CString::new(name).unwrap();
-        let ptr = avcodec_find_decoder_by_name(name.as_ptr()) as *mut AVCodec;
-
-        if ptr.is_null() {
-            None
-        } else {
-            Some(Codec::wrap(ptr))
-        }
-    }
-}
+// pub fn find_by_name(name: &str) -> Option<Codec> {
+//     unsafe {
+//         let name = CString::new(name).unwrap();
+//         let ptr = avcodec_find_decoder_by_name(name.as_ptr()) as *mut AVCodec;
+//
+//         if ptr.is_null() {
+//             None
+//         } else {
+//             Some(Codec::wrap(ptr))
+//         }
+//     }
+// }

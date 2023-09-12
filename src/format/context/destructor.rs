@@ -8,12 +8,12 @@ pub enum Mode {
 }
 
 pub struct Destructor {
-    ptr: *mut AVFormatContext,
+    ptr: AVFormatContext,
     mode: Mode,
 }
 
 impl Destructor {
-    pub unsafe fn new(ptr: *mut AVFormatContext, mode: Mode) -> Self {
+    pub unsafe fn new(ptr: AVFormatContext, mode: Mode) -> Self {
         Destructor { ptr, mode }
     }
 }
@@ -25,7 +25,7 @@ impl Drop for Destructor {
                 Mode::Input => avformat_close_input( self.ptr as u32),
 
                 Mode::Output => {
-                    avio_close(self.ptr as u32);
+                    avio_close(self.ptr);
                     avformat_free_context(self.ptr as u32);
                 }
             }

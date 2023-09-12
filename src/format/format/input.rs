@@ -7,11 +7,11 @@ use format::generated::avInputFormat_name;
 use format::types::AVInputFormat;
 
 pub struct Input {
-    ptr: *mut AVInputFormat,
+    ptr: AVInputFormat,
 }
 
 impl Input {
-    pub unsafe fn wrap(ptr: *mut AVInputFormat) -> Self {
+    pub unsafe fn wrap(ptr: AVInputFormat) -> Self {
         Input { ptr }
     }
 
@@ -19,9 +19,6 @@ impl Input {
         self.ptr as *const _
     }
 
-    pub unsafe fn as_mut_ptr(&mut self) -> *mut AVInputFormat {
-        self.ptr
-    }
 }
 
 impl Input {

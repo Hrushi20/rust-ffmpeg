@@ -1,47 +1,56 @@
 use std::any::Any;
+use std::mem::MaybeUninit;
+use std::ptr;
 use std::rc::Rc;
 
 use super::{Context, Id};
-use ffi::*;
 use media;
+use avCodecType::AVCodecParameters;
+use codec::generated::{avcodec_parameters_alloc, avcodec_parameters_free, avcodec_parameters_from_context, avcodecparam_codec_id, avcodecparam_codec_type};
 
 pub struct Parameters {
-    ptr: *mut AVCodecParameters,
+    ptr: AVCodecParameters,
     owner: Option<Rc<dyn Any>>,
 }
 
 unsafe impl Send for Parameters {}
 
 impl Parameters {
-    pub unsafe fn wrap(ptr: *mut AVCodecParameters, owner: Option<Rc<dyn Any>>) -> Self {
+    pub unsafe fn wrap(ptr: AVCodecParameters, owner: Option<Rc<dyn Any>>) -> Self {
         Parameters { ptr, owner }
     }
 
-    pub unsafe fn as_ptr(&self) -> *const AVCodecParameters {
-        self.ptr as *const _
-    }
-
-    pub unsafe fn as_mut_ptr(&mut self) -> *mut AVCodecParameters {
+    pub unsafe fn ptr(&self) -> AVCodecParameters {
         self.ptr
     }
+
 }
 
 impl Parameters {
     pub fn new() -> Self {
         unsafe {
+            // let avCodecParameters = NonNull::<AVCodecParameters>::dangling();
+            let avCodecParameters = MaybeUninit::<AVCodecParameters>::uninit();
+            avcodec_parameters_alloc(avCodecParameters.as_ptr() as u32);
             Parameters {
-                ptr: avcodec_parameters_alloc(),
+                ptr: ptr::read(avCodecParameters.as_ptr()),
                 owner: None,
             }
         }
     }
 
     pub fn medium(&self) -> media::Type {
-        unsafe { media::Type::from((*self.as_ptr()).codec_type) }
+        unsafe {
+            let mediaType = avcodecparam_codec_type(self.ptr());
+            media::Type::from(mediaType)
+        }
     }
 
     pub fn id(&self) -> Id {
-        unsafe { Id::from((*self.as_ptr()).codec_id) }
+        unsafe {
+            let ID = avcodecparam_codec_id(self.ptr());
+            Id::from(ID)
+        }
     }
 }
 
@@ -55,33 +64,33 @@ impl Drop for Parameters {
     fn drop(&mut self) {
         unsafe {
             if self.owner.is_none() {
-                avcodec_parameters_free(&mut self.as_mut_ptr());
+                avcodec_parameters_free( self.ptr());
             }
         }
     }
 }
-
-impl Clone for Parameters {
-    fn clone(&self) -> Self {
-        let mut ctx = Parameters::new();
-        ctx.clone_from(self);
-
-        ctx
-    }
-
-    fn clone_from(&mut self, source: &Self) {
-        unsafe {
-            avcodec_parameters_copy(self.as_mut_ptr(), source.as_ptr());
-        }
-    }
-}
+//
+// impl Clone for Parameters {
+//     fn clone(&self) -> Self {
+//         let mut ctx = Parameters::new();
+//         ctx.clone_from(self);
+//
+//         ctx
+//     }
+//
+//     fn clone_from(&mut self, source: &Self) {
+//         unsafe {
+//             avcodec_parameters_copy(self.as_mut_ptr(), source.as_ptr());
+//         }
+//     }
+// }
 
 impl<C: AsRef<Context>> From<C> for Parameters {
     fn from(context: C) -> Parameters {
         let mut parameters = Parameters::new();
         let context = context.as_ref();
         unsafe {
-            avcodec_parameters_from_context(parameters.as_mut_ptr(), context.as_ptr());
+            avcodec_parameters_from_context(parameters.ptr(),context.ptr() as u32);
         }
         parameters
     }

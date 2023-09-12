@@ -17,10 +17,12 @@ extern "C" {
                 pub fn avInputFormat_mime_type(avInputFormatPtr: u32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avformat_avInputFormat_name"] 
                 pub fn avInputFormat_name(avInputFormatPtr: u32, name: u32) -> i32;
+                #[link_name = "wasmedge_ffmpeg_avformat_avStream_codecpar"] 
+                pub fn avStream_codecpar(avFormatCtxPtr: u32, streamIdx: u32, codecParameter: u32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avformat_avStream_id"] 
-                pub fn avStream_id(avStreamPtr: u32, streamIdx: u32) -> i32;
+                pub fn avStream_id(avFormatCtxPtr: u32, streamIdx: u32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avformat_avStream_index"] 
-                pub fn avStream_index(avStreamPtr: u32, streamIdx: u32) -> i32;
+                pub fn avStream_index(avFormatCtxPtr: u32, streamIdx: u32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avformat_avformat_close_input"] 
                 pub fn avformat_close_input(avFormatCtxPtr: u32) -> ();
                 #[link_name = "wasmedge_ffmpeg_avformat_avformat_find_stream_info"] 
