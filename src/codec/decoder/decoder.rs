@@ -1,15 +1,16 @@
 use std::ops::{Deref, DerefMut};
 use std::{mem};
+use std::mem::MaybeUninit;
 
 use super::{Opened,Video};
 // use super::{Audio, Check, Conceal, Opened, Subtitle, Video};
 use codec::{Context,traits};
 // use codec::{traits, Context};
-use {Error};
+use {Error, Rational};
 // use {Dictionary, Discard, Error, Rational};
 use avCodecType::AVCodec;
 use avUtilTypes::AVDictionary;
-use codec::generated::avcodec_open2;
+use codec::generated::{avcodec_open2, avcodeccontext_time_base};
 
 pub struct Decoder(pub Context);
 
@@ -115,10 +116,15 @@ impl Decoder {
     //         (*self.as_mut_ptr()).skip_frame = value.into();
     //     }
     // }
-    //
-    // pub fn time_base(&self) -> Rational {
-    //     unsafe { Rational::from((*self.as_ptr()).time_base) }
-    // }
+
+    pub fn time_base(&self) -> Rational {
+        unsafe {
+            let num = MaybeUninit::<i32>::uninit();
+            let den = MaybeUninit::<i32>::uninit();
+            avcodeccontext_time_base(self.ptr() as u32, num.as_ptr() as u32,den.as_ptr() as u32);
+            Rational::new(std::ptr::read(num.as_ptr()),std::ptr::read(den.as_ptr()))
+        }
+    }
 }
 
 impl Deref for Decoder {

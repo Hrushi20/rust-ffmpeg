@@ -15,7 +15,7 @@ pub mod media;
 // pub mod picture;
 pub mod range;
 pub mod types;
-// pub mod rational;
+pub mod rational;
 // pub mod time;
 //
 // use std::ffi::CStr;

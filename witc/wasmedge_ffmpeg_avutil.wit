@@ -1,3 +1,17 @@
+// error.h
 av-strerror: func(errno:s32,buf:list<u8>)-> s32
 AVERROR: func(errno:s32)-> s32
 AVUNERROR: func(errno:s32)-> s32
+
+// rational.h
+av-add-q: func(ANum:s32,ADen:s32,BNum:s32,BDen:s32,CNumPtr:u32,CDenPtr:u32) -> s32
+av-sub-q: func(ANum:s32,ADen:s32,BNum:s32,BDen:s32,CNumPtr:u32,CDenPtr:u32) -> s32
+av-mul-q: func(ANum:s32,ADen:s32,BNum:s32,BDen:s32,CNumPtr:u32,CDenPtr:u32) -> s32
+av-div-q: func(ANum:s32,ADen:s32,BNum:s32,BDen:s32,CNumPtr:u32,CDenPtr:u32) -> s32
+av-q2d: func(ANum:s32,ADen:s32) -> f64
+av-d2q: func(D:f64,Max:s32,ANumPtr:u32,ADenPtr:u32) -> s32
+av-inv-q: func(ANum:s32,ADen:s32,BNumPtr:u32,BDenPtr:u32) -> s32
+av-q2intfloat: func(ANum:s32,ADen:s32) -> u32
+av-nearer-q: func(ANum:s32,ADen:s32,BNum:s32,BDen:s32,CNum:s32,CDen:s32) -> s32
+av-cmp-q: func(ANum:s32,ADen:s32,BNum:s32,BDen:s32) -> s32
+av-reduce: func(ANumPtr:u32,ADenPtr:u32,BNum:s64,BDen:s64,Max:s64) -> s32

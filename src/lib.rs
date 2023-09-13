@@ -26,7 +26,7 @@ pub use util::error::{self, Error};
 pub use util::media;
 // pub use util::option;
 // pub use util::picture;
-// pub use util::rational::{self, Rational};
+pub use util::rational::{self, Rational};
 // pub use util::time;
 
 // #[cfg(feature = "format")]

@@ -45,7 +45,7 @@ impl Video {
     //         }
     //     }
     // }
-    //
+
     // pub fn width(&self) -> u32 {
     //     unsafe { (*self.as_ptr()).width as u32 }
     // }

@@ -129,17 +129,17 @@ impl Context {
     //         }
     //     }
     // }
-    //
-    // pub fn set_parameters<P: Into<Parameters>>(&mut self, parameters: P) -> Result<(), Error> {
-    //     let parameters = parameters.into();
-    //
-    //     unsafe {
-    //         match avcodec_parameters_to_context(self.as_mut_ptr(), parameters.as_ptr()) {
-    //             e if e < 0 => Err(Error::from(e)),
-    //             _ => Ok(()),
-    //         }
-    //     }
-    // }
+
+    pub fn set_parameters<P: Into<Parameters>>(&mut self, parameters: P) -> Result<(), Error> {
+        let parameters = parameters.into();
+
+        unsafe {
+            match avcodec_parameters_to_context(self.ptr(), parameters.ptr()) {
+                e if e < 0 => Err(Error::from(e)),
+                _ => Ok(()),
+            }
+        }
+    }
 }
 
 impl Default for Context {

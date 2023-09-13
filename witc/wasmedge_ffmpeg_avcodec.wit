@@ -14,6 +14,7 @@ avcodec-close : func(avCodecCtxId:u32) -> s32
 // AVCodecContext struct fields
 avcodeccontext-codec-id : func(avCodecCtxId:u32) -> u32
 avcodeccontext-codec-type : func(avCodecCtxId:u32) -> s32
+avcodeccontext-time-base : func(avCodecCtxId:u32,Num:u32,Den:u32) -> s32
 
 // AVCodec struct fields
 avcodec-id : func(avCodec:u32) -> u32
