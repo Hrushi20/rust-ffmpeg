@@ -20,7 +20,7 @@ pub mod util;
 // pub use util::dictionary::Owned as Dictionary;
 // pub use util::dictionary::Ref as DictionaryRef;
 pub use util::error::{self, Error};
-// pub use util::frame::{self, Frame};
+pub use util::frame::{self, Frame};
 // pub use util::log;
 // pub use util::mathematics::{self, rescale, Rescale, Rounding};
 pub use util::media;

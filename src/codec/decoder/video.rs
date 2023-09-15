@@ -1,4 +1,6 @@
+use std::mem::MaybeUninit;
 use std::ops::{Deref, DerefMut};
+use std::ptr;
 
 // #[cfg(not(feature = "ffmpeg_5_0"))]
 // use ffi::*;
@@ -15,6 +17,8 @@ use codec::Context;
 #[cfg(not(feature = "ffmpeg_5_0"))]
 use {Error};
 // use {packet, Error};
+use {Rational};
+use codec::generated::{avcodeccontext_height, avcodeccontext_sample_aspect_ratio, avcodeccontext_width};
 // use {FieldOrder, Rational};
 
 pub struct Video(pub Opened);
@@ -46,26 +50,36 @@ impl Video {
     //     }
     // }
 
-    // pub fn width(&self) -> u32 {
-    //     unsafe { (*self.as_ptr()).width as u32 }
-    // }
-    //
-    // pub fn height(&self) -> u32 {
-    //     unsafe { (*self.as_ptr()).height as u32 }
-    // }
+    pub fn width(&self) -> u32 {
+        unsafe {
+            avcodeccontext_width(self.ptr())
+        }
+    }
+
+    pub fn height(&self) -> u32 {
+        unsafe {
+            avcodeccontext_height(self.ptr())
+        }
+    }
     //
     // pub fn format(&self) -> format::Pixel {
     //     unsafe { format::Pixel::from((*self.as_ptr()).pix_fmt) }
     // }
-    //
+
     // pub fn has_b_frames(&self) -> bool {
     //     unsafe { (*self.as_ptr()).has_b_frames != 0 }
     // }
-    //
-    // pub fn aspect_ratio(&self) -> Rational {
-    //     unsafe { Rational::from((*self.as_ptr()).sample_aspect_ratio) }
-    // }
-    //
+
+    pub fn aspect_ratio(&self) -> Rational {
+        unsafe {
+            let result_num = MaybeUninit::<i32>::uninit();
+            let result_den = MaybeUninit::<i32>::uninit();
+
+            avcodeccontext_sample_aspect_ratio(self.ptr(),result_num.as_ptr() as u32,result_den.as_ptr() as u32);
+            Rational::new(ptr::read(result_num.as_ptr()),ptr::read(result_den.as_ptr()))
+        }
+    }
+
     // pub fn color_space(&self) -> color::Space {
     //     unsafe { color::Space::from((*self.as_ptr()).colorspace) }
     // }

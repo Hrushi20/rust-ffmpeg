@@ -15,3 +15,12 @@ av-q2intfloat: func(ANum:s32,ADen:s32) -> u32
 av-nearer-q: func(ANum:s32,ADen:s32,BNum:s32,BDen:s32,CNum:s32,CDen:s32) -> s32
 av-cmp-q: func(ANum:s32,ADen:s32,BNum:s32,BDen:s32) -> s32
 av-reduce: func(ANumPtr:u32,ADenPtr:u32,BNum:s64,BDen:s64,Max:s64) -> s32
+
+// frame.h
+av-frame-alloc: func(framePtr:u32) -> s32
+av-frame-free: func(frameId:u32) -> s32
+av-frame-width: func(frameId:u32) -> u32
+av-frame-height: func(frameId:u32) -> u32
+av-frame-set-width: func(frameId:u32,width:u32) -> unit
+av-frame-set-height: func(frameId:u32,height:u32) -> unit
+av-frame-format: func(frameId:u32) -> u32

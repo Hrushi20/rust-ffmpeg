@@ -5,10 +5,11 @@ use codec::id::AVCodecID::*;
 
 use util::media;
 
+
 #[allow(non_camel_case_types)]
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Id {
-    None,
+    None ,
 
     // video codecs
     MPEG1VIDEO,

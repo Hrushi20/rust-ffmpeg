@@ -13,6 +13,20 @@ extern "C" {
                 pub fn av_d2q(D: f64, Max: i32, ANumPtr: u32, ADenPtr: u32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avutil_av_div_q"] 
                 pub fn av_div_q(ANum: i32, ADen: i32, BNum: i32, BDen: i32, CNumPtr: u32, CDenPtr: u32) -> i32;
+                #[link_name = "wasmedge_ffmpeg_avutil_av_frame_alloc"] 
+                pub fn av_frame_alloc(framePtr: u32) -> i32;
+                #[link_name = "wasmedge_ffmpeg_avutil_av_frame_format"] 
+                pub fn av_frame_format(frameId: u32) -> u32;
+                #[link_name = "wasmedge_ffmpeg_avutil_av_frame_free"] 
+                pub fn av_frame_free(frameId: u32) -> i32;
+                #[link_name = "wasmedge_ffmpeg_avutil_av_frame_height"] 
+                pub fn av_frame_height(frameId: u32) -> u32;
+                #[link_name = "wasmedge_ffmpeg_avutil_av_frame_set_height"] 
+                pub fn av_frame_set_height(frameId: u32, height: u32) -> ();
+                #[link_name = "wasmedge_ffmpeg_avutil_av_frame_set_width"] 
+                pub fn av_frame_set_width(frameId: u32, width: u32) -> ();
+                #[link_name = "wasmedge_ffmpeg_avutil_av_frame_width"] 
+                pub fn av_frame_width(frameId: u32) -> u32;
                 #[link_name = "wasmedge_ffmpeg_avutil_av_inv_q"] 
                 pub fn av_inv_q(ANum: i32, ADen: i32, BNumPtr: u32, BDenPtr: u32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avutil_av_mul_q"] 
