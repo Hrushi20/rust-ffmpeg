@@ -7,59 +7,64 @@ use std::ops::Sub;
 use std::ops::Mul;
 use std::ops::Div;
 use std::cell::RefCell;
+use ffmpeg_next::codec::Context;
 
+const RESOURCE_TEMPORARILY_UNAVAILABLE: ffmpeg_next::Error = ffmpeg_next::Error::Other {
+    errno: ffmpeg_next::util::error::EAGAIN + 29
+};
 
 fn main() {
-    let path = Path::new("/Users/pc/my/code/openSource/wasmedge/rust-ffmpeg/example/assets/test.yuv");
-
+    let path = Path::new("/Users/pc/my/code/openSource/wasmedge/rust-ffmpeg/example/assets/small_bunny_1080p_60fps.mp4");
+    // let path = Path::new("assets/small_bunny_1080p_60fps.mp4");
     ffmpeg_next::init();
-    let mut k = ffmpeg_next::format::input::<&Path>(&path).unwrap();
-    println!("Probe score {:?}",k.probe_score());
-    // println!("Nb streams {:?}",k.nb_streams());
-    // // println!("Bitrate {:?}",k.bit_rate());
-    // // println!("Duration {:?}",k.duration());
-    // // println!("Nb Chapters {:?}",k.nb_chapters());
-    // println!("{:?}",k.play());
-    // println!("{:?}",k.pause());
-    println!("{:?}",*k);
-    //
-    let streams = k.streams();
-    //
-    let input_stream = streams.best(ffmpeg_next::util::media::Type::Video).unwrap();
-
+    let mut input = ffmpeg_next::format::input::<&Path>(&path).unwrap();
+    println!("Probe score {:?}",input.probe_score());
+    println!("{:?}",*input);
+    let input_stream = input
+        .streams()
+        .best(ffmpeg_next::media::Type::Video).unwrap();
     let input_stream_index = input_stream.index();
-    let context = ffmpeg_next::codec::Context::from_parameters(input_stream.parameters()).unwrap();
+    let context = Context::from_parameters(input_stream.parameters()).unwrap();
     let mut decoder = context.decoder().video().unwrap();
     decoder.set_parameters(input_stream.parameters()).unwrap();
-    println!("Width: {}",decoder.width());
-    println!("Height: {}",decoder.height());
-    println!("Numeration Aspect Ratio: {}",decoder.aspect_ratio().numerator());
-    println!("Denominator Aspect Ratio: {}",decoder.aspect_ratio().denominator());
 
-    let rational1 = ffmpeg_next::util::rational::Rational::new(1,2);
-    let rational2 = ffmpeg_next::util::rational::Rational::new(1,2);
-    let test = rational2.add(rational1);
-    println!("ADDD: {:?}",test);
-    println!("Sub: {:?}",rational2.sub(rational1));
-    println!("Mul: {:?}",rational2.mul(rational1));
-    println!("Div: {:?}",rational2.div(rational1));
-    println!("Compare: {:?}",rational1.partial_cmp(&rational2));
-    let rational3 = ffmpeg_next::util::rational::Rational::new(0,1);
-    println!("Inverse: {:?}",rational3.invert());
-    println!("Nearer: {:?}",ffmpeg_next::util::rational::nearer(rational1,rational2,rational3));
-    println!("F64: {:?}",<ffmpeg_next::util::rational::Rational as Into<f64>>::into(rational1) as f64);
-
-    // let mut k = RefCell::new(ffmpeg_next::frame::Video::empty());
-    //
-    // let mut scale_frame_buffer = k.borrow_mut();
     let frame = ffmpeg_next::frame::Video::empty();
     println!("Width: {}",frame.width());
-    println!("height: {}",frame.height());
-    // println!("Add: {:?}",rational1.add(rational2));
+    println!("Height: {}",frame.height());
 
-    frame.format();
-    // let convert_to_ms = decoder.time_base().numerator() as f64
-    //     / decoder.time_base().denominator() as f64
-    //     * 1000.;
-    // println!("convert_to_ms: {}",convert_to_ms);
+    let mut decoder_has_sent_eof = false;
+    while let Err(err) = decoder.receive_frame(&frame) {
+        println!("Returned error");
+        if err == RESOURCE_TEMPORARILY_UNAVAILABLE {
+            if !decoder_has_sent_eof {
+                let mut is_eof = true;
+                while let Some((stream, package)) = input.packets().next() {
+                    if stream.index() != input_stream_index {
+                        continue;
+                    }
+                    decoder.send_packet(&package);
+                    is_eof = false;
+                    break;
+                }
+                if is_eof {
+                    decoder.send_eof();
+                    decoder_has_sent_eof = true;
+                }
+            }
+        }else {
+            if let ffmpeg_next::Error::Eof = err {
+                println!("False");
+                break;
+            } else {
+                println!("Error");
+                break;
+            };
+        }
+    }
+
+    println!("Width: {}",frame.width());
+    println!("Height: {}",frame.height());
+    let src_format = frame.format();
+    println!("Src_format: {:?}",src_format);
+    let data = frame.data(0);
 }

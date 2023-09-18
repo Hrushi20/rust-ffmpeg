@@ -10,6 +10,8 @@ avcodec-find-decoder : func(avCodecIDIndex:u32,avCodecPtr:u32) -> s32
 av-codec-is-encoder : func(avCodecId:u32) -> s32
 av-codec-is-decoder : func(avCodecId:u32) -> s32
 avcodec-close : func(avCodecCtxId:u32) -> s32
+avcodec-receive-frame : func(avCodecCtxId:u32,frameId:u32) -> s32
+avcodec-send-packet : func(avCodecCtx:u32,packetId:u32) -> s32
 
 // AVCodecContext struct fields
 avcodeccontext-codec-id : func(avCodecCtxId:u32) -> u32
@@ -26,3 +28,11 @@ avcodec-type : func(avCodec:u32) -> s32
 // AVCodecParams struct fields.
 avcodecparam-codec-id : func(avCodecParams:u32) -> u32
 avcodecparam-codec-type : func(avCodecParams:u32) -> s32
+
+// AVPacket
+av-packet-alloc : func(avPacketPtr:u32) -> s32
+av-new-packet : func(avPacketId:u32,size:s32) -> s32
+av-packet-unref : func(avPacketId:u32) -> s32
+av-grow-packet : func(avPacketId:u32,size:s32) -> s32
+av-shrink-packet : func(avPacketId:u32,size:s32) -> s32
+av-packet-stream-index : func(avPacketId:u32) -> s32

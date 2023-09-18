@@ -15,12 +15,18 @@ extern "C" {
                 pub fn av_div_q(ANum: i32, ADen: i32, BNum: i32, BDen: i32, CNumPtr: u32, CDenPtr: u32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avutil_av_frame_alloc"] 
                 pub fn av_frame_alloc(framePtr: u32) -> i32;
+                #[link_name = "wasmedge_ffmpeg_avutil_av_frame_data"] 
+                pub fn av_frame_data(frameId: u32, data_ptr: *const u8, data_len: usize) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avutil_av_frame_format"] 
                 pub fn av_frame_format(frameId: u32) -> u32;
                 #[link_name = "wasmedge_ffmpeg_avutil_av_frame_free"] 
                 pub fn av_frame_free(frameId: u32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avutil_av_frame_height"] 
                 pub fn av_frame_height(frameId: u32) -> u32;
+                #[link_name = "wasmedge_ffmpeg_avutil_av_frame_isnull"] 
+                pub fn av_frame_isnull(avPacketId: u32) -> i32;
+                #[link_name = "wasmedge_ffmpeg_avutil_av_frame_linesize"] 
+                pub fn av_frame_linesize(avPacketId: u32, Idx: u32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avutil_av_frame_set_height"] 
                 pub fn av_frame_set_height(frameId: u32, height: u32) -> ();
                 #[link_name = "wasmedge_ffmpeg_avutil_av_frame_set_width"] 
@@ -42,4 +48,10 @@ extern "C" {
                 #[link_name = "wasmedge_ffmpeg_avutil_av_strerror"] 
                 pub fn av_strerror(errno: i32, buf_ptr: *const u8, buf_len: usize) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avutil_av_sub_q"] 
-                pub fn av_sub_q(ANum: i32, ADen: i32, BNum: i32, BDen: i32, CNumPtr: u32, CDenPtr: u32) -> i32;}
+                pub fn av_sub_q(ANum: i32, ADen: i32, BNum: i32, BDen: i32, CNumPtr: u32, CDenPtr: u32) -> i32;
+                #[link_name = "wasmedge_ffmpeg_avutil_avpixfmtdescriptor_log2_chromah"] 
+                pub fn avpixfmtdescriptor_log2_chromah(AvPixFormatId: u32) -> i32;
+                #[link_name = "wasmedge_ffmpeg_avutil_avpixfmtdescriptor_log2_chromaw"] 
+                pub fn avpixfmtdescriptor_log2_chromaw(AvPixFormatId: u32) -> i32;
+                #[link_name = "wasmedge_ffmpeg_avutil_avpixfmtdescriptor_nb_components"] 
+                pub fn avpixfmtdescriptor_nb_components(AvPixFormatId: u32) -> i32;}

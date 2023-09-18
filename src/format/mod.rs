@@ -1,5 +1,7 @@
 use std::mem::MaybeUninit;
+// Temporary. Should use build script to generate and use files.
 mod generated;
+pub use format::generated::av_read_frame;
 // pub use util::format::{pixel, Pixel};
 // pub use util::format::{sample, Sample};
 // use util::interrupt;
@@ -175,7 +177,6 @@ pub fn input<P: AsRef<Path>>(path: &P) -> Result<context::Input, Error> {
                     Err(Error::from(e))
                 }
             },
-
             e => Err(Error::from(e)),
         }
     }

@@ -11,7 +11,7 @@ use avUtilTypes::{AVFrame, AVPixelFormat};
 use util::format;
 use Rational;
 use util::format::Pixel;
-use util::generated::{av_frame_format, av_frame_height, av_frame_set_height, av_frame_set_width, av_frame_width};
+use util::generated::{av_frame_data, av_frame_format, av_frame_height, av_frame_linesize, av_frame_set_height, av_frame_set_width, av_frame_width};
 
 #[derive(PartialEq, Eq)]
 pub struct Video(Frame);
@@ -97,6 +97,7 @@ impl Video {
     #[inline]
     pub fn width(&self) -> u32 {
         unsafe {
+            // How to differentiate between wasmError and width
             av_frame_width(self.ptr())
         }
     }
@@ -111,6 +112,7 @@ impl Video {
     #[inline]
     pub fn height(&self) -> u32 {
         unsafe {
+            // How to differentiate between wasmError and height
             av_frame_height(self.ptr())
         }
     }
@@ -194,28 +196,30 @@ impl Video {
     // pub fn repeat(&self) -> f64 {
     //     unsafe { f64::from((*self.as_ptr()).repeat_pict) }
     // }
-    //
-    // #[inline]
-    // pub fn stride(&self, index: usize) -> usize {
-    //     if index >= self.planes() {
-    //         panic!("out of bounds");
-    //     }
-    //
-    //     unsafe { (*self.as_ptr()).linesize[index] as usize }
-    // }
-    //
-    // #[inline]
-    // pub fn planes(&self) -> usize {
-    //     for i in 0..8 {
-    //         unsafe {
-    //             if (*self.as_ptr()).linesize[i] == 0 {
-    //                 return i;
-    //             }
-    //         }
-    //     }
-    //
-    //     8
-    // }
+
+    #[inline]
+    pub fn stride(&self, index: usize) -> usize {
+        if index >= self.planes() {
+            panic!("out of bounds");
+        }
+
+        unsafe {
+            av_frame_linesize(self.ptr(),index as u32) as usize
+        }
+    }
+
+    #[inline]
+    pub fn planes(&self) -> usize {
+        for i in 0..8 {
+            unsafe {
+                if av_frame_linesize(self.ptr(),i) == 0 {
+                     return i as usize;
+                }
+            }
+        }
+
+        8
+    }
     //
     // #[inline]
     // pub fn plane_width(&self, index: usize) -> u32 {
@@ -235,26 +239,26 @@ impl Video {
     //         self.width()
     //     }
     // }
-    //
-    // #[inline]
-    // pub fn plane_height(&self, index: usize) -> u32 {
-    //     if index >= self.planes() {
-    //         panic!("out of bounds");
-    //     }
-    //
-    //     // Logic taken from av_image_fill_pointers().
-    //     if index != 1 && index != 2 {
-    //         return self.height();
-    //     }
-    //
-    //     if let Some(desc) = self.format().descriptor() {
-    //         let s = desc.log2_chroma_h();
-    //         (self.height() + (1 << s) - 1) >> s
-    //     } else {
-    //         self.height()
-    //     }
-    // }
-    //
+
+    #[inline]
+    pub fn plane_height(&self, index: usize) -> u32 {
+        if index >= self.planes() {
+            panic!("out of bounds");
+        }
+
+        // Logic taken from av_image_fill_pointers().
+        if index != 1 && index != 2 {
+            return self.height();
+        }
+
+        if let Some(desc) = self.format().descriptor() {
+            let s = desc.log2_chroma_h();
+            (self.height() + (1 << s) - 1) >> s
+        } else {
+            self.height()
+        }
+    }
+
     // #[inline]
     // pub fn plane<T: Component>(&self, index: usize) -> &[T] {
     //     if index >= self.planes() {
@@ -290,21 +294,21 @@ impl Video {
     //         )
     //     }
     // }
-    //
-    // #[inline]
-    // pub fn data(&self, index: usize) -> &[u8] {
-    //     if index >= self.planes() {
-    //         panic!("out of bounds");
-    //     }
-    //
-    //     unsafe {
-    //         slice::from_raw_parts(
-    //             (*self.as_ptr()).data[index],
-    //             self.stride(index) * self.plane_height(index) as usize,
-    //         )
-    //     }
-    // }
-    //
+
+    #[inline]
+    pub fn data(&self, index: usize) -> Vec<u8> {
+        if index >= self.planes() {
+            panic!("out of bounds");
+        }
+
+        unsafe {
+            let size = self.stride(index) * self.plane_height(index) as usize;
+            let mut data = vec![0;size];
+            av_frame_data(self.ptr(),data.as_ptr(),data.len());
+            data
+        }
+    }
+
     // #[inline]
     // pub fn data_mut(&mut self, index: usize) -> &mut [u8] {
     //     if index >= self.planes() {

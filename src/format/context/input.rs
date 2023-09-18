@@ -8,8 +8,7 @@ use super::destructor;
 use util::range::Range;
 // #[cfg(not(feature = "ffmpeg_5_0"))]
 // use Codec;
-use {format,Error};
-// use {format, Error, Packet, Stream};
+use {format, Error, Packet, Stream};
 use format::types::{AVFormatContext, AVInputFormat};
 use format::generated::{av_dump_format, av_read_pause, av_read_play, avformat_seek_file, avformatContext_iformat, avformatContext_probescope};
 
@@ -32,9 +31,6 @@ impl Input {
         self.ptr
     }
 
-    // pub unsafe fn as_mut_ptr(&mut self) -> *mut AVFormatContext {
-    //     self.ptr
-    // }
 }
 
 impl Input {
@@ -43,8 +39,7 @@ impl Input {
             let avInputFormat = MaybeUninit::<AVInputFormat>::uninit();
             avformatContext_iformat(self.ptr as u32,avInputFormat.as_ptr() as u32);
 
-            // Should I use assume Init or read the value as ptr::read();
-            format::Input::wrap(std::ptr::read(avInputFormat.as_ptr()))
+            format::Input::wrap(ptr::read(avInputFormat.as_ptr()))
         }
     }
 
@@ -102,7 +97,7 @@ impl Input {
 
     pub fn probe_score(&self) -> i32 {
         unsafe {
-            avformatContext_probescope(self.ptr() as u32)
+            avformatContext_probescope(self.ptr())
         }
     }
 
@@ -169,29 +164,29 @@ impl<'a> PacketIter<'a> {
         PacketIter { context }
     }
 }
-//
-// impl<'a> Iterator for PacketIter<'a> {
-//     type Item = (Stream<'a>, Packet);
-//
-//     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
-//         let mut packet = Packet::empty();
-//
-//         loop {
-//             match packet.read(self.context) {
-//                 Ok(..) => unsafe {
-//                     return Some((
-//                         Stream::wrap(mem::transmute_copy(&self.context), packet.stream()),
-//                         packet,
-//                     ));
-//                 },
-//
-//                 Err(Error::Eof) => return None,
-//
-//                 Err(..) => (),
-//             }
-//         }
-//     }
-// }
+
+impl<'a> Iterator for PacketIter<'a> {
+    type Item = (Stream<'a>, Packet);
+
+    fn next(&mut self) -> Option<<Self as Iterator>::Item> {
+        let mut packet = Packet::empty();
+
+        loop {
+            match packet.read(self.context) {
+                Ok(..) => unsafe {
+                    return Some((
+                        Stream::wrap(mem::transmute_copy(&self.context), packet.stream()),
+                        packet,
+                    ));
+                },
+
+                Err(Error::Eof) => return None,
+
+                Err(..) => (),
+            }
+        }
+    }
+}
 
 // Need to test.
 pub fn dump(ctx: &Input, index: i32, url: Option<&str>) {

@@ -3,9 +3,9 @@
 
 pub mod id;
 pub use self::id::Id;
-//
-// pub mod packet;
-//
+
+pub mod packet;
+
 // pub mod subtitle;
 //
 // #[cfg(not(feature = "ffmpeg_5_0"))]

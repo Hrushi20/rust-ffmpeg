@@ -2,13 +2,15 @@
 #[link(wasm_import_module = "wasmedge_ffmpeg_avformat")]
 extern "C" {    
                 #[link_name = "wasmedge_ffmpeg_avformat_av_dump_format"] 
-                pub fn av_dump_format(avFormatCtxPtr: u32, idx: i32, urlPtr_ptr: *const u8, urlPtr_len: usize, isOutput: i32) -> ();
+                pub fn av_dump_format(avFormatCtxId: u32, idx: i32, urlPtr_ptr: *const u8, urlPtr_len: usize, isOutput: i32) -> ();
                 #[link_name = "wasmedge_ffmpeg_avformat_av_find_best_stream"] 
-                pub fn av_find_best_stream(avFormatCtxPtr: u32, avMediaType: i32, wanted_stream_nb: i32, releated_stream: i32, avCodecPtr: u32, flags: i32) -> i32;
+                pub fn av_find_best_stream(avFormatCtxId: u32, avMediaType: i32, wanted_stream_nb: i32, related_stream: i32, avCodecPtr: u32, flags: i32) -> i32;
+                #[link_name = "wasmedge_ffmpeg_avformat_av_read_frame"] 
+                pub fn av_read_frame(avFormatCtxId: u32, avPacketId: u32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avformat_av_read_pause"] 
-                pub fn av_read_pause(avFormatCtxPtr: u32) -> i32;
+                pub fn av_read_pause(avFormatCtxId: u32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avformat_av_read_play"] 
-                pub fn av_read_play(avFormatCtxPtr: u32) -> i32;
+                pub fn av_read_play(avFormatCtxId: u32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avformat_avInputFormat_extensions"] 
                 pub fn avInputFormat_extensions(avInputFormatPtr: u32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avformat_avInputFormat_long_name"] 
@@ -24,15 +26,15 @@ extern "C" {
                 #[link_name = "wasmedge_ffmpeg_avformat_avStream_index"] 
                 pub fn avStream_index(avFormatCtxPtr: u32, streamIdx: u32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avformat_avformat_close_input"] 
-                pub fn avformat_close_input(avFormatCtxPtr: u32) -> ();
+                pub fn avformat_close_input(avFormatCtxId: u32) -> ();
                 #[link_name = "wasmedge_ffmpeg_avformat_avformat_find_stream_info"] 
                 pub fn avformat_find_stream_info(avFormatCtxPtr: u32, avDictionaryPtr: u32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avformat_avformat_free_context"] 
-                pub fn avformat_free_context(avFormatCtxPtr: u32) -> ();
+                pub fn avformat_free_context(avFormatCtxId: u32) -> ();
                 #[link_name = "wasmedge_ffmpeg_avformat_avformat_open_input"] 
                 pub fn avformat_open_input(avFormatCtxPtr: u32, urlPtr_ptr: *const u8, urlPtr_len: usize, avInputFormatPtr: u32, avDictionaryPtr: u32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avformat_avformat_seek_file"] 
-                pub fn avformat_seek_file(avFormatCtxPtr: u32, streamIdx: i32, min_ts: i64, ts: i64, max_ts: i64, flags: i32) -> i32;
+                pub fn avformat_seek_file(avFormatCtxId: u32, streamIdx: i32, min_ts: i64, ts: i64, max_ts: i64, flags: i32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avformat_avformatContext_avstream"] 
                 pub fn avformatContext_avstream(avFormatCtxPtr: u32, avStreamPtr: u32) -> ();
                 #[link_name = "wasmedge_ffmpeg_avformat_avformatContext_bit_rate"] 

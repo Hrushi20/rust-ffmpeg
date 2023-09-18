@@ -1,13 +1,14 @@
 use std::ops::{Deref, DerefMut};
-use std::ptr;
+use std::{mem, ptr};
+use libc::memcpy;
 
 use super::{Decoder,Video};
 // use super::{Audio, Decoder, Subtitle, Video};
 use codec::{Context};
 // use codec::{Context, Profile};
-use {media, Error};
-// use {media, packet, Error, Frame, Rational};
-use codec::generated::avcodec_close;
+use {media, packet ,Error, Frame, Rational};
+use avCodecType::AVPacket;
+use codec::generated::{avcodec_close, avcodec_receive_frame, avcodec_send_packet};
 
 pub struct Opened(pub Decoder);
 
@@ -35,36 +36,37 @@ impl Opened {
     //         Err(Error::InvalidData)
     //     }
     // }
-    //
-    // pub fn send_packet<P: packet::Ref>(&mut self, packet: &P) -> Result<(), Error> {
-    //     unsafe {
-    //         match avcodec_send_packet(self.as_mut_ptr(), packet.as_ptr()) {
-    //             e if e < 0 => Err(Error::from(e)),
-    //             _ => Ok(()),
-    //         }
-    //     }
-    // }
+
+    pub fn send_packet<P: packet::Ref>(&mut self, packet: &P) -> Result<(), Error> {
+        unsafe {
+            match avcodec_send_packet(self.ptr(), packet.ptr()) {
+                e if e < 0 => Err(Error::from(e)),
+                _ => Ok(()),
+            }
+        }
+    }
 
     // Sends a NULL packet to the decoder to signal end of stream and enter
     // draining mode.
-    // pub fn send_eof(&mut self) -> Result<(), Error> {
-    //     unsafe {
-    //         match avcodec_send_packet(self.as_mut_ptr(), ptr::null()) {
-    //             e if e < 0 => Err(Error::from(e)),
-    //             _ => Ok(()),
-    //         }
-    //     }
-    // }
-    //
-    // pub fn receive_frame(&mut self, frame: &mut Frame) -> Result<(), Error> {
-    //     unsafe {
-    //         match avcodec_receive_frame(self.as_mut_ptr(), frame.as_mut_ptr()) {
-    //             e if e < 0 => Err(Error::from(e)),
-    //             _ => Ok(()),
-    //         }
-    //     }
-    // }
-    //
+    pub fn send_eof(&mut self) -> Result<(), Error> {
+        unsafe {
+            let av_packet = mem::zeroed::<AVPacket>();
+            match avcodec_send_packet(self.ptr(), av_packet) {
+                e if e < 0 => Err(Error::from(e)),
+                _ => Ok(()),
+            }
+        }
+    }
+
+    pub fn receive_frame(&mut self, frame: &Frame) -> Result<(), Error> {
+        unsafe {
+            match avcodec_receive_frame(self.ptr(), frame.ptr()) {
+                e if e < 0 => Err(Error::from(e)),
+                _ => Ok(()),
+            }
+        }
+    }
+
     // pub fn bit_rate(&self) -> usize {
     //     unsafe { (*self.as_ptr()).bit_rate as usize }
     // }

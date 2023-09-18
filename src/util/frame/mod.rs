@@ -3,7 +3,7 @@
 use std::mem::MaybeUninit;
 use std::ptr;
 use avUtilTypes::AVFrame;
-use util::generated::{av_frame_alloc, av_frame_free};
+use util::generated::{av_frame_alloc, av_frame_free, av_frame_isnull};
 // pub use self::side_data::SideData;
 
 pub mod video;
@@ -59,10 +59,11 @@ impl Frame {
         self.ptr
     }
 
-    // #[inline(always)]
-    // pub unsafe fn is_empty(&self) -> bool {
-    //     (*self.as_ptr()).data[0].is_null()
-    // }
+    #[inline(always)]
+    pub unsafe fn is_empty(&self) -> bool {
+        av_frame_isnull(self.ptr()) == 0
+    }
+
 }
 
 impl Frame {
@@ -117,7 +118,7 @@ impl Frame {
     //         }
     //     }
     // }
-    //
+
     // #[inline]
     // pub fn quality(&self) -> usize {
     //     unsafe { (*self.as_ptr()).quality as usize }

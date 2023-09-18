@@ -1,11 +1,12 @@
 use std::error;
 use std::ffi::CStr;
 use std::fmt;
+use std::fmt::Write;
 use std::io;
-use std::str::from_utf8_unchecked;
+use std::str::{from_utf8_unchecked, FromStr};
 
 use util::generated::*;
-use libc::{c_char, c_int};
+use libc::{c_int};
 
 // Export POSIX error codes so that users can do something like
 //
@@ -13,6 +14,7 @@ use libc::{c_char, c_int};
 //       ...
 //   }
 
+// Few Error codes missing.
 pub use libc::{
     E2BIG, EACCES, EADDRINUSE, EADDRNOTAVAIL, EAFNOSUPPORT, EAGAIN, EALREADY, EBADF, EBADMSG,
     EBUSY, ECANCELED, ECHILD, ECONNABORTED, ECONNREFUSED, ECONNRESET, EDEADLK, EDESTADDRREQ, EDOM,
@@ -61,7 +63,8 @@ pub enum Error {
     HttpServerError,
 
     // WasmEdge ERRORS
-    // Add them into from block
+    WasmEdgeMissingMemory,
+    WasmEdgeNullStructId,
 
     /// For AVERROR(e) wrapping POSIX error codes, e.g. AVERROR(EAGAIN).
     Other {
@@ -99,6 +102,8 @@ impl From<i32> for Error {
             i if i == ErrorCode::AVERROR_HTTP_NOT_FOUND as i32 => Error::HttpNotFound,
             i if i == ErrorCode::AVERROR_HTTP_OTHER_4XX as i32 => Error::HttpOther4xx,
             i if i == ErrorCode::AVERROR_HTTP_SERVER_ERROR as i32 => Error::HttpServerError,
+            i if i == ErrorCode::WASMEDGE_MISSING_MEMORY as i32 => Error::WasmEdgeMissingMemory,
+            i if i == ErrorCode::WASMEDGE_NULL_STRUCT_ID as i32 => Error::WasmEdgeNullStructId,
             e => Error::Other {
                 errno: unsafe{AVUNERROR(e)},
             },
@@ -136,12 +141,9 @@ enum ErrorCode {
     AVERROR_HTTP_SERVER_ERROR = compute_error_code(0xF8 as u8 as char, '5','X','X'),
     AV_ERROR_MAX_STRING_SIZE  = 64,
 
-    // WASMEDGE ERROR CODES BELOW
-    SUCCESS = 0,
-    INVALID_ARGUMENT = -200,
-    MISSING_MEMORY = -202,
-    BUSY = -203,
-    RUNTIME_ERROR = -204
+    // WASMEDGE Plugin ERROR CODES BELOW
+    WASMEDGE_MISSING_MEMORY = -201,
+    WASMEDGE_NULL_STRUCT_ID = -202
 }
 
 impl From<Error> for c_int {
@@ -174,6 +176,8 @@ impl From<Error> for c_int {
             Error::HttpNotFound => ErrorCode::AVERROR_HTTP_NOT_FOUND as i32,
             Error::HttpOther4xx => ErrorCode::AVERROR_HTTP_OTHER_4XX as i32,
             Error::HttpServerError => ErrorCode::AVERROR_HTTP_SERVER_ERROR as i32,
+            Error::WasmEdgeMissingMemory => ErrorCode::WASMEDGE_MISSING_MEMORY as i32,
+            Error::WasmEdgeNullStructId => ErrorCode::WASMEDGE_NULL_STRUCT_ID as i32,
             Error::Other { errno } => unsafe {AVERROR(errno)},
         }
     }
@@ -189,21 +193,23 @@ impl From<Error> for io::Error {
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-        f.write_str(unsafe {
-            from_utf8_unchecked(
-                CStr::from_ptr(match *self {
-                    Error::Other { errno } => libc::strerror(errno),
-                    _ => STRINGS[index(self)].as_ptr() as *const i8,
-                })
-                .to_bytes(),
-            )
+
+        f.write_str(
+            match self {
+                // WasmEdge Errors.
+               Error::WasmEdgeMissingMemory => "WasmEdge Missing Memory Frame",
+               Error::WasmEdgeNullStructId => "Struct Pointer missing for given Id",
+               _ => unsafe {
+                   from_utf8_unchecked(
+                   CStr::from_ptr(match self {
+                       Error::Other { errno } => libc::strerror(*errno),
+                       _ => STRINGS[index(self)].as_ptr() as *const i8,
+                   })
+                       .to_bytes(),
+               )
+            }
         })
     }
-}
-
-// Took this function from FFMPEG error.h file.
-const fn compute_error_code(a:char, b:char, c:char, d:char) -> isize {
-    (a as isize | (b as isize) << 8 | (c as isize) << 16 | (d as isize) << 24)  * -1
 }
 
 impl fmt::Debug for Error {
@@ -215,6 +221,11 @@ impl fmt::Debug for Error {
         fmt::Display::fmt(self, f)?;
         f.write_str(")")
     }
+}
+
+// Took this function from FFMPEG error.h file.
+const fn compute_error_code(a:char, b:char, c:char, d:char) -> isize {
+    (a as isize | (b as isize) << 8 | (c as isize) << 16 | (d as isize) << 24)  * -1
 }
 
 #[inline(always)]
@@ -248,6 +259,7 @@ fn index(error: &Error) -> usize {
         Error::HttpOther4xx => 25,
         Error::HttpServerError => 26,
         Error::Other { errno: _ } => (-1isize) as usize,
+        _ => (-1isize) as usize
     }
 }
 

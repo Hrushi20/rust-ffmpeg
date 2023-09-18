@@ -2,7 +2,8 @@ use std::{error, mem};
 use std::ffi::{CStr, CString, NulError};
 use std::fmt;
 use std::str::{from_utf8_unchecked, FromStr};
-use avUtilTypes::AVPixelFormat;
+use avUtilTypes::{AVPixelFormat, AVPixFmtDescriptor};
+use util::generated::{avpixfmtdescriptor_log2_chromah, avpixfmtdescriptor_log2_chromaw, avpixfmtdescriptor_nb_components};
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 #[repr(u32)]
@@ -413,51 +414,53 @@ pub enum Pixel {
     RGB555 = 298,
 }
 
-// #[derive(Clone, Copy, PartialEq, Eq)]
-// pub struct Descriptor {
-//     ptr: *const AVPixFmtDescriptor,
-// }
-//
-// unsafe impl Send for Descriptor {}
-// unsafe impl Sync for Descriptor {}
-//
-// impl Pixel {
-//     pub const Y400A: Pixel = Pixel::YA8;
-//     pub const GRAY8A: Pixel = Pixel::YA8;
-//     pub const GBR24P: Pixel = Pixel::GBRP;
-//     #[cfg(all(feature = "ff_api_xvmc", not(feature = "ffmpeg_5_0")))]
-//     pub const XVMC: Pixel = Pixel::XVMC_MPEG2_IDCT;
-//
-//     pub fn descriptor(self) -> Option<Descriptor> {
-//         unsafe {
-//             let ptr = av_pix_fmt_desc_get(self.into());
-//
-//             ptr.as_ref().map(|ptr| Descriptor { ptr })
-//         }
-//     }
-// }
-//
-// impl Descriptor {
-//     pub fn as_ptr(self) -> *const AVPixFmtDescriptor {
-//         self.ptr
-//     }
-//
-//     pub fn name(self) -> &'static str {
-//         unsafe { from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).name).to_bytes()) }
-//     }
-//
-//     pub fn nb_components(self) -> u8 {
-//         unsafe { (*self.as_ptr()).nb_components }
-//     }
-//
-//     pub fn log2_chroma_w(self) -> u8 {
-//         unsafe { (*self.as_ptr()).log2_chroma_w }
-//     }
-//
-//     pub fn log2_chroma_h(self) -> u8 {
-//         unsafe { (*self.as_ptr()).log2_chroma_h }
-//     }
-// }
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub struct Descriptor {
+    ptr: AVPixelFormat, // Using AVPixelFormat to fetch descriptor to avoid storing pointer in FFmpeg Plugin
+}
+
+unsafe impl Send for Descriptor {}
+unsafe impl Sync for Descriptor {}
+
+impl Pixel {
+    pub const Y400A: Pixel = Pixel::YA8;
+    pub const GRAY8A: Pixel = Pixel::YA8;
+    pub const GBR24P: Pixel = Pixel::GBRP;
+    #[cfg(all(feature = "ff_api_xvmc", not(feature = "ffmpeg_5_0")))]
+    pub const XVMC: Pixel = Pixel::XVMC_MPEG2_IDCT;
+
+    pub fn descriptor(self) -> Option<Descriptor> {
+        Some(Descriptor{ ptr:self.into() })
+    }
+}
+
+impl Descriptor {
+    pub fn ptr(self) -> AVPixelFormat {
+        self.ptr
+    }
+
+    // pub fn name(self) -> &'static str {
+    //     unsafe { from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).name).to_bytes()) }
+    // }
+
+    pub fn nb_components(self) -> u8 {
+        unsafe {
+            avpixfmtdescriptor_nb_components(self.ptr().into()) as u8
+        }
+    }
+
+    pub fn log2_chroma_w(self) -> u8 {
+        unsafe {
+            avpixfmtdescriptor_log2_chromaw(self.ptr().into()) as u8
+        }
+    }
+
+    pub fn log2_chroma_h(self) -> u8 {
+        unsafe {
+            avpixfmtdescriptor_log2_chromah(self.ptr().into()) as u8
+        }
+    }
+}
 
 impl From<AVPixelFormat> for Pixel {
     #[inline]

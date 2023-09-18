@@ -35,8 +35,9 @@ pub mod format;
 pub use format::chapter::{Chapter, ChapterMut};
 #[cfg(feature = "format")]
 pub use format::format::Format;
-#[cfg(feature = "format")]
-pub use format::stream::{Stream, StreamMut};
+// #[cfg(feature = "format")]
+pub use format::stream::{Stream};
+// pub use format::stream::{Stream, StreamMut};
 
 // #[cfg(feature = "codec")]
 pub mod codec;
@@ -49,7 +50,7 @@ pub use codec::codec::Codec;
 // #[cfg(feature = "codec")]
 // pub use codec::field_order::FieldOrder;
 // #[cfg(feature = "codec")]
-// pub use codec::packet::{self, Packet};
+pub use codec::packet::{self, Packet};
 // #[cfg(all(feature = "codec", not(feature = "ffmpeg_5_0")))]
 // pub use codec::picture::Picture;
 // #[cfg(feature = "codec")]

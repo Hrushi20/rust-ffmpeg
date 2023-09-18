@@ -6,6 +6,7 @@ use codec::{self};
 // use codec::{self, packet};
 use format::context::common::Context;
 use libc::c_int;
+use avCodecType::AVCodecParameters;
 use format::generated::{avformatContext_avstream, avStream_codecpar, avStream_id, avStream_index};
 // use {DictionaryRef, Discard, Rational};
 use format::types::{AVFormatContext, AVStream};
@@ -43,8 +44,7 @@ impl<'a> Stream<'a> {
     //
     pub fn parameters(&self) -> codec::Parameters {
         unsafe {
-            // Todo, update type
-            let codecParameter = MaybeUninit::<u32>::uninit();
+            let codecParameter = MaybeUninit::<AVCodecParameters>::uninit();
             avStream_codecpar(self.ptr(),self.index as u32,codecParameter.as_ptr() as u32);
             codec::Parameters::wrap(ptr::read(codecParameter.as_ptr()), Some(self.context.destructor()))
         }
