@@ -21,13 +21,17 @@ categories    = ["multimedia"]
 # don't do anything anymore (equivalents are automatically specified through
 # compile-time detection in ffmpeg-sys-next). Deprecation plan: all these
 # features will be removed come 5.0.
-ffmpeg43 = []
-ffmpeg42 = []
-ffmpeg41 = []
-ffmpeg4 = []
+#ffmpeg43 = []
+#ffmpeg42 = []
+#ffmpeg41 = []
+#ffmpeg4 = []
+#
+## platforms
+#rpi = []
 
-# platforms
-rpi = []
+[build-dependencies]
+os_info = { version = "3.7.0", default-features = false }
+powershell_script = "1.1.0"
 
 [dependencies]
 libc     = "0.2"

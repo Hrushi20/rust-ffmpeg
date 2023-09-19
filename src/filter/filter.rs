@@ -1,26 +1,23 @@
 use std::ffi::CStr;
 use std::marker::PhantomData;
 use std::str::from_utf8_unchecked;
+use filter::types::AVFilter;
 
 use super::{Flags, Pad};
-use ffi::*;
 
 pub struct Filter {
-    ptr: *mut AVFilter,
+    ptr: AVFilter,
 }
 
 impl Filter {
-    pub unsafe fn wrap(ptr: *mut AVFilter) -> Self {
+    pub unsafe fn wrap(ptr: AVFilter) -> Self {
         Filter { ptr }
     }
 
-    pub unsafe fn as_ptr(&self) -> *const AVFilter {
-        self.ptr as *const _
-    }
-
-    pub unsafe fn as_mut_ptr(&mut self) -> *mut AVFilter {
+    pub unsafe fn ptr(&self) -> AVFilter {
         self.ptr
     }
+
 }
 
 impl Filter {

@@ -21,12 +21,16 @@ extern "C" {
                 pub fn av_frame_format(frameId: u32) -> u32;
                 #[link_name = "wasmedge_ffmpeg_avutil_av_frame_free"] 
                 pub fn av_frame_free(frameId: u32) -> i32;
+                #[link_name = "wasmedge_ffmpeg_avutil_av_frame_get_buffer"] 
+                pub fn av_frame_get_buffer(frameId: u32, Align: i32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avutil_av_frame_height"] 
                 pub fn av_frame_height(frameId: u32) -> u32;
                 #[link_name = "wasmedge_ffmpeg_avutil_av_frame_isnull"] 
                 pub fn av_frame_isnull(avPacketId: u32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avutil_av_frame_linesize"] 
                 pub fn av_frame_linesize(avPacketId: u32, Idx: u32) -> i32;
+                #[link_name = "wasmedge_ffmpeg_avutil_av_frame_set_format"] 
+                pub fn av_frame_set_format(frameId: u32, AvPixFormatId: u32) -> i32;
                 #[link_name = "wasmedge_ffmpeg_avutil_av_frame_set_height"] 
                 pub fn av_frame_set_height(frameId: u32, height: u32) -> ();
                 #[link_name = "wasmedge_ffmpeg_avutil_av_frame_set_width"] 

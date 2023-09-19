@@ -11,7 +11,7 @@ use avUtilTypes::{AVFrame, AVPixelFormat};
 use util::format;
 use Rational;
 use util::format::Pixel;
-use util::generated::{av_frame_data, av_frame_format, av_frame_height, av_frame_linesize, av_frame_set_height, av_frame_set_width, av_frame_width};
+use util::generated::{av_frame_data, av_frame_format, av_frame_get_buffer, av_frame_height, av_frame_linesize, av_frame_set_format, av_frame_set_height, av_frame_set_width, av_frame_width};
 
 #[derive(PartialEq, Eq)]
 pub struct Video(Frame);
@@ -22,14 +22,14 @@ impl Video {
         Video(Frame::wrap(ptr))
     }
 
-    // #[inline]
-    // pub unsafe fn alloc(&mut self, format: format::Pixel, width: u32, height: u32) {
-    //     self.set_format(format);
-    //     self.set_width(width);
-    //     self.set_height(height);
-    //
-    //     av_frame_get_buffer(self.as_mut_ptr(), 32);
-    // }
+    #[inline]
+    pub unsafe fn alloc(&self, format: format::Pixel, width: u32, height: u32) {
+        self.set_format(format);
+        self.set_width(width);
+        self.set_height(height);
+
+        av_frame_get_buffer(self.ptr(),32);
+    }
 }
 
 impl Video {
@@ -60,13 +60,13 @@ impl Video {
         }
     }
 
-    // #[inline]
-    // pub fn set_format(&mut self, value: format::Pixel) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).format = mem::transmute::<AVPixelFormat, c_int>(value.into());
-    //     }
-    // }
-    //
+    #[inline]
+    pub fn set_format(&self, value: format::Pixel) {
+        unsafe {
+            av_frame_set_format(self.ptr(),value.into());
+        }
+    }
+
     // #[inline]
     // pub fn kind(&self) -> picture::Type {
     //     unsafe { picture::Type::from((*self.as_ptr()).pict_type) }
@@ -103,7 +103,7 @@ impl Video {
     }
 
     #[inline]
-    pub fn set_width(&mut self, value: u32) {
+    pub fn set_width(&self, value: u32) {
         unsafe {
             av_frame_set_width(self.ptr(),value)
         }
@@ -118,7 +118,7 @@ impl Video {
     }
 
     #[inline]
-    pub fn set_height(&mut self, value: u32) {
+    pub fn set_height(&self, value: u32) {
         unsafe {
             av_frame_set_height(self.ptr(),value)
         }
@@ -303,7 +303,7 @@ impl Video {
 
         unsafe {
             let size = self.stride(index) * self.plane_height(index) as usize;
-            let mut data = vec![0;size];
+            let data = vec![0;size];
             av_frame_data(self.ptr(),data.as_ptr(),data.len());
             data
         }

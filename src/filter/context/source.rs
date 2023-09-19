@@ -1,8 +1,9 @@
-use std::ptr;
+use std::{mem};
 
 use super::Context;
-use ffi::*;
 use {Error, Frame};
+use avUtilTypes::AVFrame;
+use filter::generated::{av_buffersrc_add_frame, av_buffersrc_close, av_buffersrc_get_nb_failed_requests};
 
 pub struct Source<'a> {
     ctx: &'a mut Context<'a>,
@@ -16,12 +17,12 @@ impl<'a> Source<'a> {
 
 impl<'a> Source<'a> {
     pub fn failed_requests(&self) -> usize {
-        unsafe { av_buffersrc_get_nb_failed_requests(self.ctx.as_ptr() as *mut _) as usize }
+        unsafe { av_buffersrc_get_nb_failed_requests(self.ctx.ptr()) as usize }
     }
 
     pub fn add(&mut self, frame: &Frame) -> Result<(), Error> {
         unsafe {
-            match av_buffersrc_add_frame(self.ctx.as_mut_ptr(), frame.as_ptr() as *mut _) {
+            match av_buffersrc_add_frame(self.ctx.ptr(), frame.ptr()) {
                 0 => Ok(()),
                 e => Err(Error::from(e)),
             }
@@ -29,12 +30,13 @@ impl<'a> Source<'a> {
     }
 
     pub fn flush(&mut self) -> Result<(), Error> {
-        unsafe { self.add(&Frame::wrap(ptr::null_mut())) }
+        // Need to create a frame.
+        unsafe { self.add(&Frame::wrap(mem::zeroed::<AVFrame>())) }
     }
 
     pub fn close(&mut self, pts: i64) -> Result<(), Error> {
         unsafe {
-            match av_buffersrc_close(self.ctx.as_mut_ptr(), pts, 0) {
+            match av_buffersrc_close(self.ctx.ptr(), pts, 0) {
                 0 => Ok(()),
                 e => Err(Error::from(e)),
             }

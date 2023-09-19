@@ -64,12 +64,12 @@ pub use codec::packet::{self, Packet};
 // pub mod device;
 //
 // #[cfg(feature = "filter")]
-// pub mod filter;
+pub mod filter;
 // #[cfg(feature = "filter")]
 // pub use filter::Filter;
-//
-// pub mod software;
-//
+
+pub mod software;
+
 
 // Types
 pub use format::types as avFormatTypes;

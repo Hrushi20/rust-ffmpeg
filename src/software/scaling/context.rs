@@ -1,10 +1,11 @@
-use std::ptr;
+use std::mem::MaybeUninit;
+use std::{mem, ptr};
 
 use super::Flags;
-use ffi::*;
-use libc::c_int;
 use util::format;
 use {frame, Error};
+use software::scaling::generated::{sws_freeContext, sws_getCachedContext, sws_getContext, sws_scale};
+use software::scaling::types::{SwsContext, SwsFilter};
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub struct Definition {
@@ -14,7 +15,7 @@ pub struct Definition {
 }
 
 pub struct Context {
-    ptr: *mut SwsContext,
+    ptr: SwsContext,
 
     input: Definition,
     output: Definition,
@@ -22,12 +23,7 @@ pub struct Context {
 
 impl Context {
     #[inline(always)]
-    pub unsafe fn as_ptr(&self) -> *const SwsContext {
-        self.ptr as *const _
-    }
-
-    #[inline(always)]
-    pub unsafe fn as_mut_ptr(&mut self) -> *mut SwsContext {
+    pub unsafe fn ptr(&self) -> SwsContext {
         self.ptr
     }
 }
@@ -43,22 +39,25 @@ impl Context {
         flags: Flags,
     ) -> Result<Self, Error> {
         unsafe {
-            let ptr = sws_getContext(
-                src_w as c_int,
-                src_h as c_int,
+            let sws_context = MaybeUninit::<SwsContext>::uninit();
+            sws_getContext(
+                sws_context.as_ptr() as u32,
+                src_w ,
+                src_h,
                 src_format.into(),
-                dst_w as c_int,
-                dst_h as c_int,
+                dst_w,
+                dst_h,
                 dst_format.into(),
                 flags.bits(),
-                ptr::null_mut(),
-                ptr::null_mut(),
-                ptr::null_mut(),
+                mem::zeroed::<SwsFilter>(),
+                mem::zeroed::<SwsFilter>(),
             );
 
-            if !ptr.is_null() {
+            let sws_context = ptr::read(sws_context.as_ptr());
+
+            if sws_context > 0 {
                 Ok(Context {
-                    ptr,
+                    ptr: sws_context,
 
                     input: Definition {
                         format: src_format,
@@ -101,19 +100,23 @@ impl Context {
         };
 
         unsafe {
-            self.ptr = sws_getCachedContext(
-                self.as_mut_ptr(),
-                src_w as c_int,
-                src_h as c_int,
+            let sws_cached_context = MaybeUninit::<SwsContext>::uninit();
+
+           sws_getCachedContext(
+               sws_cached_context.as_ptr() as u32,
+                self.ptr(),
+                src_w,
+                src_h,
                 src_format.into(),
-                dst_w as c_int,
-                dst_h as c_int,
+                dst_w,
+                dst_h,
                 dst_format.into(),
                 flags.bits(),
-                ptr::null_mut(),
-                ptr::null_mut(),
-                ptr::null(),
+                mem::zeroed::<SwsFilter>(),
+                mem::zeroed::<SwsFilter>(),
             );
+
+            self.ptr = ptr::read(sws_cached_context.as_ptr());
         }
     }
 
@@ -127,7 +130,7 @@ impl Context {
         &self.output
     }
 
-    pub fn run(&mut self, input: &frame::Video, output: &mut frame::Video) -> Result<(), Error> {
+    pub fn run(&self, input: &frame::Video, output: &frame::Video) -> Result<(), Error> {
         if input.format() != self.input.format
             || input.width() != self.input.width
             || input.height() != self.input.height
@@ -150,13 +153,11 @@ impl Context {
 
         unsafe {
             sws_scale(
-                self.as_mut_ptr(),
-                (*input.as_ptr()).data.as_ptr() as *const *const _,
-                (*input.as_ptr()).linesize.as_ptr() as *const _,
+                self.ptr(),
+                input.ptr(),
                 0,
-                self.input.height as c_int,
-                (*output.as_mut_ptr()).data.as_ptr() as *const *mut _,
-                (*output.as_mut_ptr()).linesize.as_ptr() as *mut _,
+                self.input.height as i32,
+                output.ptr()
             );
         }
 
@@ -167,7 +168,7 @@ impl Context {
 impl Drop for Context {
     fn drop(&mut self) {
         unsafe {
-            sws_freeContext(self.as_mut_ptr());
+            sws_freeContext(self.ptr());
         }
     }
 }

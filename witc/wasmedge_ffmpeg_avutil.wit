@@ -24,9 +24,11 @@ av-frame-height: func(frameId:u32) -> u32
 av-frame-set-width: func(frameId:u32,width:u32) -> unit
 av-frame-set-height: func(frameId:u32,height:u32) -> unit
 av-frame-format: func(frameId:u32) -> u32
+av-frame-set-format : func(frameId:u32,AvPixFormatId:u32) -> s32
 av-frame-isnull : func(avPacketId:u32) -> s32
 av-frame-linesize : func(avPacketId:u32,Idx:u32) -> s32
 av-frame-data : func(frameId:u32,data:list<u8>) -> s32
+av-frame-get-buffer : func(frameId:u32,Align:s32) -> s32
 
 // pixfunc.h
 avpixfmtdescriptor-nb-components : func(AvPixFormatId:u32) -> s32

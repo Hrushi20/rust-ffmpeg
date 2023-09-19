@@ -1,4 +1,4 @@
-use ffi::*;
+use software::scaling::generated::{sws_isSupportedEndiannessConversion, sws_isSupportedInput, sws_isSupportedOutput};
 use util::format;
 
 pub fn input(format: format::Pixel) -> bool {

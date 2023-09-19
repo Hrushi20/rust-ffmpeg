@@ -1,0 +1,14 @@
+avfilter-graph-alloc : func(AVFilterGraphPtr:u32) -> s32
+avfilter-graph-config : func(AVFilterGraphId:u32) -> s32
+avfilter-graph-free : func(AVFilterGraphId:u32) -> s32
+avfilter-graph-get-filter : func(AVFilterCtxPtr:u32,AVFilterGraphId:u32,name:string) -> s32
+avfilter-graph-parse-ptr : func(AVFilterGraphId:u32,FiltersStr:string,InputsPtr:u32,OutputsPtr:u32) -> s32
+avfilter-inout-free : func(InoutId:u32) -> s32
+
+// Buffersink.h && Buffersource.h
+av-buffersink-get-frame : func(AVFilterContextId:u32,AVFrameId:u32) -> s32
+av-buffersink-get-samples : func(AVFilterContextId:u32,AVFrameId:u32,Samples:s32) -> s32
+av-buffersink-set-frame-size : func(AVFilterContextId:u32,FrameSize:s32) -> s32
+av-buffersrc-get-nb-failed-requests : func(AVFilterContextId:u32) -> s32
+av-buffersrc-add-frame : func(AVFilterContextId:u32,AVFrameId:u32) -> s32
+av-buffersrc-close : func(AVFilterContextId:u32,Pts:s64,Flags:u32) -> s32
