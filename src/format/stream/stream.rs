@@ -1,15 +1,13 @@
 use std::mem::MaybeUninit;
 use std::ptr;
-use std::ptr::NonNull;
 // use super::Disposition;
 use codec::{self};
 // use codec::{self, packet};
 use format::context::common::Context;
-use libc::c_int;
 use avCodecType::AVCodecParameters;
-use format::generated::{avformatContext_avstream, avStream_codecpar, avStream_id, avStream_index};
 // use {DictionaryRef, Discard, Rational};
-use format::types::{AVFormatContext, AVStream};
+use format::types::{AVFormatContext};
+use avformat_wasmedge;
 
 #[derive(Debug)]
 pub struct Stream<'a> {
@@ -33,7 +31,7 @@ impl<'a> Stream<'a> {
 impl<'a> Stream<'a> {
     pub fn id(&self) -> i32 {
         unsafe {
-            avStream_id(self.ptr() as u32,self.index() as u32)
+            avformat_wasmedge::avStream_id(self.ptr() as u32,self.index() as u32)
         }
     }
 
@@ -45,14 +43,14 @@ impl<'a> Stream<'a> {
     pub fn parameters(&self) -> codec::Parameters {
         unsafe {
             let codecParameter = MaybeUninit::<AVCodecParameters>::uninit();
-            avStream_codecpar(self.ptr(),self.index as u32,codecParameter.as_ptr() as u32);
+            avformat_wasmedge::avStream_codecpar(self.ptr(),self.index as u32,codecParameter.as_ptr() as u32);
             codec::Parameters::wrap(ptr::read(codecParameter.as_ptr()), Some(self.context.destructor()))
         }
     }
 
     pub fn index(&self) -> usize {
         unsafe {
-            avStream_index(self.ptr() as u32 ,self.index as u32) as usize
+            avformat_wasmedge::avStream_index(self.ptr() as u32 ,self.index as u32) as usize
         }
     }
 

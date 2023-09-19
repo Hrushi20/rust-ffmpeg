@@ -3,9 +3,9 @@ use std::ffi::CStr;
 use std::fmt;
 use std::fmt::Write;
 use std::io;
-use std::str::{from_utf8_unchecked, FromStr};
+use std::str::{from_utf8_unchecked};
 
-use util::generated::*;
+use avutil_wasmedge;
 use libc::{c_int};
 
 // Export POSIX error codes so that users can do something like
@@ -105,7 +105,7 @@ impl From<i32> for Error {
             i if i == ErrorCode::WASMEDGE_MISSING_MEMORY as i32 => Error::WasmEdgeMissingMemory,
             i if i == ErrorCode::WASMEDGE_NULL_STRUCT_ID as i32 => Error::WasmEdgeNullStructId,
             e => Error::Other {
-                errno: unsafe{AVUNERROR(e)},
+                errno: unsafe{avutil_wasmedge::AVUNERROR(e)},
             },
         }
     }
@@ -178,7 +178,7 @@ impl From<Error> for c_int {
             Error::HttpServerError => ErrorCode::AVERROR_HTTP_SERVER_ERROR as i32,
             Error::WasmEdgeMissingMemory => ErrorCode::WASMEDGE_MISSING_MEMORY as i32,
             Error::WasmEdgeNullStructId => ErrorCode::WASMEDGE_NULL_STRUCT_ID as i32,
-            Error::Other { errno } => unsafe {AVERROR(errno)},
+            Error::Other { errno } => unsafe {avutil_wasmedge::AVERROR(errno)},
         }
     }
 }
@@ -216,7 +216,7 @@ impl fmt::Debug for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         f.write_str("ffmpeg::Error(")?;
         unsafe {
-            f.write_str(&format!("{}: ", AVUNERROR((*self).into())))?;
+            f.write_str(&format!("{}: ", avutil_wasmedge::AVUNERROR((*self).into())))?;
         }
         fmt::Display::fmt(self, f)?;
         f.write_str(")")
@@ -269,140 +269,140 @@ static mut STRINGS: [[u8; 64]; 27] = [[0; 64]; 27];
 
 pub fn register_all() {
     unsafe {
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::Bug.into(),
             STRINGS[index(&Error::Bug)].as_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::Bug2.into(),
             STRINGS[index(&Error::Bug2)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::Unknown.into(),
             STRINGS[index(&Error::Unknown)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::Experimental.into(),
             STRINGS[index(&Error::Experimental)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::BufferTooSmall.into(),
             STRINGS[index(&Error::BufferTooSmall)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::Eof.into(),
             STRINGS[index(&Error::Eof)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::Exit.into(),
             STRINGS[index(&Error::Exit)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::External.into(),
             STRINGS[index(&Error::External)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::InvalidData.into(),
             STRINGS[index(&Error::InvalidData)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::PatchWelcome.into(),
             STRINGS[index(&Error::PatchWelcome)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
 
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::InputChanged.into(),
             STRINGS[index(&Error::InputChanged)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::OutputChanged.into(),
             STRINGS[index(&Error::OutputChanged)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
 
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::BsfNotFound.into(),
             STRINGS[index(&Error::BsfNotFound)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::DecoderNotFound.into(),
             STRINGS[index(&Error::DecoderNotFound)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::DemuxerNotFound.into(),
             STRINGS[index(&Error::DemuxerNotFound)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::EncoderNotFound.into(),
             STRINGS[index(&Error::EncoderNotFound)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::OptionNotFound.into(),
             STRINGS[index(&Error::OptionNotFound)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::MuxerNotFound.into(),
             STRINGS[index(&Error::MuxerNotFound)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::FilterNotFound.into(),
             STRINGS[index(&Error::FilterNotFound)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::ProtocolNotFound.into(),
             STRINGS[index(&Error::ProtocolNotFound)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::StreamNotFound.into(),
             STRINGS[index(&Error::StreamNotFound)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
 
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::HttpBadRequest.into(),
             STRINGS[index(&Error::HttpBadRequest)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::HttpUnauthorized.into(),
             STRINGS[index(&Error::HttpUnauthorized)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::HttpForbidden.into(),
             STRINGS[index(&Error::HttpForbidden)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::HttpNotFound.into(),
             STRINGS[index(&Error::HttpNotFound)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::HttpOther4xx.into(),
             STRINGS[index(&Error::HttpOther4xx)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,
         );
-        av_strerror(
+        avutil_wasmedge::av_strerror(
             Error::HttpServerError.into(),
             STRINGS[index(&Error::HttpServerError)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE as usize,

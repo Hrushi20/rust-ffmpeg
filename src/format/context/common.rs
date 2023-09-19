@@ -1,18 +1,13 @@
 use std::fmt;
 use std::mem;
-use std::ptr;
 use std::rc::Rc;
-use std::thread::Thread;
-use std::time::Duration;
-
 use super::destructor::{self, Destructor};
-use libc::{c_int, c_uint};
+use libc::{c_uint};
 use format::types::AVFormatContext;
 use { media };
 // use {media, Chapter, ChapterMut, DictionaryRef, Stream, StreamMut};
-use format::generated;
-use format::generated::{av_find_best_stream, avformatContext_bit_rate, avformatContext_duration, avformatContext_nb_chapters, avformatContext_nb_streams};
 use format::stream::Stream;
+use avformat_wasmedge;
 
 pub struct Context {
     ptr: AVFormatContext,
@@ -42,7 +37,7 @@ impl Context {
     #[inline]
     pub fn nb_streams(&self) -> u32 {
         unsafe {
-            avformatContext_nb_streams(self.ptr())
+            avformat_wasmedge::avformatContext_nb_streams(self.ptr())
         }
     }
 
@@ -82,20 +77,20 @@ impl Context {
 
     pub fn bit_rate(&self) -> i64 {
         unsafe {
-            avformatContext_bit_rate(self.ptr())
+            avformat_wasmedge::avformatContext_bit_rate(self.ptr())
         }
     }
 
     pub fn duration(&self) -> i64 {
         unsafe {
-            avformatContext_duration(self.ptr())
+            avformat_wasmedge::avformatContext_duration(self.ptr())
         }
     }
 
     #[inline]
     pub fn nb_chapters(&self) -> u32 {
         unsafe {
-            avformatContext_nb_chapters(self.ptr())
+            avformat_wasmedge::avformatContext_nb_chapters(self.ptr())
         }
     }
 
@@ -178,7 +173,7 @@ impl<'a> Best<'a> {
         unsafe {
             let decoder = mem::zeroed();
 
-            let index = av_find_best_stream(
+            let index = avformat_wasmedge::av_find_best_stream(
                 self.context.ptr(),
                 kind.into(),
                 self.wanted,

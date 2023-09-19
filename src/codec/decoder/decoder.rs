@@ -10,7 +10,7 @@ use {Error, Rational};
 // use {Dictionary, Discard, Error, Rational};
 use avCodecType::AVCodec;
 use avUtilTypes::AVDictionary;
-use codec::generated::{avcodec_open2, avcodeccontext_time_base};
+use avcodec_wasmedge;
 
 pub struct Decoder(pub Context);
 
@@ -19,7 +19,7 @@ impl Decoder {
         unsafe {
             let avCodec = mem::zeroed::<AVCodec>();
             let avDictionary = mem::zeroed::<AVDictionary>();
-            match avcodec_open2(self.ptr(), avCodec, avDictionary) {
+            match avcodec_wasmedge::avcodec_open2(self.ptr(), avCodec, avDictionary) {
                 0 => Ok(Opened(self)),
                 e => Err(Error::from(e)),
             }
@@ -31,7 +31,7 @@ impl Decoder {
 
             let avDictionary = mem::zeroed::<AVDictionary>();
             if let Some(codec) = codec.decoder() {
-                match avcodec_open2(self.ptr(), codec.ptr(), avDictionary) {
+                match avcodec_wasmedge::avcodec_open2(self.ptr(), codec.ptr(), avDictionary) {
                     0 => Ok(Opened(self)),
                     e => Err(Error::from(e)),
                 }
@@ -121,7 +121,7 @@ impl Decoder {
         unsafe {
             let num = MaybeUninit::<i32>::uninit();
             let den = MaybeUninit::<i32>::uninit();
-            avcodeccontext_time_base(self.ptr() as u32, num.as_ptr() as u32,den.as_ptr() as u32);
+            avcodec_wasmedge::avcodeccontext_time_base(self.ptr() as u32, num.as_ptr() as u32,den.as_ptr() as u32);
             Rational::new(std::ptr::read(num.as_ptr()),std::ptr::read(den.as_ptr()))
         }
     }

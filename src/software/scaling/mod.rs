@@ -17,7 +17,6 @@ pub use self::context::Context;
 
 // mod extensions;
 mod types;
-mod generated;
 
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;

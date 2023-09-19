@@ -6,7 +6,7 @@ use std::rc::Rc;
 use super::{Context, Id};
 use media;
 use avCodecType::AVCodecParameters;
-use codec::generated::{avcodec_parameters_alloc, avcodec_parameters_free, avcodec_parameters_from_context, avcodecparam_codec_id, avcodecparam_codec_type};
+use avcodec_wasmedge;
 
 pub struct Parameters {
     ptr: AVCodecParameters,
@@ -31,7 +31,7 @@ impl Parameters {
         unsafe {
             // let avCodecParameters = NonNull::<AVCodecParameters>::dangling();
             let avCodecParameters = MaybeUninit::<AVCodecParameters>::uninit();
-            avcodec_parameters_alloc(avCodecParameters.as_ptr() as u32);
+            avcodec_wasmedge::avcodec_parameters_alloc(avCodecParameters.as_ptr() as u32);
             Parameters {
                 ptr: ptr::read(avCodecParameters.as_ptr()),
                 owner: None,
@@ -41,14 +41,14 @@ impl Parameters {
 
     pub fn medium(&self) -> media::Type {
         unsafe {
-            let mediaType = avcodecparam_codec_type(self.ptr());
+            let mediaType = avcodec_wasmedge::avcodecparam_codec_type(self.ptr());
             media::Type::from(mediaType)
         }
     }
 
     pub fn id(&self) -> Id {
         unsafe {
-            let ID = avcodecparam_codec_id(self.ptr());
+            let ID = avcodec_wasmedge::avcodecparam_codec_id(self.ptr());
             Id::from(ID)
         }
     }
@@ -64,7 +64,7 @@ impl Drop for Parameters {
     fn drop(&mut self) {
         unsafe {
             if self.owner.is_none() {
-                avcodec_parameters_free( self.ptr());
+                avcodec_wasmedge::avcodec_parameters_free( self.ptr());
             }
         }
     }
@@ -90,7 +90,7 @@ impl<C: AsRef<Context>> From<C> for Parameters {
         let mut parameters = Parameters::new();
         let context = context.as_ref();
         unsafe {
-            avcodec_parameters_from_context(parameters.ptr(),context.ptr() as u32);
+            avcodec_wasmedge::avcodec_parameters_from_context(parameters.ptr(),context.ptr() as u32);
         }
         parameters
     }

@@ -9,6 +9,30 @@ extern crate bitflags;
 extern crate image;
 extern crate libc;
 
+mod avcodec_wasmedge {
+    #![allow(non_camel_case_types)]
+    include!(concat!(env!("OUT_DIR"), "/avcodec.rs"));
+}
+
+mod avfilter_wasmedge {
+    #![allow(non_camel_case_types)]
+    include!(concat!(env!("OUT_DIR"), "/avfilter.rs"));
+}
+
+mod avformat_wasmedge {
+    #![allow(non_camel_case_types)]
+    include!(concat!(env!("OUT_DIR"), "/avformat.rs"));
+}
+
+mod avutil_wasmedge {
+    #![allow(non_camel_case_types)]
+    include!(concat!(env!("OUT_DIR"), "/avutil.rs"));
+}
+
+mod swscale_wasmedge {
+    #![allow(non_camel_case_types)]
+    include!(concat!(env!("OUT_DIR"), "/swscale.rs"));
+}
 
 // #[macro_use]
 pub mod util;

@@ -5,7 +5,7 @@ use super::{Id};
 // use super::{Audio, Capabilities, Id, Profile, Video};
 use {media, Error};
 use avCodecType::AVCodec;
-use codec::generated::{av_codec_is_decoder, av_codec_is_encoder, avcodec_id, avcodec_type};
+use avcodec_wasmedge;
 
 #[derive(PartialEq, Eq, Copy, Clone)]
 pub struct Codec {
@@ -31,11 +31,11 @@ impl Codec {
 
 impl Codec {
     pub fn is_encoder(&self) -> bool {
-        unsafe { av_codec_is_encoder(self.ptr()) != 0 }
+        unsafe { avcodec_wasmedge::av_codec_is_encoder(self.ptr()) != 0 }
     }
 
     pub fn is_decoder(&self) -> bool {
-        unsafe { av_codec_is_decoder(self.ptr()) != 0 }
+        unsafe { avcodec_wasmedge::av_codec_is_decoder(self.ptr()) != 0 }
     }
 
     // pub fn name(&self) -> &str {
@@ -55,14 +55,14 @@ impl Codec {
 
     pub fn medium(&self) -> media::Type {
         unsafe {
-            let mediaType = avcodec_type(self.ptr());
+            let mediaType = avcodec_wasmedge::avcodec_type(self.ptr());
             media::Type::from(mediaType)
         }
     }
 
     pub fn id(&self) -> Id {
         unsafe {
-            let id = avcodec_id(self.ptr());
+            let id = avcodec_wasmedge::avcodec_id(self.ptr());
             Id::from(id)
         }
     }

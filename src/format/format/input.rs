@@ -1,9 +1,3 @@
-use std::ffi::CStr;
-use std::mem::MaybeUninit;
-use std::{ffi, ptr};
-use std::str::from_utf8_unchecked;
-use libc::c_char;
-use format::generated::avInputFormat_name;
 use format::types::AVInputFormat;
 
 pub struct Input {

@@ -6,8 +6,8 @@ use std::str::from_utf8_unchecked;
 use super::{Context};
 // use super::{Context, Filter};
 use Error;
-use filter::generated::{avfilter_graph_alloc, avfilter_graph_config, avfilter_graph_free, avfilter_graph_get_filter, avfilter_graph_parse_ptr, avfilter_inout_free};
 use filter::types::{AVFilterContext, AVFilterGraph, AVFilterInOut};
+use avfilter_wasmedge;
 
 pub struct Graph {
     ptr: AVFilterGraph,
@@ -31,7 +31,7 @@ impl Graph {
     pub fn new() -> Self {
         unsafe {
             let avfilter_graph = MaybeUninit::<AVFilterGraph>::uninit();
-            avfilter_graph_alloc(avfilter_graph.as_ptr() as u32);
+            avfilter_wasmedge::avfilter_graph_alloc(avfilter_graph.as_ptr() as u32);
 
             let avfilter_graph = ptr::read(avfilter_graph.as_ptr());
             if avfilter_graph == 0 {
@@ -45,7 +45,7 @@ impl Graph {
     pub fn validate(&mut self) -> Result<(), Error> {
         unsafe {
 
-            match avfilter_graph_config(self.ptr()) {
+            match avfilter_wasmedge::avfilter_graph_config(self.ptr()) {
                 0 => Ok(()),
                 e => Err(Error::from(e)),
             }
@@ -86,7 +86,7 @@ impl Graph {
     {
         unsafe {
             let avfilter_context = MaybeUninit::<AVFilterContext>::uninit();
-            avfilter_graph_get_filter(avfilter_context.as_ptr() as u32,self.ptr(), name.as_ptr(),name.len());
+            avfilter_wasmedge::avfilter_graph_get_filter(avfilter_context.as_ptr() as u32,self.ptr(), name.as_ptr(),name.len());
 
             let avfilter_context = ptr::read(avfilter_context.as_ptr());
             if avfilter_context == 0 {
@@ -125,7 +125,7 @@ impl Graph {
 impl Drop for Graph {
     fn drop(&mut self) {
         unsafe {
-            avfilter_graph_free(self.ptr());
+            avfilter_wasmedge::avfilter_graph_free(self.ptr());
         }
     }
 }
@@ -202,7 +202,7 @@ impl<'a> Parser<'a> {
     pub fn parse(mut self, spec: &str) -> Result<(), Error> {
         unsafe {
 
-            let result = avfilter_graph_parse_ptr(
+            let result = avfilter_wasmedge::avfilter_graph_parse_ptr(
                 self.graph.ptr(),
                 spec.as_ptr(),
                 spec.len(),
@@ -211,8 +211,8 @@ impl<'a> Parser<'a> {
             );
 
             // This may fail. Check once.
-            avfilter_inout_free(self.inputs);
-            avfilter_inout_free(self.outputs);
+            avfilter_wasmedge::avfilter_inout_free(self.inputs);
+            avfilter_wasmedge::avfilter_inout_free(self.outputs);
 
             match result {
                 n if n >= 0 => Ok(()),

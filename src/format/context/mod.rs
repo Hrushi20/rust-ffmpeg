@@ -7,8 +7,6 @@ pub use self::input::Input;
 // pub mod output;
 // pub use self::output::Output;
 
-use format::generated;
-
 #[doc(hidden)]
 pub mod common;
 

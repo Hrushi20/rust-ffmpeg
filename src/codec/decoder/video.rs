@@ -18,7 +18,7 @@ use codec::Context;
 use {Error};
 // use {packet, Error};
 use {Rational};
-use codec::generated::{avcodeccontext_height, avcodeccontext_sample_aspect_ratio, avcodeccontext_width};
+use avcodec_wasmedge;
 // use {FieldOrder, Rational};
 
 pub struct Video(pub Opened);
@@ -52,13 +52,13 @@ impl Video {
 
     pub fn width(&self) -> u32 {
         unsafe {
-            avcodeccontext_width(self.ptr())
+            avcodec_wasmedge::avcodeccontext_width(self.ptr())
         }
     }
 
     pub fn height(&self) -> u32 {
         unsafe {
-            avcodeccontext_height(self.ptr())
+            avcodec_wasmedge::avcodeccontext_height(self.ptr())
         }
     }
     //
@@ -75,7 +75,7 @@ impl Video {
             let result_num = MaybeUninit::<i32>::uninit();
             let result_den = MaybeUninit::<i32>::uninit();
 
-            avcodeccontext_sample_aspect_ratio(self.ptr(),result_num.as_ptr() as u32,result_den.as_ptr() as u32);
+            avcodec_wasmedge::avcodeccontext_sample_aspect_ratio(self.ptr(),result_num.as_ptr() as u32,result_den.as_ptr() as u32);
             Rational::new(ptr::read(result_num.as_ptr()),ptr::read(result_den.as_ptr()))
         }
     }

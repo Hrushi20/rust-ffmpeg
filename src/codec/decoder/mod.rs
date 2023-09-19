@@ -29,7 +29,7 @@ use avCodecType::AVCodec;
 use codec::Context;
 use codec::Id;
 use Codec;
-use codec::generated::avcodec_find_decoder;
+use avcodec_wasmedge;
 
 pub fn new() -> Decoder {
     Context::new().decoder()
@@ -38,7 +38,7 @@ pub fn new() -> Decoder {
 pub fn find(id: Id) -> Option<Codec> {
     unsafe {
         let avCodec = MaybeUninit::<AVCodec>::uninit();
-        avcodec_find_decoder(id.into(),avCodec.as_ptr() as u32);
+        avcodec_wasmedge::avcodec_find_decoder(id.into(),avCodec.as_ptr() as u32);
 
         println!("Found Decoder");
         if ptr::read(avCodec.as_ptr()) == 0 {

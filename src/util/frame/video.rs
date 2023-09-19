@@ -1,17 +1,14 @@
-use std::mem;
 use std::ops::{Deref, DerefMut};
-use std::slice;
 
 use super::Frame;
 // use color;
-use libc::c_int;
-use avUtilTypes::{AVFrame, AVPixelFormat};
+use avUtilTypes::{AVFrame};
 // use picture;
 // use util::chroma;
 use util::format;
 use Rational;
 use util::format::Pixel;
-use util::generated::{av_frame_data, av_frame_format, av_frame_get_buffer, av_frame_height, av_frame_linesize, av_frame_set_format, av_frame_set_height, av_frame_set_width, av_frame_width};
+use avutil_wasmedge;
 
 #[derive(PartialEq, Eq)]
 pub struct Video(Frame);
@@ -28,7 +25,7 @@ impl Video {
         self.set_width(width);
         self.set_height(height);
 
-        av_frame_get_buffer(self.ptr(),32);
+        avutil_wasmedge::av_frame_get_buffer(self.ptr(),32);
     }
 }
 
@@ -51,7 +48,7 @@ impl Video {
     #[inline]
     pub fn format(&self) -> format::Pixel {
         unsafe {
-            let format = av_frame_format(self.ptr());
+            let format = avutil_wasmedge::av_frame_format(self.ptr());
             if format == 0 {
                 Pixel::None
             }else{
@@ -63,7 +60,7 @@ impl Video {
     #[inline]
     pub fn set_format(&self, value: format::Pixel) {
         unsafe {
-            av_frame_set_format(self.ptr(),value.into());
+            avutil_wasmedge::av_frame_set_format(self.ptr(),value.into());
         }
     }
 
@@ -98,14 +95,14 @@ impl Video {
     pub fn width(&self) -> u32 {
         unsafe {
             // How to differentiate between wasmError and width
-            av_frame_width(self.ptr())
+            avutil_wasmedge::av_frame_width(self.ptr())
         }
     }
 
     #[inline]
     pub fn set_width(&self, value: u32) {
         unsafe {
-            av_frame_set_width(self.ptr(),value)
+            avutil_wasmedge::av_frame_set_width(self.ptr(),value)
         }
     }
 
@@ -113,14 +110,14 @@ impl Video {
     pub fn height(&self) -> u32 {
         unsafe {
             // How to differentiate between wasmError and height
-            av_frame_height(self.ptr())
+            avutil_wasmedge::av_frame_height(self.ptr())
         }
     }
 
     #[inline]
     pub fn set_height(&self, value: u32) {
         unsafe {
-            av_frame_set_height(self.ptr(),value)
+            avutil_wasmedge::av_frame_set_height(self.ptr(),value)
         }
     }
 
@@ -204,7 +201,7 @@ impl Video {
         }
 
         unsafe {
-            av_frame_linesize(self.ptr(),index as u32) as usize
+            avutil_wasmedge::av_frame_linesize(self.ptr(),index as u32) as usize
         }
     }
 
@@ -212,7 +209,7 @@ impl Video {
     pub fn planes(&self) -> usize {
         for i in 0..8 {
             unsafe {
-                if av_frame_linesize(self.ptr(),i) == 0 {
+                if avutil_wasmedge::av_frame_linesize(self.ptr(),i) == 0 {
                      return i as usize;
                 }
             }
@@ -304,7 +301,7 @@ impl Video {
         unsafe {
             let size = self.stride(index) * self.plane_height(index) as usize;
             let data = vec![0;size];
-            av_frame_data(self.ptr(),data.as_ptr(),data.len());
+            avutil_wasmedge::av_frame_data(self.ptr(),data.as_ptr(),data.len());
             data
         }
     }

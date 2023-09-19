@@ -23,7 +23,6 @@ pub mod codec;
 
 pub mod parameters;
 pub use self::parameters::Parameters;
-pub mod generated;
 
 pub mod video;
 pub use self::video::Video;

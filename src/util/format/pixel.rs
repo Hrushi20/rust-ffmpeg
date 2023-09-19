@@ -1,9 +1,6 @@
 use std::{error, mem};
-use std::ffi::{CStr, CString, NulError};
-use std::fmt;
-use std::str::{from_utf8_unchecked, FromStr};
-use avUtilTypes::{AVPixelFormat, AVPixFmtDescriptor};
-use util::generated::{avpixfmtdescriptor_log2_chromah, avpixfmtdescriptor_log2_chromaw, avpixfmtdescriptor_nb_components};
+use avUtilTypes::{AVPixelFormat};
+use avutil_wasmedge;
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 #[repr(u32)]
@@ -445,19 +442,19 @@ impl Descriptor {
 
     pub fn nb_components(self) -> u8 {
         unsafe {
-            avpixfmtdescriptor_nb_components(self.ptr().into()) as u8
+            avutil_wasmedge::avpixfmtdescriptor_nb_components(self.ptr().into()) as u8
         }
     }
 
     pub fn log2_chroma_w(self) -> u8 {
         unsafe {
-            avpixfmtdescriptor_log2_chromaw(self.ptr().into()) as u8
+            avutil_wasmedge::avpixfmtdescriptor_log2_chromaw(self.ptr().into()) as u8
         }
     }
 
     pub fn log2_chroma_h(self) -> u8 {
         unsafe {
-            avpixfmtdescriptor_log2_chromah(self.ptr().into()) as u8
+            avutil_wasmedge::avpixfmtdescriptor_log2_chromah(self.ptr().into()) as u8
         }
     }
 }

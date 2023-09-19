@@ -3,7 +3,7 @@
 use std::mem::MaybeUninit;
 use std::ptr;
 use avUtilTypes::AVFrame;
-use util::generated::{av_frame_alloc, av_frame_free, av_frame_isnull};
+use avutil_wasmedge;
 // pub use self::side_data::SideData;
 
 pub mod video;
@@ -47,7 +47,7 @@ impl Frame {
     #[inline(always)]
     pub unsafe fn empty() -> Self {
         let frame = MaybeUninit::<AVFrame>::uninit();
-        av_frame_alloc(frame.as_ptr() as u32);
+        avutil_wasmedge::av_frame_alloc(frame.as_ptr() as u32);
         Frame {
             ptr: ptr::read(frame.as_ptr()),
             _own: true,
@@ -61,7 +61,7 @@ impl Frame {
 
     #[inline(always)]
     pub unsafe fn is_empty(&self) -> bool {
-        av_frame_isnull(self.ptr()) == 0
+        avutil_wasmedge::av_frame_isnull(self.ptr()) == 0
     }
 
 }
@@ -177,7 +177,7 @@ impl Drop for Frame {
     #[inline]
     fn drop(&mut self) {
         unsafe {
-            av_frame_free(self.ptr());
+            avutil_wasmedge::av_frame_free(self.ptr());
         }
     }
 }

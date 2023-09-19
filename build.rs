@@ -1,7 +1,5 @@
 use std::env;
-use std::fmt::format;
 use std::fs;
-use std::ops::Index;
 use std::path::Path;
 use std::process::Command;
 extern crate os_info;
@@ -90,7 +88,7 @@ fn main() {
         // witc plugin wasmedge_opencvmini.wit > src/generated.rs
         let output = Command::new(&exe)
             .arg("plugin")
-            .arg(wit_file)
+            .arg(format!("witc/{}",wit_file))
             .output()
             .expect("Failed to execute command");
 
@@ -101,9 +99,6 @@ fn main() {
         fs::write(&dest_path, String::from_utf8_lossy(&output.stdout).as_ref()).unwrap();
 
     }
-
-
-
 
     if !witc_in_path {
         let _ = Command::new("rm")

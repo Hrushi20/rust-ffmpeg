@@ -1,9 +1,7 @@
-use std::ffi::CStr;
-use std::str::from_utf8_unchecked;
-use codec::generated::avcodec_get_type;
 use codec::id::AVCodecID::*;
 
 use util::media;
+use avcodec_wasmedge;
 
 
 #[allow(non_camel_case_types)]
@@ -652,7 +650,7 @@ impl Id {
     pub const VIMA: Id = Id::ADPCM_VIMA;
 
     pub fn medium(&self) -> media::Type {
-        unsafe { media::Type::from(avcodec_get_type((*self).into())) }
+        unsafe { media::Type::from(avcodec_wasmedge::avcodec_get_type((*self).into())) }
     }
 
     // pub fn name(&self) -> &'static str {

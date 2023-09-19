@@ -1,15 +1,13 @@
 use std::marker::PhantomData;
-use std::{mem, ptr};
+use std::{ptr};
 use std::mem::MaybeUninit;
-use std::slice;
 
 use super::{Ref};
 // use super::{Borrow, Flags, Mut, Ref, SideData};
 use libc::c_int;
 use {format, Error, Rational};
 use avCodecType::AVPacket;
-use codec::generated::{av_grow_packet, av_new_packet, av_packet_alloc, av_packet_stream_index, av_packet_unref, av_shrink_packet};
-use format::av_read_frame;
+use ::{avcodec_wasmedge, avformat_wasmedge};
 
 pub struct Packet(AVPacket);
 
@@ -30,7 +28,7 @@ impl Packet {
             // let mut pkt: AVPacket = mem::zeroed();
             let av_packet = MaybeUninit::<AVPacket>::uninit();
 
-            av_packet_alloc(av_packet.as_ptr() as u32);
+            avcodec_wasmedge::av_packet_alloc(av_packet.as_ptr() as u32);
             Packet(ptr::read(av_packet.as_ptr()))
         }
     }
@@ -40,8 +38,8 @@ impl Packet {
         unsafe {
             let avPacket = MaybeUninit::<AVPacket>::uninit();
 
-            av_packet_alloc(avPacket.as_ptr() as u32);
-            av_new_packet(ptr::read(avPacket.as_ptr()), size as i32);
+            avcodec_wasmedge::av_packet_alloc(avPacket.as_ptr() as u32);
+            avcodec_wasmedge::av_new_packet(ptr::read(avPacket.as_ptr()), size as i32);
 
             Packet(ptr::read(avPacket.as_ptr()))
         }
@@ -65,14 +63,14 @@ impl Packet {
     #[inline]
     pub fn shrink(&mut self, size: usize) {
         unsafe {
-            av_shrink_packet(self.0,size as i32);
+            avcodec_wasmedge::av_shrink_packet(self.0,size as i32);
         }
     }
 
     #[inline]
     pub fn grow(&mut self, size: usize) {
         unsafe {
-            av_grow_packet(self.0,size as i32);
+            avcodec_wasmedge::av_grow_packet(self.0,size as i32);
         }
     }
 
@@ -114,7 +112,7 @@ impl Packet {
     #[inline]
     pub fn stream(&self) -> usize {
         unsafe {
-            av_packet_stream_index(self.0) as usize
+            avcodec_wasmedge::av_packet_stream_index(self.0) as usize
         }
     }
 
@@ -210,7 +208,7 @@ impl Packet {
     #[inline]
     pub fn read(&self, format: &format::context::Input) -> Result<(), Error> {
         unsafe {
-            match av_read_frame(format.ptr(), self.ptr()) {
+            match avformat_wasmedge::av_read_frame(format.ptr(), self.ptr()) {
                 0 => Ok(()),
                 e => Err(Error::from(e)),
             }
@@ -279,7 +277,7 @@ impl Ref for Packet {
 impl Drop for Packet {
     fn drop(&mut self) {
         unsafe {
-            av_packet_unref(self.0);
+            avcodec_wasmedge::av_packet_unref(self.0);
         }
     }
 }

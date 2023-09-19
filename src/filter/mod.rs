@@ -6,7 +6,6 @@ pub use self::flag::Flags;
 
 // pub mod filter;
 // pub use self::filter::Filter;
-mod generated;
 
 pub mod context;
 pub use self::context::{Context, Sink, Source};

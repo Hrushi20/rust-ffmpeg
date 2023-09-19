@@ -1,7 +1,6 @@
 use std::mem::MaybeUninit;
 // Temporary. Should use build script to generate and use files.
-mod generated;
-pub use format::generated::av_read_frame;
+use avformat_wasmedge;
 // pub use util::format::{pixel, Pixel};
 // pub use util::format::{sample, Sample};
 // use util::interrupt;
@@ -28,8 +27,6 @@ pub use self::format::{Input};
 // use std::ffi::{CStr, CString};
 use std::path::Path;
 use std::{mem, ptr};
-use std::str::from_utf8_unchecked;
-use format::generated::*;
 
 //
 // use ffi::*;
@@ -169,11 +166,11 @@ pub fn input<P: AsRef<Path>>(path: &P) -> Result<context::Input, Error> {
 
         let avInputFormat = mem::zeroed::<AVInputFormat>();
         let avDictionary = mem::zeroed::<AVDictionary>();
-        match avformat_open_input(avFormatCtx.as_ptr() as u32, path.as_ptr() ,path.len(), avInputFormat as u32, avDictionary as u32) {
-            0 => match avformat_find_stream_info( ptr::read(avFormatCtx.as_ptr()), avDictionary as u32) {
+        match avformat_wasmedge::avformat_open_input(avFormatCtx.as_ptr() as u32, path.as_ptr() ,path.len(), avInputFormat as u32, avDictionary as u32) {
+            0 => match avformat_wasmedge::avformat_find_stream_info( ptr::read(avFormatCtx.as_ptr()), avDictionary as u32) {
                 r if r >= 0 => Ok(context::Input::wrap(ptr::read(avFormatCtx.as_ptr()))),
                 e => {
-                    avformat_close_input( avFormatCtx.as_ptr() as u32);
+                    avformat_wasmedge::avformat_close_input( avFormatCtx.as_ptr() as u32);
                     Err(Error::from(e))
                 }
             },

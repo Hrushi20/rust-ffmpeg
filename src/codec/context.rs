@@ -12,8 +12,7 @@ use media;
 use {Error};
 // use {Codec, Error};
 use avCodecType::{AVCodec, AVCodecContext};
-use codec::generated::{avcodec_alloc_context3, avcodec_free_context, avcodec_parameters_from_context, avcodec_parameters_to_context, avcodeccontext_codec_id, avcodeccontext_codec_type};
-use codec::id::AVCodecID;
+use avcodec_wasmedge;
 
 pub struct Context {
     ptr: AVCodecContext,
@@ -38,7 +37,7 @@ impl Context {
         unsafe {
             let avCodec = mem::zeroed::<AVCodec>();
             let avCodecContext = MaybeUninit::<AVCodecContext>::uninit();
-            let k = avcodec_alloc_context3(avCodec ,avCodecContext.as_ptr() as u32);
+            avcodec_wasmedge::avcodec_alloc_context3(avCodec ,avCodecContext.as_ptr() as u32);
             Context {
                 ptr: ptr::read(avCodecContext.as_ptr()),
                 owner: None,
@@ -52,7 +51,7 @@ impl Context {
 
         unsafe {
             // To Context
-            match avcodec_parameters_to_context(context.ptr() as u32, parameters.ptr()) {
+            match avcodec_wasmedge::avcodec_parameters_to_context(context.ptr() as u32, parameters.ptr()) {
                 e if e < 0 => Err(Error::from(e)),
                 _ => Ok(context),
             }
@@ -79,7 +78,7 @@ impl Context {
 
     pub fn medium(&self) -> media::Type {
         unsafe {
-            media::Type::from(avcodeccontext_codec_type(self.ptr()))
+            media::Type::from(avcodec_wasmedge::avcodeccontext_codec_type(self.ptr()))
         }
     }
     //
@@ -91,7 +90,7 @@ impl Context {
 
     pub fn id(&self) -> Id {
         unsafe {
-            let ID = avcodeccontext_codec_id(self.ptr());
+            let ID = avcodec_wasmedge::avcodeccontext_codec_id(self.ptr());
             Id::from(ID)
         }
     }
@@ -134,7 +133,7 @@ impl Context {
         let parameters = parameters.into();
 
         unsafe {
-            match avcodec_parameters_to_context(self.ptr(), parameters.ptr()) {
+            match avcodec_wasmedge::avcodec_parameters_to_context(self.ptr(), parameters.ptr()) {
                 e if e < 0 => Err(Error::from(e)),
                 _ => Ok(()),
             }
@@ -152,7 +151,7 @@ impl Drop for Context {
     fn drop(&mut self) {
         unsafe {
             if self.owner.is_none() {
-                avcodec_free_context(self.ptr() as u32);
+                avcodec_wasmedge::avcodec_free_context(self.ptr() as u32);
             }
         }
     }

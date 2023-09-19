@@ -8,7 +8,7 @@ use codec::{Context};
 // use codec::{Context, Profile};
 use {media, packet ,Error, Frame, Rational};
 use avCodecType::AVPacket;
-use codec::generated::{avcodec_close, avcodec_receive_frame, avcodec_send_packet};
+use avcodec_wasmedge;
 
 pub struct Opened(pub Decoder);
 
@@ -39,7 +39,7 @@ impl Opened {
 
     pub fn send_packet<P: packet::Ref>(&mut self, packet: &P) -> Result<(), Error> {
         unsafe {
-            match avcodec_send_packet(self.ptr(), packet.ptr()) {
+            match avcodec_wasmedge::avcodec_send_packet(self.ptr(), packet.ptr()) {
                 e if e < 0 => Err(Error::from(e)),
                 _ => Ok(()),
             }
@@ -51,7 +51,7 @@ impl Opened {
     pub fn send_eof(&mut self) -> Result<(), Error> {
         unsafe {
             let av_packet = mem::zeroed::<AVPacket>();
-            match avcodec_send_packet(self.ptr(), av_packet) {
+            match avcodec_wasmedge::avcodec_send_packet(self.ptr(), av_packet) {
                 e if e < 0 => Err(Error::from(e)),
                 _ => Ok(()),
             }
@@ -60,7 +60,7 @@ impl Opened {
 
     pub fn receive_frame(&mut self, frame: &Frame) -> Result<(), Error> {
         unsafe {
-            match avcodec_receive_frame(self.ptr(), frame.ptr()) {
+            match avcodec_wasmedge::avcodec_receive_frame(self.ptr(), frame.ptr()) {
                 e if e < 0 => Err(Error::from(e)),
                 _ => Ok(()),
             }
@@ -101,7 +101,7 @@ impl Opened {
 impl Drop for Opened {
     fn drop(&mut self) {
         unsafe {
-            avcodec_close(self.ptr());
+            avcodec_wasmedge::avcodec_close(self.ptr());
         }
     }
 }

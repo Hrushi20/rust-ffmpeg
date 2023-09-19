@@ -1,4 +1,3 @@
-use std::ffi::CString;
 use std::{mem, ptr};
 use std::mem::MaybeUninit;
 use std::ops::{Deref, DerefMut};
@@ -10,7 +9,7 @@ use util::range::Range;
 // use Codec;
 use {format, Error, Packet, Stream};
 use format::types::{AVFormatContext, AVInputFormat};
-use format::generated::{av_dump_format, av_read_pause, av_read_play, avformat_seek_file, avformatContext_iformat, avformatContext_probescope};
+use avformat_wasmedge;
 
 pub struct Input {
     ptr: AVFormatContext,
@@ -37,7 +36,7 @@ impl Input {
     pub fn format(&self) -> format::Input {
         unsafe {
             let avInputFormat = MaybeUninit::<AVInputFormat>::uninit();
-            avformatContext_iformat(self.ptr as u32,avInputFormat.as_ptr() as u32);
+            avformat_wasmedge::avformatContext_iformat(self.ptr as u32,avInputFormat.as_ptr() as u32);
 
             format::Input::wrap(ptr::read(avInputFormat.as_ptr()))
         }
@@ -97,7 +96,7 @@ impl Input {
 
     pub fn probe_score(&self) -> i32 {
         unsafe {
-            avformatContext_probescope(self.ptr())
+            avformat_wasmedge::avformatContext_probescope(self.ptr())
         }
     }
 
@@ -107,7 +106,7 @@ impl Input {
 
     pub fn pause(&mut self) -> Result<(), Error> {
         unsafe {
-            match av_read_pause(self.ptr() as u32) {
+            match avformat_wasmedge::av_read_pause(self.ptr() as u32) {
                 0 => Ok(()),
                 e => Err(Error::from(e)),
             }
@@ -116,7 +115,7 @@ impl Input {
 
     pub fn play(&mut self) -> Result<(), Error> {
         unsafe {
-            match av_read_play(self.ptr() as u32) {
+            match avformat_wasmedge::av_read_play(self.ptr() as u32) {
                 0 => Ok(()),
                 e => Err(Error::from(e)),
             }
@@ -126,7 +125,7 @@ impl Input {
     // Need to test.
     pub fn seek<R: Range<i64>>(&mut self, ts: i64, range: R) -> Result<(), Error> {
         unsafe {
-            match avformat_seek_file(
+            match avformat_wasmedge::avformat_seek_file(
                 self.ptr() as u32,
                 -1,
                 range.start().cloned().unwrap_or(i64::MIN),
@@ -191,7 +190,7 @@ impl<'a> Iterator for PacketIter<'a> {
 // Need to test.
 pub fn dump(ctx: &Input, index: i32, url: Option<&str>) {
     unsafe {
-        av_dump_format(
+        avformat_wasmedge::av_dump_format(
             ctx.ptr() as u32,
             index,
             url.unwrap_or_else(|| "").as_ptr(),

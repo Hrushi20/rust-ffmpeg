@@ -4,7 +4,7 @@ use std::{mem, ptr};
 use super::Flags;
 use util::format;
 use {frame, Error};
-use software::scaling::generated::{sws_freeContext, sws_getCachedContext, sws_getContext, sws_scale};
+use swscale_wasmedge;
 use software::scaling::types::{SwsContext, SwsFilter};
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
@@ -40,7 +40,7 @@ impl Context {
     ) -> Result<Self, Error> {
         unsafe {
             let sws_context = MaybeUninit::<SwsContext>::uninit();
-            sws_getContext(
+            swscale_wasmedge::sws_getContext(
                 sws_context.as_ptr() as u32,
                 src_w ,
                 src_h,
@@ -102,7 +102,7 @@ impl Context {
         unsafe {
             let sws_cached_context = MaybeUninit::<SwsContext>::uninit();
 
-           sws_getCachedContext(
+           swscale_wasmedge::sws_getCachedContext(
                sws_cached_context.as_ptr() as u32,
                 self.ptr(),
                 src_w,
@@ -152,7 +152,7 @@ impl Context {
         }
 
         unsafe {
-            sws_scale(
+            swscale_wasmedge::sws_scale(
                 self.ptr(),
                 input.ptr(),
                 0,
@@ -168,7 +168,7 @@ impl Context {
 impl Drop for Context {
     fn drop(&mut self) {
         unsafe {
-            sws_freeContext(self.ptr());
+            swscale_wasmedge::sws_freeContext(self.ptr());
         }
     }
 }
