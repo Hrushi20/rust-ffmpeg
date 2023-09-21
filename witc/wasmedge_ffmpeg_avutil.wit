@@ -30,8 +30,19 @@ av-frame-linesize : func(avPacketId:u32,Idx:u32) -> s32
 av-frame-data : func(frameId:u32,data:list<u8>) -> s32
 av-frame-get-buffer : func(frameId:u32,Align:s32) -> s32
 
-// pixfunc.h
+// pixfmt.h
 avpixfmtdescriptor-nb-components : func(AvPixFormatId:u32) -> s32
 avpixfmtdescriptor-log2-chromah : func(AvPixFormatId:u32) -> s32
 avpixfmtdescriptor-log2-chromaw : func(AvPixFormatId:u32) -> s32
 
+// samplefmt.h
+av-get-packed-sample-fmt : func(SampleFormatID:u32) -> u32
+av-get-planar-sample-fmt : func(SampleFormatID:u32) -> u32
+av-sample-fmt-is-planar : func(SampleFormatID:u32) -> u32
+av-get-bytes-per-sample : func(SampleFormatID:u32) -> s32
+av-get-sample-fmt : func(name:string) -> u32
+av-samples-get-buffer-size : func(NbChannels:s32,NbSamples:s32,SampleFormatID:u32,Align:s32) -> s32
+av-samples-alloc-array-and-samples : func(BufferPtr:u32,Linesize:s32,NbChannels:s32,NbSamples:s32,SampleFmtId:u32,Align:s32) -> s32
+// av-samples-copy : func(DestBufPtr:u32,SrcBufId:u32,DestOffset:s32,SrcOffset:s32,NbSamples:s32,NbChannels:s32,SampleFmtId:u32) -> s32
+av-samples-get-buffer : func(BufID:u32,Buf:list<u8>) -> s32
+av-freep : func(BufId:u32) -> s32

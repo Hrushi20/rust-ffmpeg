@@ -7,14 +7,17 @@ use std::ops::Sub;
 use std::ops::Mul;
 use std::ops::Div;
 use std::cell::RefCell;
+use std::fmt::format;
 use ffmpeg_next::codec::Context;
+use ffmpeg_next::util::format;
+use std::ops::Index;
 
 const RESOURCE_TEMPORARILY_UNAVAILABLE: ffmpeg_next::Error = ffmpeg_next::Error::Other {
     errno: ffmpeg_next::util::error::EAGAIN + 29
 };
 
 fn main() {
-    let path = Path::new("/Users/pc/my/code/openSource/wasmedge/rust-ffmpeg/example/assets/small_bunny_1080p_60fps.mp4");
+    let path = Path::new("/Users/pc/my/code/openSource/wasmedge/rust-ffmpeg/example/assets/test.raw");
     // let path = Path::new("assets/small_bunny_1080p_60fps.mp4");
     ffmpeg_next::init();
     let mut input = ffmpeg_next::format::input::<&Path>(&path).unwrap();
@@ -22,10 +25,10 @@ fn main() {
     println!("{:?}",*input);
     let input_stream = input
         .streams()
-        .best(ffmpeg_next::media::Type::Video).unwrap();
+        .best(ffmpeg_next::media::Type::Audio).unwrap();
     let input_stream_index = input_stream.index();
     let context = Context::from_parameters(input_stream.parameters()).unwrap();
-    let mut decoder = context.decoder().video().unwrap();
+    let mut decoder = context.decoder().audio().unwrap();
     decoder.set_parameters(input_stream.parameters()).unwrap();
 
     let frame = ffmpeg_next::frame::Video::empty();
@@ -67,5 +70,8 @@ fn main() {
     let src_format = frame.format();
     println!("Src_format: {:?}",src_format);
     let data = frame.data(0);
-    // println!("{}");
+
+    let sample = format::Sample::U8(format::sample::Type::Planar);
+    let k = format::sample::Buffer::new(sample,2,2,true);
+    // let k = k.clone();
 }

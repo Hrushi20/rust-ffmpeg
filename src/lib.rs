@@ -135,8 +135,7 @@ fn init_filter() {}
         and will be removed in a future version"
     )
 )]
-// pub fn init() -> Result<(), Error> {
-pub fn init() -> Result<(), ()> {
+pub fn init() -> Result<(), Error> {
     init_error();
     // #[cfg(not(feature = "ffmpeg_5_0"))]
     // init_format();

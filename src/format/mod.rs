@@ -166,8 +166,8 @@ pub fn input<P: AsRef<Path>>(path: &P) -> Result<context::Input, Error> {
 
         let avInputFormat = mem::zeroed::<AVInputFormat>();
         let avDictionary = mem::zeroed::<AVDictionary>();
-        match avformat_wasmedge::avformat_open_input(avFormatCtx.as_ptr() as u32, path.as_ptr() ,path.len(), avInputFormat as u32, avDictionary as u32) {
-            0 => match avformat_wasmedge::avformat_find_stream_info( ptr::read(avFormatCtx.as_ptr()), avDictionary as u32) {
+        match avformat_wasmedge::avformat_open_input(avFormatCtx.as_ptr() as u32, path.as_ptr() ,path.len(), avInputFormat, avDictionary) {
+            0 => match avformat_wasmedge::avformat_find_stream_info( ptr::read(avFormatCtx.as_ptr()), avDictionary) {
                 r if r >= 0 => Ok(context::Input::wrap(ptr::read(avFormatCtx.as_ptr()))),
                 e => {
                     avformat_wasmedge::avformat_close_input( avFormatCtx.as_ptr() as u32);

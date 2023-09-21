@@ -1,5 +1,5 @@
 //avformat.h
-avformat-open-input : func(avFormatCtxPtr:u32,urlPtr:list<u8>,avInputFormatPtr:u32,avDictionaryPtr:u32) -> s32
+avformat-open-input : func(avFormatCtxPtr:u32,urlPtr:string,avInputFormatPtr:u32,avDictionaryPtr:u32) -> s32
 avformat-find-stream-info : func(avFormatCtxPtr:u32,avDictionaryPtr:u32) -> s32
 avformat-close-input : func(avFormatCtxId:u32) -> unit
 av-read-play : func(avFormatCtxId:u32) -> s32

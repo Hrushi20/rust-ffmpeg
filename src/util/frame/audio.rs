@@ -3,7 +3,6 @@ use std::ops::{Deref, DerefMut};
 use std::slice;
 
 use super::Frame;
-use ffi::*;
 use libc::{c_int, c_ulonglong};
 use util::format;
 use ChannelLayout;
