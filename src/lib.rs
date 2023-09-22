@@ -36,7 +36,7 @@ mod swscale_wasmedge {
 
 // #[macro_use]
 pub mod util;
-// pub use util::channel_layout::{self, ChannelLayout};
+pub use util::channel_layout::{self, ChannelLayout};
 // pub use util::chroma;
 // pub use util::color;
 // pub use util::dictionary;

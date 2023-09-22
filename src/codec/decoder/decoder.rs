@@ -2,7 +2,7 @@ use std::ops::{Deref, DerefMut};
 use std::{mem};
 use std::mem::MaybeUninit;
 
-use super::{Opened,Video};
+use super::{Audio,Opened,Video};
 // use super::{Audio, Check, Conceal, Opened, Subtitle, Video};
 use codec::{Context,traits};
 // use codec::{traits, Context};
@@ -71,14 +71,14 @@ impl Decoder {
         }
     }
 
-    // pub fn audio(self) -> Result<Audio, Error> {
-    //     if let Some(codec) = super::find(self.id()) {
-    //         self.open_as(codec).and_then(|o| o.audio())
-    //     } else {
-    //         Err(Error::DecoderNotFound)
-    //     }
-    // }
-    //
+    pub fn audio(self) -> Result<Audio, Error> {
+        if let Some(codec) = super::find(self.id()) {
+            self.open_as(codec).and_then(|o| o.audio())
+        } else {
+            Err(Error::DecoderNotFound)
+        }
+    }
+
     // pub fn subtitle(self) -> Result<Subtitle, Error> {
     //     if let Some(codec) = super::find(self.id()) {
     //         self.open_as(codec).and_then(|o| o.subtitle())

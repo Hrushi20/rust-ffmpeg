@@ -48,11 +48,11 @@ impl Video {
     #[inline]
     pub fn format(&self) -> format::Pixel {
         unsafe {
-            let format = avutil_wasmedge::av_frame_format(self.ptr());
-            if format == 0 {
+            let format = avutil_wasmedge::av_frame_video_format(self.ptr());
+            if format == -1 {
                 Pixel::None
             }else{
-                Pixel::from(format)
+                Pixel::from(format as u32)
             }
         }
     }
@@ -60,7 +60,7 @@ impl Video {
     #[inline]
     pub fn set_format(&self, value: format::Pixel) {
         unsafe {
-            avutil_wasmedge::av_frame_set_format(self.ptr(),value.into());
+            avutil_wasmedge::av_frame_set_video_format(self.ptr(),value.into());
         }
     }
 

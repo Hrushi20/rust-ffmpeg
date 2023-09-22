@@ -9,8 +9,8 @@ use avutil_wasmedge;
 pub mod video;
 pub use self::video::Video;
 
-// pub mod audio;
-// pub use self::audio::Audio;
+pub mod audio;
+pub use self::audio::Audio;
 //
 // pub mod flag;
 // pub use self::flag::Flags;

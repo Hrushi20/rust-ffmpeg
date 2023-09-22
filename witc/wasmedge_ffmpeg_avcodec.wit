@@ -20,6 +20,7 @@ avcodeccontext-time-base : func(avCodecCtxId:u32,NumPtr:u32,DenPtr:u32) -> s32
 avcodeccontext-width : func(avCodecCtxId:u32) -> u32
 avcodeccontext-height : func(avCodecCtxId:u32) -> u32
 avcodeccontext-sample-aspect-ratio : func(avCodecCtxId:u32,NumPtr:u32,DenPtr:u32) -> s32
+avcodeccontext-channel-layout : func(AvCodecCtxId:u32) -> u64
 
 // AVCodec struct fields
 avcodec-id : func(avCodec:u32) -> u32

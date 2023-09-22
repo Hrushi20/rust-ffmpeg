@@ -2,7 +2,7 @@ use std::ops::{Deref, DerefMut};
 use std::{mem, ptr};
 use libc::memcpy;
 
-use super::{Decoder,Video};
+use super::{Audio,Decoder,Video};
 // use super::{Audio, Decoder, Subtitle, Video};
 use codec::{Context};
 // use codec::{Context, Profile};
@@ -21,14 +21,14 @@ impl Opened {
         }
     }
 
-    // pub fn audio(self) -> Result<Audio, Error> {
-    //     if self.medium() == media::Type::Audio {
-    //         Ok(Audio(self))
-    //     } else {
-    //         Err(Error::InvalidData)
-    //     }
-    // }
-    //
+    pub fn audio(self) -> Result<Audio, Error> {
+        if self.medium() == media::Type::Audio {
+            Ok(Audio(self))
+        } else {
+            Err(Error::InvalidData)
+        }
+    }
+
     // pub fn subtitle(self) -> Result<Subtitle, Error> {
     //     if self.medium() == media::Type::Subtitle {
     //         Ok(Subtitle(self))
