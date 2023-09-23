@@ -57,7 +57,7 @@ pub use util::rational::{self, Rational};
 pub mod format;
 #[cfg(feature = "format")]
 pub use format::chapter::{Chapter, ChapterMut};
-#[cfg(feature = "format")]
+// #[cfg(feature = "format")]
 pub use format::format::Format;
 // #[cfg(feature = "format")]
 pub use format::stream::{Stream};

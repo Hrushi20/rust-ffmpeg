@@ -1,4 +1,4 @@
-use std::mem;
+use std::{mem, ptr};
 use std::ops::{Deref, DerefMut};
 use std::slice;
 
@@ -118,44 +118,55 @@ impl Audio {
         }
     }
 
-    // #[inline]
-    // pub fn is_planar(&self) -> bool {
-    //     self.format().is_planar()
-    // }
-    //
-    // #[inline]
-    // pub fn is_packed(&self) -> bool {
-    //     self.format().is_packed()
-    // }
-    //
-    // #[inline]
-    // pub fn planes(&self) -> usize {
-    //     unsafe {
-    //         if (*self.as_ptr()).linesize[0] == 0 {
-    //             return 0;
-    //         }
-    //     }
-    //
-    //     if self.is_packed() {
-    //         1
-    //     } else {
-    //         self.channels() as usize
-    //     }
-    // }
-    //
-    // #[inline]
-    // pub fn plane<T: Sample>(&self, index: usize) -> &[T] {
-    //     if index >= self.planes() {
-    //         panic!("out of bounds");
-    //     }
-    //
-    //     if !<T as Sample>::is_valid(self.format(), self.channels()) {
-    //         panic!("unsupported type");
-    //     }
-    //
-    //     unsafe { slice::from_raw_parts((*self.as_ptr()).data[index] as *const T, self.samples()) }
-    // }
-    //
+    #[inline]
+    pub fn is_planar(&self) -> bool {
+        self.format().is_planar()
+    }
+
+    #[inline]
+    pub fn is_packed(&self) -> bool {
+        self.format().is_packed()
+    }
+
+    #[inline]
+    pub fn planes(&self) -> usize {
+        unsafe {
+            let linesize = avutil_wasmedge::av_frame_linesize(self.ptr(),0);
+            if linesize == 0 {
+                return 0;
+            }
+        }
+
+        if self.is_packed() {
+            1
+        } else {
+            self.channels() as usize
+        }
+    }
+
+    #[inline]
+    pub fn plane<T: Sample>(&self, index: usize) -> &[T] {
+        if index >= self.planes() {
+            panic!("out of bounds");
+        }
+
+        if !<T as Sample>::is_valid(self.format(), self.channels()) {
+            panic!("unsupported type");
+        }
+
+        unsafe {
+            let size = self.samples();
+            println!("Size: {}",size);
+            let data = vec![0;size];
+            avutil_wasmedge::av_frame_data(self.ptr(),data.as_ptr(),size,index as u32);
+            slice::from_raw_parts(
+                    data.as_ptr() as *const T,
+                    self.samples()
+            )
+
+        }
+    }
+
     // #[inline]
     // pub fn plane_mut<T: Sample>(&mut self, index: usize) -> &mut [T] {
     //     if index >= self.planes() {
@@ -170,20 +181,24 @@ impl Audio {
     //         slice::from_raw_parts_mut((*self.as_mut_ptr()).data[index] as *mut T, self.samples())
     //     }
     // }
-    //
-    // #[inline]
-    // pub fn data(&self, index: usize) -> &[u8] {
-    //     if index >= self.planes() {
-    //         panic!("out of bounds");
-    //     }
-    //
-    //     unsafe {
-    //         slice::from_raw_parts(
-    //             (*self.as_ptr()).data[index],
-    //             (*self.as_ptr()).linesize[index] as usize,
-    //         )
-    //     }
-    // }
+
+    #[inline]
+    pub fn data(&self, index: usize) -> &[u8] {
+        if index >= self.planes() {
+            panic!("out of bounds");
+        }
+
+        unsafe {
+
+            let size = avutil_wasmedge::av_frame_linesize(self.ptr(),index as u32) as usize;
+            let data = vec![0;size];
+            avutil_wasmedge::av_frame_data(self.ptr(),data.as_ptr(),size as usize,index as u32);
+            slice::from_raw_parts(
+                data.as_ptr(),
+                size
+            )
+        }
+    }
 
     // #[inline]
     // pub fn data_mut(&mut self, index: usize) -> &mut [u8] {

@@ -27,7 +27,7 @@ av-frame-video-format: func(frameId:u32) -> s32
 av-frame-set-video-format : func(frameId:u32,AvPixFormatId:u32) -> s32
 av-frame-isnull : func(avPacketId:u32) -> s32
 av-frame-linesize : func(avPacketId:u32,Idx:u32) -> s32
-av-frame-data : func(frameId:u32,data:list<u8>) -> s32
+av-frame-data : func(frameId:u32,data:list<u8>,Index:u32) -> s32
 av-frame-get-buffer : func(frameId:u32,Align:s32) -> s32
 av-frame-audio-format: func(frameId:u32) -> s32
 av-frame-set-audio-format: func(frameId:u32,AvSampleFormatId:u32) -> s32
