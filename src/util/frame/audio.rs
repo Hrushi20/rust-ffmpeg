@@ -1,9 +1,8 @@
-use std::{mem, ptr};
+use std::mem::size_of;
 use std::ops::{Deref, DerefMut};
 use std::slice;
 
 use super::Frame;
-use libc::{c_int, c_ulonglong};
 use avUtilTypes::AVFrame;
 use util::format;
 use ChannelLayout;
@@ -155,13 +154,13 @@ impl Audio {
         }
 
         unsafe {
-            let size = self.samples();
-            println!("Size: {}",size);
+            let size = self.samples() * size_of::<T>(); // (Read all data in u8 and later fetch the tuples.)
             let data = vec![0;size];
             avutil_wasmedge::av_frame_data(self.ptr(),data.as_ptr(),size,index as u32);
+
             slice::from_raw_parts(
-                    data.as_ptr() as *const T,
-                    self.samples()
+               data.as_ptr() as *const T,
+                   self.samples()
             )
 
         }
@@ -192,7 +191,7 @@ impl Audio {
 
             let size = avutil_wasmedge::av_frame_linesize(self.ptr(),index as u32) as usize;
             let data = vec![0;size];
-            avutil_wasmedge::av_frame_data(self.ptr(),data.as_ptr(),size as usize,index as u32);
+            avutil_wasmedge::av_frame_data(self.ptr(),data.as_ptr(),size,index as u32);
             slice::from_raw_parts(
                 data.as_ptr(),
                 size

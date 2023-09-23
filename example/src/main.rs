@@ -75,6 +75,9 @@ fn main() {
     let src_format = frame.format();
     println!("Frame:{:?}",frame);
     println!("Format: {:?}",src_format);
+    // println!("Data ============== ");
+    // println!("{:?}",frame.data(0));
+    // println!("Data ============== ");
     match frame.format() {
         format::Sample::U8(tp) => {
             println!("U8");
