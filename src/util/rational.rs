@@ -35,21 +35,23 @@ impl Rational {
     #[inline]
     pub fn reduce_with_limit(&self, max: i32) -> Result<Rational, Rational> {
         unsafe {
-            let dst_num = MaybeUninit::<i32>::uninit();
-            let dst_den = MaybeUninit::<i32>::uninit();
+            let num = MaybeUninit::<i32>::uninit();
+            let den = MaybeUninit::<i32>::uninit();
 
             let exact = avutil_wasmedge::av_reduce(
-                dst_num.as_ptr() as u32,
-                dst_den.as_ptr() as u32,
+                num.as_ptr() as u32,
+                den.as_ptr() as u32,
                 i64::from(self.numerator()),
                 i64::from(self.denominator()),
                 i64::from(max),
             );
 
+            let num = ptr::read(num.as_ptr());
+            let den = ptr::read(den.as_ptr());
             if exact == 1 {
-                Ok(Rational(ptr::read(dst_num.as_ptr()), ptr::read(dst_den.as_ptr())))
+                Ok(Rational(num, den))
             } else {
-                Err(Rational(ptr::read(dst_num.as_ptr()), ptr::read(dst_den.as_ptr())))
+                Err(Rational(num, den))
             }
         }
     }
@@ -57,10 +59,12 @@ impl Rational {
     #[inline]
     pub fn invert(&self) -> Rational {
         unsafe {
-            let result_num = MaybeUninit::<i32>::uninit();
-            let result_den = MaybeUninit::<i32>::uninit();
-            avutil_wasmedge::av_inv_q(self.numerator(),self.denominator(),result_num.as_ptr() as u32, result_den.as_ptr() as u32);
-            Rational::new(ptr::read(result_num.as_ptr()),ptr::read(result_den.as_ptr()))
+            let num = MaybeUninit::<i32>::uninit();
+            let den = MaybeUninit::<i32>::uninit();
+            avutil_wasmedge::av_inv_q(self.numerator(),self.denominator(),num.as_ptr() as u32,den.as_ptr() as u32);
+            let num = ptr::read(num.as_ptr());
+            let den = ptr::read(den.as_ptr());
+            Rational::new(num,den)
         }
     }
 }
@@ -86,10 +90,12 @@ impl From<f64> for Rational {
     #[inline]
     fn from(value: f64) -> Rational {
         unsafe {
-            let result_num = MaybeUninit::<i32>::uninit();
-            let result_den = MaybeUninit::<i32>::uninit();
-            avutil_wasmedge::av_d2q(value,i32::MAX,result_num.as_ptr() as u32,result_den.as_ptr() as u32);
-            Rational::new(ptr::read(result_num.as_ptr()),ptr::read(result_den.as_ptr()))
+            let num = MaybeUninit::<i32>::uninit();
+            let den = MaybeUninit::<i32>::uninit();
+            avutil_wasmedge::av_d2q(value,i32::MAX,num.as_ptr() as u32,den.as_ptr() as u32);
+            let num = ptr::read(num.as_ptr());
+            let den = ptr::read(den.as_ptr());
+            Rational::new(num,den)
         }
     }
 }
@@ -159,10 +165,12 @@ impl Add for Rational {
     fn add(self, other: Rational) -> Rational {
         unsafe {
 
-            let result_num = MaybeUninit::<i32>::uninit();
-            let result_den = MaybeUninit::<i32>::uninit();
-            avutil_wasmedge::av_add_q(self.numerator(),self.denominator(),other.numerator(),other.denominator(),result_num.as_ptr() as u32,result_den.as_ptr() as u32);
-            Rational::new(ptr::read(result_num.as_ptr()),ptr::read(result_den.as_ptr()))
+            let num = MaybeUninit::<i32>::uninit();
+            let den = MaybeUninit::<i32>::uninit();
+            avutil_wasmedge::av_add_q(self.numerator(),self.denominator(),other.numerator(),other.denominator(),num.as_ptr() as u32,den.as_ptr() as u32);
+            let num = ptr::read(num.as_ptr());
+            let den = ptr::read(den.as_ptr());
+            Rational::new(num,den)
         }
     }
 }
@@ -173,10 +181,12 @@ impl Sub for Rational {
     #[inline]
     fn sub(self, other: Rational) -> Rational {
         unsafe {
-            let result_num = MaybeUninit::<i32>::uninit();
-            let result_den = MaybeUninit::<i32>::uninit();
-            avutil_wasmedge::av_sub_q(self.numerator(),self.denominator(),other.numerator(),other.denominator(),result_num.as_ptr() as u32,result_den.as_ptr() as u32);
-            Rational::new(ptr::read(result_num.as_ptr()),ptr::read(result_den.as_ptr()))
+            let num = MaybeUninit::<i32>::uninit();
+            let den = MaybeUninit::<i32>::uninit();
+            avutil_wasmedge::av_sub_q(self.numerator(),self.denominator(),other.numerator(),other.denominator(),num.as_ptr() as u32,den.as_ptr() as u32);
+            let num = ptr::read(num.as_ptr());
+            let den = ptr::read(den.as_ptr());
+            Rational::new(num,den)
         }
     }
 }
@@ -187,10 +197,13 @@ impl Mul for Rational {
     #[inline]
     fn mul(self, other: Rational) -> Rational {
         unsafe {
-            let result_num = MaybeUninit::<i32>::uninit();
-            let result_den = MaybeUninit::<i32>::uninit();
-            avutil_wasmedge::av_mul_q(self.numerator(),self.denominator(),other.numerator(),other.denominator(),result_num.as_ptr() as u32,result_den.as_ptr() as u32);
-            Rational::new(ptr::read(result_num.as_ptr()),ptr::read(result_den.as_ptr()))
+            let num = MaybeUninit::<i32>::uninit();
+            let den = MaybeUninit::<i32>::uninit();
+            avutil_wasmedge::av_mul_q(self.numerator(),self.denominator(),other.numerator(),other.denominator(),num.as_ptr() as u32,den.as_ptr() as u32);
+
+            let num = ptr::read(num.as_ptr());
+            let den = ptr::read(den.as_ptr());
+            Rational::new(num,den)
         }
     }
 }
@@ -201,10 +214,13 @@ impl Div for Rational {
     #[inline]
     fn div(self, other: Rational) -> Rational {
         unsafe {
-            let result_num = MaybeUninit::<i32>::uninit();
-            let result_den = MaybeUninit::<i32>::uninit();
-            avutil_wasmedge::av_div_q(self.numerator(),self.denominator(),other.numerator(),other.denominator(),result_num.as_ptr() as u32,result_den.as_ptr() as u32);
-            Rational::new(ptr::read(result_num.as_ptr()),ptr::read(result_den.as_ptr()))
+            let num = MaybeUninit::<i32>::uninit();
+            let den = MaybeUninit::<i32>::uninit();
+            avutil_wasmedge::av_div_q(self.numerator(),self.denominator(),other.numerator(),other.denominator(),num.as_ptr() as u32,den.as_ptr() as u32);
+
+            let num = ptr::read(num.as_ptr());
+            let den = ptr::read(den.as_ptr());
+            Rational::new(num,den)
         }
     }
 }
