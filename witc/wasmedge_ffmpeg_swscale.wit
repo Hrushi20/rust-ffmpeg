@@ -5,3 +5,10 @@ sws-getCachedContext: func(SwsCachedCtxPtr:u32,SwsCtxPtr:u32, SrcW:u32, SrcH:u32
 sws-isSupportedInput : func(AvPixFormatId:u32) -> s32
 sws-isSupportedOutput : func(AvPixFormatId:u32) -> s32
 sws-isSupportedEndiannessConversion : func(AvPixFormatId:u32) -> s32
+sws-getDefaultFilter : func(SwsFilterPtr:u32,LumaGBlur:f32,ChromaGBlur:f32,LumaSharpen:f32,ChromaSharpen:f32,ChromaHShift:f32,ChromaVShift:f32,Verbose:s32) -> s32
+sws-freeFilter : func(SwsFilterId:u32) -> s32
+sws-allocVec : func(SwsVecPtr:u32,Length:s32) -> s32
+sws-getGaussian : func(SwsVecPtr:u32,Variance:f64,Quality:f64) -> s32
+sws-scaleVec : func(SwsVecId:u32,Scalar:f64) -> s32
+sws-normalizeVec : func(SwsVecId:u32,Height:f64) -> s32
+sws-freeVec : func(SwsVecId:u32) -> s32

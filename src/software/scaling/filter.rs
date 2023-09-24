@@ -1,16 +1,15 @@
-use super::Vector;
-use ffi::*;
+use std::mem::MaybeUninit;
+use std::ptr;
+use software::scaling::types::SwsFilter;
+// use super::Vector;
+use swscale_wasmedge;
 
 pub struct Filter {
-    ptr: *mut SwsFilter,
+    ptr: SwsFilter,
 }
 
 impl Filter {
-    pub unsafe fn as_ptr(&self) -> *const SwsFilter {
-        self.ptr as *const _
-    }
-
-    pub unsafe fn as_mut_ptr(&mut self) -> *mut SwsFilter {
+    pub unsafe fn ptr(&self) -> SwsFilter {
         self.ptr
     }
 }
@@ -25,16 +24,19 @@ impl Filter {
         chroma_v_shift: f32,
     ) -> Self {
         unsafe {
+            let sws_filter = MaybeUninit::<SwsFilter>::uninit();
+            swscale_wasmedge::sws_getDefaultFilter(
+                sws_filter.as_ptr() as u32,
+                luma_g_blur,
+                chroma_g_blur,
+                luma_sharpen,
+                chroma_sharpen,
+                chroma_h_shift,
+                chroma_v_shift,
+                0
+            );
             Filter {
-                ptr: sws_getDefaultFilter(
-                    luma_g_blur,
-                    chroma_g_blur,
-                    luma_sharpen,
-                    chroma_sharpen,
-                    chroma_h_shift,
-                    chroma_v_shift,
-                    0,
-                ),
+                ptr: ptr::read(sws_filter.as_ptr())
             }
         }
     }
@@ -43,37 +45,37 @@ impl Filter {
         Self::get(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
     }
 
-    pub fn luma_horizontal(&self) -> Vector {
-        unsafe { Vector::wrap((*self.as_ptr()).lumH) }
-    }
-
-    pub fn luma_horizontal_mut(&mut self) -> Vector {
-        unsafe { Vector::wrap((*self.as_mut_ptr()).lumH) }
-    }
-
-    pub fn luma_vertical(&self) -> Vector {
-        unsafe { Vector::wrap((*self.as_ptr()).lumV) }
-    }
-
-    pub fn luma_vertical_mut(&mut self) -> Vector {
-        unsafe { Vector::wrap((*self.as_mut_ptr()).lumV) }
-    }
-
-    pub fn chroma_horizontal(&self) -> Vector {
-        unsafe { Vector::wrap((*self.as_ptr()).lumV) }
-    }
-
-    pub fn chroma_horizontal_mut(&mut self) -> Vector {
-        unsafe { Vector::wrap((*self.as_mut_ptr()).lumV) }
-    }
-
-    pub fn chroma_vertical(&self) -> Vector {
-        unsafe { Vector::wrap((*self.as_ptr()).lumV) }
-    }
-
-    pub fn chroma_vertical_mut(&mut self) -> Vector {
-        unsafe { Vector::wrap((*self.as_mut_ptr()).lumV) }
-    }
+    // pub fn luma_horizontal(&self) -> Vector {
+    //     unsafe { Vector::wrap((*self.as_ptr()).lumH) }
+    // }
+    //
+    // pub fn luma_horizontal_mut(&mut self) -> Vector {
+    //     unsafe { Vector::wrap((*self.as_mut_ptr()).lumH) }
+    // }
+    //
+    // pub fn luma_vertical(&self) -> Vector {
+    //     unsafe { Vector::wrap((*self.as_ptr()).lumV) }
+    // }
+    //
+    // pub fn luma_vertical_mut(&mut self) -> Vector {
+    //     unsafe { Vector::wrap((*self.as_mut_ptr()).lumV) }
+    // }
+    //
+    // pub fn chroma_horizontal(&self) -> Vector {
+    //     unsafe { Vector::wrap((*self.as_ptr()).lumV) }
+    // }
+    //
+    // pub fn chroma_horizontal_mut(&mut self) -> Vector {
+    //     unsafe { Vector::wrap((*self.as_mut_ptr()).lumV) }
+    // }
+    //
+    // pub fn chroma_vertical(&self) -> Vector {
+    //     unsafe { Vector::wrap((*self.as_ptr()).lumV) }
+    // }
+    //
+    // pub fn chroma_vertical_mut(&mut self) -> Vector {
+    //     unsafe { Vector::wrap((*self.as_mut_ptr()).lumV) }
+    // }
 }
 
 impl Default for Filter {
@@ -85,7 +87,7 @@ impl Default for Filter {
 impl Drop for Filter {
     fn drop(&mut self) {
         unsafe {
-            sws_freeFilter(self.as_mut_ptr());
+            swscale_wasmedge::sws_freeFilter(self.ptr());
         }
     }
 }

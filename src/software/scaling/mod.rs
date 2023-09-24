@@ -8,9 +8,9 @@ pub mod support;
 
 // pub mod vector;
 // pub use self::vector::Vector;
-//
-// pub mod filter;
-// pub use self::filter::Filter;
+
+pub mod filter;
+pub use self::filter::Filter;
 
 pub mod context;
 pub use self::context::Context;
