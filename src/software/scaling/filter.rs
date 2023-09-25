@@ -1,7 +1,7 @@
 use std::mem::MaybeUninit;
 use std::ptr;
-use software::scaling::types::SwsFilter;
-// use super::Vector;
+use software::scaling::types::{SwsFilter, SwsVector};
+use super::Vector;
 use swscale_wasmedge;
 
 pub struct Filter {
@@ -45,34 +45,50 @@ impl Filter {
         Self::get(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
     }
 
-    // pub fn luma_horizontal(&self) -> Vector {
-    //     unsafe { Vector::wrap((*self.as_ptr()).lumH) }
-    // }
-    //
+    pub fn luma_horizontal(&self) -> Vector {
+        unsafe {
+            let luma_h = MaybeUninit::<SwsVector>::uninit();
+            swscale_wasmedge::sws_getLumaH(self.ptr(),luma_h.as_ptr() as u32);
+            Vector::wrap(ptr::read(luma_h.as_ptr()))
+        }
+    }
+
     // pub fn luma_horizontal_mut(&mut self) -> Vector {
     //     unsafe { Vector::wrap((*self.as_mut_ptr()).lumH) }
     // }
-    //
-    // pub fn luma_vertical(&self) -> Vector {
-    //     unsafe { Vector::wrap((*self.as_ptr()).lumV) }
-    // }
-    //
+
+    pub fn luma_vertical(&self) -> Vector {
+        unsafe {
+            let luma_v = MaybeUninit::<SwsVector>::uninit();
+            swscale_wasmedge::sws_getLumaV(self.ptr(),luma_v.as_ptr() as u32);
+            Vector::wrap(ptr::read(luma_v.as_ptr()))
+        }
+    }
+
     // pub fn luma_vertical_mut(&mut self) -> Vector {
     //     unsafe { Vector::wrap((*self.as_mut_ptr()).lumV) }
     // }
-    //
-    // pub fn chroma_horizontal(&self) -> Vector {
-    //     unsafe { Vector::wrap((*self.as_ptr()).lumV) }
-    // }
-    //
+
+    pub fn chroma_horizontal(&self) -> Vector {
+        unsafe {
+            let chroma_h = MaybeUninit::<SwsVector>::uninit();
+            swscale_wasmedge::sws_getChromaH(self.ptr(),chroma_h.as_ptr() as u32);
+            Vector::wrap(ptr::read(chroma_h.as_ptr()))
+        }
+    }
+
     // pub fn chroma_horizontal_mut(&mut self) -> Vector {
     //     unsafe { Vector::wrap((*self.as_mut_ptr()).lumV) }
     // }
-    //
-    // pub fn chroma_vertical(&self) -> Vector {
-    //     unsafe { Vector::wrap((*self.as_ptr()).lumV) }
-    // }
-    //
+
+    pub fn chroma_vertical(&self) -> Vector {
+        unsafe {
+            let chroma_v = MaybeUninit::<SwsVector>::uninit();
+            swscale_wasmedge::sws_getChromaV(self.ptr(),chroma_v.as_ptr() as u32);
+            Vector::wrap(ptr::read(chroma_v.as_ptr()))
+        }
+    }
+
     // pub fn chroma_vertical_mut(&mut self) -> Vector {
     //     unsafe { Vector::wrap((*self.as_mut_ptr()).lumV) }
     // }

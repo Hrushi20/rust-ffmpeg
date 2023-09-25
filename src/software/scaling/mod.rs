@@ -6,8 +6,8 @@ pub use self::flag::Flags;
 
 pub mod support;
 
-// pub mod vector;
-// pub use self::vector::Vector;
+pub mod vector;
+pub use self::vector::Vector;
 
 pub mod filter;
 pub use self::filter::Filter;
@@ -15,11 +15,9 @@ pub use self::filter::Filter;
 pub mod context;
 pub use self::context::Context;
 
-// mod extensions;
+mod extensions;
 mod types;
 
-use std::ffi::CStr;
-use std::str::from_utf8_unchecked;
 
 //
 // pub fn version() -> u32 {

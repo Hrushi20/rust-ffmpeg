@@ -1,3 +1,4 @@
+// SwsContext
 sws-getContext : func(SwsCtxPtr:u32, SrcW:u32, SrcH:u32, SrcAvPixFormatId:u32, DesW:u32, DesH:u32, DesAvPixFormatId:u32, Flags:s32, SrcFilterId:u32, DesFilterId:u32) -> s32
 sws-freeContext : func(swsCtxId:u32) -> s32
 sws-scale : func(swsCtxId:u32,InputFrameId:u32,SrcSliceY:s32,SrcSliceH:s32,OutputFrameId:u32) -> s32
@@ -5,10 +6,20 @@ sws-getCachedContext: func(SwsCachedCtxPtr:u32,SwsCtxPtr:u32, SrcW:u32, SrcH:u32
 sws-isSupportedInput : func(AvPixFormatId:u32) -> s32
 sws-isSupportedOutput : func(AvPixFormatId:u32) -> s32
 sws-isSupportedEndiannessConversion : func(AvPixFormatId:u32) -> s32
+
+// SwsFilter
 sws-getDefaultFilter : func(SwsFilterPtr:u32,LumaGBlur:f32,ChromaGBlur:f32,LumaSharpen:f32,ChromaSharpen:f32,ChromaHShift:f32,ChromaVShift:f32,Verbose:s32) -> s32
+sws-getLumaH : func(SwsFilterId:u32,SwsVectorPtr:u32) -> s32
+sws-getLumaV : func(SwsFilterId:u32,SwsVectorPtr:u32) -> s32
+sws-getChromaH : func(SwsFilterId:u32,SwsVectorPtr:u32) -> s32
+sws-getChromaV : func(SwsFilterId:u32,SwsVectorPtr:u32) -> s32
 sws-freeFilter : func(SwsFilterId:u32) -> s32
+
+// SwsVector
 sws-allocVec : func(SwsVecPtr:u32,Length:s32) -> s32
-sws-getGaussian : func(SwsVecPtr:u32,Variance:f64,Quality:f64) -> s32
+sws-getGaussianVec : func(SwsVecPtr:u32,Variance:f64,Quality:f64) -> s32
 sws-scaleVec : func(SwsVecId:u32,Scalar:f64) -> s32
 sws-normalizeVec : func(SwsVecId:u32,Height:f64) -> s32
+sws-getCoeffVecLength : func(SwsVecId:u32) -> s32
+sws-getCoeff : func(SwsVecId:u32,CoeffBufPtr:list<u8>) -> s32
 sws-freeVec : func(SwsVecId:u32) -> s32

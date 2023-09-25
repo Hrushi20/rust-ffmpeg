@@ -82,6 +82,7 @@ pub use codec::packet::{self, Packet};
 // #[cfg(feature = "codec")]
 // pub use codec::threading;
 // #[cfg(feature = "codec")]
+pub use codec::{decoder};
 // pub use codec::{decoder, encoder};
 
 // #[cfg(feature = "device")]

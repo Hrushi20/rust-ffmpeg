@@ -1,5 +1,7 @@
 use std::marker::PhantomData;
-use std::slice;
+use std::mem::MaybeUninit;
+use std::{ptr, slice};
+use software::scaling::types::SwsVector;
 
 use swscale_wasmedge;
 
@@ -28,8 +30,11 @@ impl<'a> Vector<'a> {
 impl<'a> Vector<'a> {
     pub fn new(length: usize) -> Self {
         unsafe {
+            let sws_vec = MaybeUninit::<SwsVector>::uninit();
+            swscale_wasmedge::sws_allocVec(sws_vec.as_ptr() as u32,length as i32);
+
             Vector {
-                ptr: sws_allocVec(length as c_int),
+                ptr: ptr::read(sws_vec.as_ptr()),
                 _own: true,
                 _marker: PhantomData,
             }
@@ -38,8 +43,10 @@ impl<'a> Vector<'a> {
 
     pub fn gaussian(variance: f64, quality: f64) -> Self {
         unsafe {
+            let sws_vec = MaybeUninit::<SwsVector>::uninit();
+            swscale_wasmedge::sws_getGaussianVec(sws_vec.as_ptr() as u32, variance,quality);
             Vector {
-                ptr: sws_getGaussianVec(variance as c_double, quality as c_double),
+                ptr: ptr::read(sws_vec.as_ptr()),
                 _own: true,
                 _marker: PhantomData,
             }
@@ -109,14 +116,20 @@ impl<'a> Vector<'a> {
     // }
 
     pub fn coefficients(&self) -> &[f64] {
-        unsafe { slice::from_raw_parts((*self.as_ptr()).coeff, (*self.as_ptr()).length as usize) }
-    }
-
-    pub fn coefficients_mut(&self) -> &[f64] {
         unsafe {
-            slice::from_raw_parts_mut((*self.as_ptr()).coeff, (*self.as_ptr()).length as usize)
+            let length = swscale_wasmedge::sws_getCoeffVecLength(self.ptr()) as usize; // This length is in uint format
+
+            let coeff = vec![0;length];
+            swscale_wasmedge::sws_getCoeff(self.ptr(),coeff.as_ptr(),length);
+            slice::from_raw_parts(coeff.as_ptr() as *const f64, length)
         }
     }
+
+    // pub fn coefficients_mut(&self) -> &[f64] {
+    //     unsafe {
+    //         slice::from_raw_parts_mut((*self.as_ptr()).coeff, (*self.as_ptr()).length as usize)
+    //     }
+    // }
 }
 
 // #[cfg(not(feature = "ffmpeg_5_0"))]

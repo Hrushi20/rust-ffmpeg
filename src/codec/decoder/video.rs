@@ -13,7 +13,7 @@ use codec::Context;
 #[cfg(not(feature = "ffmpeg_5_0"))]
 // use frame;
 // use util::chroma;
-// use util::format;
+use util::format;
 #[cfg(not(feature = "ffmpeg_5_0"))]
 use {Error};
 // use {packet, Error};
@@ -61,10 +61,13 @@ impl Video {
             avcodec_wasmedge::avcodeccontext_height(self.ptr())
         }
     }
-    //
-    // pub fn format(&self) -> format::Pixel {
-    //     unsafe { format::Pixel::from((*self.as_ptr()).pix_fmt) }
-    // }
+
+    pub fn format(&self) -> format::Pixel {
+        unsafe {
+            let format_id = avcodec_wasmedge::avcodeccontext_pix_fmt(self.ptr());
+            format::Pixel::from(format_id)
+        }
+    }
 
     // pub fn has_b_frames(&self) -> bool {
     //     unsafe { (*self.as_ptr()).has_b_frames != 0 }
