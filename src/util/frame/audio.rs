@@ -62,10 +62,12 @@ impl Audio {
         }
     }
 
-    // #[inline]
-    // pub fn channel_layout(&self) -> ChannelLayout {
-    //     unsafe { ChannelLayout::from_bits_truncate((*self.as_ptr()).channel_layout as c_ulonglong) }
-    // }
+    #[inline]
+    pub fn channel_layout(&self) -> ChannelLayout {
+        unsafe {
+            ChannelLayout::from_bits_truncate(avutil_wasmedge::av_frame_channel_layout(self.ptr()))
+        }
+    }
 
     #[inline]
     pub fn set_channel_layout(&mut self, value: ChannelLayout) {

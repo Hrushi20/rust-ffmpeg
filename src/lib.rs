@@ -34,6 +34,11 @@ mod swscale_wasmedge {
     include!(concat!(env!("OUT_DIR"), "/swscale.rs"));
 }
 
+mod swresample_wasmedge {
+    #![allow(non_camel_case_types)]
+    include!(concat!(env!("OUT_DIR"), "swresample/.rs"));
+}
+
 // #[macro_use]
 pub mod util;
 pub use util::channel_layout::{self, ChannelLayout};

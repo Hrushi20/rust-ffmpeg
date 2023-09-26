@@ -1,29 +1,25 @@
-use ffi::SwrFilterType::*;
-use ffi::*;
+use super::types::SwrFilterType;
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub enum Filter {
-    Cubic,
-    BlackmanNuttall,
-    Kaiser,
+    Cubic = 1,
+    BlackmanNuttall = 2,
+    Kaiser = 3,
 }
 
 impl From<SwrFilterType> for Filter {
-    fn from(value: SwrFilterType) -> Filter {
+    fn from(value: u32) -> Filter {
         match value {
-            SWR_FILTER_TYPE_CUBIC => Filter::Cubic,
-            SWR_FILTER_TYPE_BLACKMAN_NUTTALL => Filter::BlackmanNuttall,
-            SWR_FILTER_TYPE_KAISER => Filter::Kaiser,
+            i if i == Filter::Cubic as u32 => Filter::Cubic,
+            i if i == Filter::BlackmanNuttall as u32 => Filter::BlackmanNuttall,
+            i if i == Filter::Kaiser as u32 => Filter::Kaiser,
+            _ => Filter::Cubic
         }
     }
 }
 
 impl From<Filter> for SwrFilterType {
-    fn from(value: Filter) -> SwrFilterType {
-        match value {
-            Filter::Cubic => SWR_FILTER_TYPE_CUBIC,
-            Filter::BlackmanNuttall => SWR_FILTER_TYPE_BLACKMAN_NUTTALL,
-            Filter::Kaiser => SWR_FILTER_TYPE_KAISER,
-        }
+    fn from(value: Filter) -> u32 {
+        value as u32
     }
 }

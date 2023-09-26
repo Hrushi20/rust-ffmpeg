@@ -1,0 +1,3 @@
+swresample-getVersion : func() -> s32
+swr-get-delay : func(SWRContextId:u32,Base:s64) -> s64
+

@@ -9,7 +9,8 @@ static WIT_FILES: &'static [&str] = &[
     "wasmedge_ffmpeg_avfilter.wit",
     "wasmedge_ffmpeg_avformat.wit",
     "wasmedge_ffmpeg_avutil.wit",
-    "wasmedge_ffmpeg_swscale.wit"
+    "wasmedge_ffmpeg_swscale.wit",
+    "wasmedge_ffmpeg_swresample.wit"
 ];
 
 fn program_exists(program: &str) -> bool {

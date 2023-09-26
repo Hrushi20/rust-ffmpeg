@@ -10,27 +10,27 @@ pub use self::engine::Engine;
 pub mod filter;
 pub use self::filter::Filter;
 
-pub mod delay;
-pub use self::delay::Delay;
+// pub mod delay;
+// pub use self::delay::Delay;
 
-pub mod context;
-pub use self::context::Context;
+// pub mod context;
+// pub use self::context::Context;
 
-mod extensions;
+// mod extensions;
+mod types;
 
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 
-use ffi::*;
 
 pub fn version() -> u32 {
     unsafe { swresample_version() }
 }
 
-pub fn configuration() -> &'static str {
-    unsafe { from_utf8_unchecked(CStr::from_ptr(swresample_configuration()).to_bytes()) }
-}
+// pub fn configuration() -> &'static str {
+//     unsafe { from_utf8_unchecked(CStr::from_ptr(swresample_configuration()).to_bytes()) }
+// }
 
-pub fn license() -> &'static str {
-    unsafe { from_utf8_unchecked(CStr::from_ptr(swresample_license()).to_bytes()) }
-}
+// pub fn license() -> &'static str {
+//     unsafe { from_utf8_unchecked(CStr::from_ptr(swresample_license()).to_bytes()) }
+// }

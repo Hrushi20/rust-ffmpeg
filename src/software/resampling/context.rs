@@ -1,12 +1,12 @@
 use std::ptr;
 
 use super::Delay;
-use ffi::*;
 use libc::c_int;
 use std::ffi::c_void;
 use util::format;
-use Dictionary;
+// use Dictionary;
 use {frame, ChannelLayout, Error};
+use software::resampling::types::SwrContext;
 
 #[derive(Eq, PartialEq, Copy, Clone)]
 pub struct Definition {
@@ -16,7 +16,7 @@ pub struct Definition {
 }
 
 pub struct Context {
-    ptr: *mut SwrContext,
+    ptr: SwrContext,
 
     input: Definition,
     output: Definition,
@@ -26,14 +26,14 @@ unsafe impl Send for Context {}
 
 impl Context {
     #[doc(hidden)]
-    pub unsafe fn as_ptr(&self) -> *const SwrContext {
-        self.ptr as *const _
-    }
-
-    #[doc(hidden)]
-    pub unsafe fn as_mut_ptr(&mut self) -> *mut SwrContext {
+    pub unsafe fn as_ptr(&self) -> SwrContext {
         self.ptr
     }
+
+    // #[doc(hidden)]
+    // pub unsafe fn as_mut_ptr(&mut self) -> *mut SwrContext {
+    //     self.ptr
+    // }
 }
 
 impl Context {
@@ -138,7 +138,7 @@ impl Context {
     ///
     /// When there are internal frames to process it will return `Ok(Some(Delay { .. }))`.
     pub fn run(
-        &mut self,
+        &self,
         input: &frame::Audio,
         output: &mut frame::Audio,
     ) -> Result<Option<Delay>, Error> {

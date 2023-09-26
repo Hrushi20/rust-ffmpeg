@@ -1,5 +1,5 @@
 use super::Context;
-use ffi::*;
+use swresample_wasmedge;
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 pub struct Delay {
@@ -12,11 +12,16 @@ pub struct Delay {
 impl Delay {
     pub fn from(context: &Context) -> Self {
         unsafe {
+            let seconds = swresample_wasmedge::swr_get_delay(context.ptr(),1);
+            let milliseconds = swresample_wasmedge::swr_get_delay(context.ptr(),1000);
+            let input = swresample_wasmedge::swr_get_delay(context.ptr(),i64::from(context.input().rate));
+            let output = swresample_wasmedge::swr_get_delay(context.ptr(),i64::from(context.output().rate));
+
             Delay {
-                seconds: swr_get_delay(context.as_ptr() as *mut _, 1),
-                milliseconds: swr_get_delay(context.as_ptr() as *mut _, 1000),
-                input: swr_get_delay(context.as_ptr() as *mut _, i64::from(context.input().rate)),
-                output: swr_get_delay(context.as_ptr() as *mut _, i64::from(context.output().rate)),
+                seconds: std::ptr::read(seconds.as_ptr()),
+                milliseconds: std::ptr::read(milliseconds.as_ptr()),
+                input: ptr(input.as_ptr()),
+                output: ptr(output.as_ptr()),
             }
         }
     }
