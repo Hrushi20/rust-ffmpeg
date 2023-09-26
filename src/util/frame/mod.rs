@@ -61,7 +61,7 @@ impl Frame {
 
     #[inline(always)]
     pub unsafe fn is_empty(&self) -> bool {
-        avutil_wasmedge::av_frame_isnull(self.ptr()) == 0
+        avutil_wasmedge::av_frame_isnull(self.ptr()) == 1
     }
 
 }

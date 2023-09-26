@@ -1,6 +1,6 @@
 pub mod flag;
 pub use self::flag::Flags;
-//
+
 // pub mod color_space;
 // pub use self::color_space::ColorSpace;
 

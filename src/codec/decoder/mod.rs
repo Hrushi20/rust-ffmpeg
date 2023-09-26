@@ -40,7 +40,6 @@ pub fn find(id: Id) -> Option<Codec> {
         let avCodec = MaybeUninit::<AVCodec>::uninit();
         avcodec_wasmedge::avcodec_find_decoder(id.into(),avCodec.as_ptr() as u32);
 
-        println!("Found Decoder");
         if ptr::read(avCodec.as_ptr()) == 0 {
             None
         } else {

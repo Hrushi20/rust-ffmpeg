@@ -1,7 +1,7 @@
 use std::mem::MaybeUninit;
 // Temporary. Should use build script to generate and use files.
 use avformat_wasmedge;
-// pub use util::format::{pixel, Pixel};
+pub use util::format::{pixel, Pixel};
 // pub use util::format::{sample, Sample};
 // use util::interrupt;
 
