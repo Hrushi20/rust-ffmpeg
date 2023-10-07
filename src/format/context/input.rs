@@ -35,6 +35,9 @@ impl Input {
 impl Input {
     pub fn format(&self) -> format::Input {
         unsafe {
+            // Need to update this. Can't create a Ptr to AvInputFormat, cuz there is no
+            // way to clear the pointer in C++ Plugin. Need to Pass AVFormatCtxID to AVInputFormat
+            // and fetch the functionalities.
             let avInputFormat = MaybeUninit::<AVInputFormat>::uninit();
             avformat_wasmedge::avformatContext_iformat(self.ptr as u32,avInputFormat.as_ptr() as u32);
 

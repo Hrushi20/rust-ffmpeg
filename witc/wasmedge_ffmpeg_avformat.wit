@@ -29,9 +29,15 @@ avInputFormat-mime-type : func(avInputFormatPtr:u32) -> s32
 avio-close : func(avFormatCtxPtr:u32) -> unit
 
 // Functions to fetch avStream data fields.
-avStream-id : func(avFormatCtxPtr:u32,streamIdx:u32) -> s32
-avStream-index : func(avFormatCtxPtr:u32, streamIdx:u32) -> s32
-avStream-codecpar : func(avFormatCtxPtr:u32,streamIdx:u32,codecParameter:u32) -> s32
+avStream-id : func(avFormatCtxId:u32,streamIdx:u32) -> s32
+avStream-index : func(avFormatCtxId:u32, streamIdx:u32) -> s32
+avStream-codecpar : func(avFormatCtxId:u32,streamIdx:u32,codecParameter:u32) -> s32
+
+// Functions to fetch avChapter data fields.
+avChapter-id : func(avFormatCtxId:u32,chapterIdx:u32) -> s64
+avChapter-timebase : func(NumPtr:u32,DenPtr:u32,avFormatCtxId:u32,chapterIdx:u32) -> s32
+avChapter-start : func(avFormatCtxId:u32,chapterIdx:u32) -> s64
+avChapter-end : func(avFormatCtxId:u32,chapterIdx:u32) -> s64
 
 
 // Need to update Parameter Names....

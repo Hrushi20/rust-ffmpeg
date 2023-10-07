@@ -1,5 +1,9 @@
-use ffi::*;
-use {DictionaryRef, Rational};
+use std::mem::MaybeUninit;
+use std::ptr;
+use {Rational};
+use avFormatTypes::AVFormatContext;
+use avformat_wasmedge;
+// use {DictionaryRef, Rational};
 
 use format::context::common::Context;
 
@@ -15,8 +19,9 @@ impl<'a> Chapter<'a> {
         Chapter { context, index }
     }
 
-    pub unsafe fn as_ptr(&self) -> *const AVChapter {
-        *(*self.context.as_ptr()).chapters.add(self.index)
+    pub unsafe fn ptr(&self) -> AVFormatContext {
+        self.context.ptr()
+        // *(*self.context.as_ptr()).chapters.add(self.index)
     }
 }
 
@@ -28,29 +33,41 @@ impl<'a> Chapter<'a> {
     pub fn id(&self) -> i64 {
         #[allow(clippy::unnecessary_cast)]
         unsafe {
-            (*self.as_ptr()).id as i64
+            avformat_wasmedge::avChapter_id(self.ptr(),self.index as u32)
         }
     }
 
     pub fn time_base(&self) -> Rational {
-        unsafe { Rational::from((*self.as_ptr()).time_base) }
+        unsafe {
+            let result_num = MaybeUninit::<i32>::uninit().as_ptr();
+            let result_den = MaybeUninit::<i32>::uninit().as_ptr();
+
+            avformat_wasmedge::avChapter_timebase(result_num as u32,result_den as u32,self.ptr(),self.index as u32);
+            Rational::new(ptr::read(result_num),ptr::read(result_den))
+            // Rational::from((*self.as_ptr()).time_base)
+        }
     }
 
     pub fn start(&self) -> i64 {
-        unsafe { (*self.as_ptr()).start }
+        unsafe {
+            avformat_wasmedge::avChapter_start(self.ptr(),self.index as u32)
+        }
     }
 
     pub fn end(&self) -> i64 {
-        unsafe { (*self.as_ptr()).end }
+        unsafe {
+            avformat_wasmedge::avChapter_end(self.ptr(),self.index as u32)
+        }
     }
 
-    pub fn metadata(&self) -> DictionaryRef {
-        unsafe { DictionaryRef::wrap((*self.as_ptr()).metadata) }
-    }
+    // pub fn metadata(&self) -> DictionaryRef {
+    //     unsafe { DictionaryRef::wrap((*self.as_ptr()).metadata) }
+    // }
 }
 
 impl<'a> PartialEq for Chapter<'a> {
     fn eq(&self, other: &Self) -> bool {
-        unsafe { self.as_ptr() == other.as_ptr() }
+        // Or can compare index.
+        unsafe { self.id() == other.id() }
     }
 }

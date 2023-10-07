@@ -14,11 +14,15 @@ pub mod graph;
 pub use self::graph::Graph;
 
 use std::ffi::{CStr, CString};
+use std::mem::MaybeUninit;
+use std::ptr;
 use std::str::from_utf8_unchecked;
+use avfilter_wasmedge;
 
 pub mod types;
 #[cfg(not(feature = "ffmpeg_5_0"))]
 use Error;
+use filter::types::AVFilter;
 
 // #[cfg(not(feature = "ffmpeg_5_0"))]
 // pub fn register_all() {
@@ -36,11 +40,13 @@ use Error;
 //         }
 //     }
 // }
-//
-// pub fn version() -> u32 {
-//     unsafe { avfilter_version() }
-// }
-//
+
+pub fn version() -> u32 {
+    unsafe {
+        avfilter_wasmedge::avfilter_version() as u32
+    }
+}
+
 // pub fn configuration() -> &'static str {
 //     unsafe { from_utf8_unchecked(CStr::from_ptr(avfilter_configuration()).to_bytes()) }
 // }
@@ -48,20 +54,22 @@ use Error;
 // pub fn license() -> &'static str {
 //     unsafe { from_utf8_unchecked(CStr::from_ptr(avfilter_license()).to_bytes()) }
 // }
-//
+
 // pub fn find(name: &str) -> Option<Filter> {
 //     unsafe {
-//         let name = CString::new(name).unwrap();
-//         let ptr = avfilter_get_by_name(name.as_ptr());
 //
-//         if ptr.is_null() {
+//         let avfilter = MaybeUninit::<AVFilter>::uninit();
+//         avfilter_wasmedge::avfilter_get_by_name(avfilter.as_ptr(),name.as_ptr(),name.len());
+//
+//         let avfilter = ptr::read(avfilter.as_ptr());
+//         if avfilter == 0 {
 //             None
 //         } else {
-//             Some(Filter::wrap(ptr as *mut _))
+//             Some(Filter::wrap(avfilter))
 //         }
 //     }
 // }
-//
+
 // #[cfg(test)]
 // mod tests {
 //     use super::*;

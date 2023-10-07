@@ -118,11 +118,11 @@ impl From<Rational> for u32 {
     }
 }
 
-// impl From<(i32, i32)> for Rational {
-//     fn from((num, den): (i32, i32)) -> Rational {
-//         Rational::new(num, den)
-//     }
-// }
+impl From<(i32, i32)> for Rational {
+    fn from((num, den): (i32, i32)) -> Rational {
+        Rational::new(num, den)
+    }
+}
 
 impl PartialEq for Rational {
     fn eq(&self, other: &Rational) -> bool {

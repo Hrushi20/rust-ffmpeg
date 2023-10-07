@@ -4,7 +4,7 @@ use std::rc::Rc;
 use super::destructor::{self, Destructor};
 use libc::{c_uint};
 use format::types::AVFormatContext;
-use { media };
+use { media, Chapter };
 // use {media, Chapter, ChapterMut, DictionaryRef, Stream, StreamMut};
 use format::stream::Stream;
 use avformat_wasmedge;
@@ -94,19 +94,19 @@ impl Context {
         }
     }
 
-    // pub fn chapter<'a, 'b>(&'a self, index: usize) -> Option<Chapter<'b>>
-    // where
-    //     'a: 'b,
-    // {
-    //     unsafe {
-    //         if index >= self.nb_chapters() as usize {
-    //             None
-    //         } else {
-    //             Some(Chapter::wrap(self, index))
-    //         }
-    //     }
-    // }
-    //
+    pub fn chapter<'a, 'b>(&'a self, index: usize) -> Option<Chapter<'b>>
+    where
+        'a: 'b,
+    {
+        unsafe {
+            if index >= self.nb_chapters() as usize {
+                None
+            } else {
+                Some(Chapter::wrap(self, index))
+            }
+        }
+    }
+
     // pub fn chapter_mut<'a, 'b>(&'a mut self, index: usize) -> Option<ChapterMut<'b>>
     // where
     //     'a: 'b,
