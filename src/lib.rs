@@ -36,7 +36,7 @@ mod swscale_wasmedge {
 
 mod swresample_wasmedge {
     #![allow(non_camel_case_types)]
-    include!(concat!(env!("OUT_DIR"), "swresample/.rs"));
+    include!(concat!(env!("OUT_DIR"), "/swresample.rs"));
 }
 
 // #[macro_use]

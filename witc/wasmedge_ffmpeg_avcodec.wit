@@ -22,6 +22,8 @@ avcodeccontext-height : func(avCodecCtxId:u32) -> u32
 avcodeccontext-sample-aspect-ratio : func(avCodecCtxId:u32,NumPtr:u32,DenPtr:u32) -> s32
 avcodeccontext-channel-layout : func(AvCodecCtxId:u32) -> u64
 avcodeccontext-pix-fmt : func(AvCodecCtxId:u32) -> u32
+avcodeccontext-sample-format : func(AvCodecCtxId:u32) -> u32
+avcodeccontext-sample-rate : func(AvCodecCtxId:u32) -> s32
 
 // AVCodec struct fields
 avcodec-id : func(avCodec:u32) -> u32

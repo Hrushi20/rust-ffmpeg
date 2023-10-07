@@ -18,10 +18,10 @@ impl Delay {
             let output = swresample_wasmedge::swr_get_delay(context.ptr(),i64::from(context.output().rate));
 
             Delay {
-                seconds: std::ptr::read(seconds.as_ptr()),
-                milliseconds: std::ptr::read(milliseconds.as_ptr()),
-                input: ptr(input.as_ptr()),
-                output: ptr(output.as_ptr()),
+                seconds,
+                milliseconds,
+                input,
+                output,
             }
         }
     }

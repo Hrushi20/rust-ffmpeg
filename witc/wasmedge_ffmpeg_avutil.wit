@@ -35,6 +35,7 @@ av-frame-set-nb-samples: func(frameId:u32,Samples:s32) -> s32
 av-frame-set-channel-layout: func(frameId:u32,ChannelLayoutId:u64) -> s32
 av-frame-nb-samples : func(frameId:u32) -> s32
 av-frame-sample-rate : func(frameId:u32) -> s32
+av-frame-set-sample-rate : func(frameId:u32,sample-rate:s32) -> s32
 av-frame-channels : func(frameId:u32) -> s32
 av-frame-channel-layout : func(frameId:u32) -> u64
 

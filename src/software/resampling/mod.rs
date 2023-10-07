@@ -10,21 +10,24 @@ pub use self::engine::Engine;
 pub mod filter;
 pub use self::filter::Filter;
 
-// pub mod delay;
-// pub use self::delay::Delay;
+pub mod delay;
+pub use self::delay::Delay;
 
-// pub mod context;
-// pub use self::context::Context;
+pub mod context;
+pub use self::context::Context;
 
 // mod extensions;
 mod types;
 
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
+use swresample_wasmedge;
 
 
 pub fn version() -> u32 {
-    unsafe { swresample_version() }
+    unsafe {
+        swresample_wasmedge::swresample_version()
+    }
 }
 
 // pub fn configuration() -> &'static str {

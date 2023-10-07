@@ -1,3 +1,8 @@
-swresample-getVersion : func() -> s32
+swresample-version : func() -> u32
 swr-get-delay : func(SWRContextId:u32,Base:s64) -> s64
+swr-init : func(SWRContextId:u32) -> s32
+swr-alloc-set-opts : func(SWRContextId:u32) -> s32
+av-opt-set-dict : func() -> s32
+swr-convert-frame : func(SWRContextId:u32,FrameOutputId:u32,FrameInputId:u32) -> s32
+swr-free : func(SWRContextId:u32) -> s32
 

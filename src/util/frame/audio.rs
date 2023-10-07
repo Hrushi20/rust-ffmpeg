@@ -56,7 +56,7 @@ impl Audio {
     }
 
     #[inline]
-    pub fn set_format(&mut self, value: format::Sample) {
+    pub fn set_format(&self, value: format::Sample) {
         unsafe {
             avutil_wasmedge::av_frame_set_audio_format(self.ptr(),u32::from(value));
         }
@@ -70,7 +70,7 @@ impl Audio {
     }
 
     #[inline]
-    pub fn set_channel_layout(&mut self, value: ChannelLayout) {
+    pub fn set_channel_layout(&self, value: ChannelLayout) {
         unsafe {
             avutil_wasmedge::av_frame_set_channel_layout(self.ptr(),value.bits());
         }
@@ -97,12 +97,12 @@ impl Audio {
         }
     }
 
-    // #[inline]
-    // pub fn set_rate(&mut self, value: u32) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).sample_rate = value as c_int;
-    //     }
-    // }
+    #[inline]
+    pub fn set_rate(&self, value: u32) {
+        unsafe {
+            avutil_wasmedge::av_frame_set_sample_rate(self.ptr(),value as i32);
+        }
+    }
 
     #[inline]
     pub fn samples(&self) -> usize {
@@ -113,7 +113,7 @@ impl Audio {
     }
 
     #[inline]
-    pub fn set_samples(&mut self, value: usize) {
+    pub fn set_samples(&self, value: usize) {
         unsafe {
             avutil_wasmedge::av_frame_set_nb_samples(self.ptr(),value as i32);
         }

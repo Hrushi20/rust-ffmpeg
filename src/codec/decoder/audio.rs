@@ -42,19 +42,24 @@ impl Audio {
     //         }
     //     }
     // }
-    //
-    // pub fn rate(&self) -> u32 {
-    //     unsafe { (*self.as_ptr()).sample_rate as u32 }
-    // }
-    //
+
+    pub fn rate(&self) -> u32 {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_sample_rate(self.ptr()) as u32
+        }
+    }
+
     // pub fn channels(&self) -> u16 {
     //     unsafe { (*self.as_ptr()).channels as u16 }
     // }
-    //
-    // pub fn format(&self) -> format::Sample {
-    //     unsafe { format::Sample::from((*self.as_ptr()).sample_fmt) }
-    // }
-    //
+
+    pub fn format(&self) -> format::Sample {
+        unsafe {
+            let format_id = avcodec_wasmedge::avcodeccontext_sample_format(self.ptr());
+            format::Sample::from(format_id)
+        }
+    }
+
     // pub fn request_format(&mut self, value: format::Sample) {
     //     unsafe {
     //         (*self.as_mut_ptr()).request_sample_fmt = value.into();
