@@ -1,10 +1,12 @@
-use std::fmt;
+use std::{fmt, mem};
 use std::iter::FromIterator;
+use std::mem::MaybeUninit;
 use std::ops::{Deref, DerefMut};
 use std::ptr;
+use avUtilTypes::AVDictionary;
+use avutil_wasmedge;
 
 use super::mutable;
-use ffi::*;
 
 pub struct Owned<'a> {
     inner: mutable::Ref<'a>,
@@ -17,15 +19,15 @@ impl<'a> Default for Owned<'a> {
 }
 
 impl<'a> Owned<'a> {
-    pub unsafe fn own(ptr: *mut AVDictionary) -> Self {
+    pub unsafe fn own(ptr: AVDictionary) -> Self {
         Owned {
             inner: mutable::Ref::wrap(ptr),
         }
     }
 
-    pub unsafe fn disown(mut self) -> *mut AVDictionary {
-        let result = self.inner.as_mut_ptr();
-        self.inner = mutable::Ref::wrap(ptr::null_mut());
+    pub unsafe fn disown(mut self) -> AVDictionary {
+        let result = self.inner.ptr();
+        self.inner = mutable::Ref::wrap(mem::zeroed::<AVDictionary>());
 
         result
     }
@@ -34,8 +36,10 @@ impl<'a> Owned<'a> {
 impl<'a> Owned<'a> {
     pub fn new() -> Self {
         unsafe {
+            let av_dict = MaybeUninit::<AVDictionary>::uninit();
+            avutil_wasmedge::av_dict_new(av_dict.as_ptr() as u32);
             Owned {
-                inner: mutable::Ref::wrap(ptr::null_mut()),
+                inner: mutable::Ref::wrap(ptr::read(av_dict.as_ptr())),
             }
         }
     }
@@ -97,6 +101,7 @@ impl<'a> Deref for Owned<'a> {
     }
 }
 
+// Not required
 impl<'a> DerefMut for Owned<'a> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.inner
@@ -113,8 +118,8 @@ impl<'a> Clone for Owned<'a> {
 
     fn clone_from(&mut self, source: &Self) {
         unsafe {
-            let mut ptr = self.as_mut_ptr();
-            av_dict_copy(&mut ptr, source.as_ptr(), 0);
+            let ptr = self.ptr();
+            avutil_wasmedge::av_dict_copy(ptr, source.ptr(), 0);
             self.inner = mutable::Ref::wrap(ptr);
         }
     }
@@ -123,13 +128,13 @@ impl<'a> Clone for Owned<'a> {
 impl<'a> Drop for Owned<'a> {
     fn drop(&mut self) {
         unsafe {
-            av_dict_free(&mut self.inner.as_mut_ptr());
+            avutil_wasmedge::av_dict_free(self.inner.ptr());
         }
     }
 }
 
-impl<'a> fmt::Debug for Owned<'a> {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        self.inner.fmt(fmt)
-    }
-}
+// impl<'a> fmt::Debug for Owned<'a> {
+//     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+//         self.inner.fmt(fmt)
+//     }
+// }

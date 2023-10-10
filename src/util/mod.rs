@@ -1,5 +1,5 @@
-// #[macro_use]
-// pub mod dictionary;
+#[macro_use]
+pub mod dictionary;
 pub mod channel_layout;
 // pub mod chroma;
 // pub mod color;

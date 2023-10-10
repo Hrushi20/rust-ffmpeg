@@ -39,15 +39,15 @@ mod swresample_wasmedge {
     include!(concat!(env!("OUT_DIR"), "/swresample.rs"));
 }
 
-// #[macro_use]
+#[macro_use]
 pub mod util;
 pub use util::channel_layout::{self, ChannelLayout};
 // pub use util::chroma;
 // pub use util::color;
-// pub use util::dictionary;
-// pub use util::dictionary::Mut as DictionaryMut;
-// pub use util::dictionary::Owned as Dictionary;
-// pub use util::dictionary::Ref as DictionaryRef;
+pub use util::dictionary;
+pub use util::dictionary::Mut as DictionaryMut;
+pub use util::dictionary::Owned as Dictionary;
+pub use util::dictionary::Ref as DictionaryRef;
 pub use util::error::{self, Error};
 pub use util::frame::{self, Frame};
 // pub use util::log;
@@ -65,7 +65,7 @@ pub use format::chapter::{Chapter};
 // pub use format::chapter::{Chapter, ChapterMut};
 // #[cfg(feature = "format")]
 pub use format::format::Format;
-// #[cfg(feature = "format")]
+// #[cfg(feature = "format")
 pub use format::stream::{Stream};
 // pub use format::stream::{Stream, StreamMut};
 
