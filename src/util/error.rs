@@ -146,8 +146,8 @@ enum ErrorCode {
     WASMEDGE_NULL_STRUCT_ID = -202
 }
 
-impl From<Error> for c_int {
-    fn from(value: Error) -> c_int {
+impl From<Error> for i32 {
+    fn from(value: Error) -> i32 {
         match value {
             Error::BsfNotFound => ErrorCode::AVERROR_BSF_NOT_FOUND as i32,
             Error::Bug => ErrorCode::AVERROR_BUG as i32,

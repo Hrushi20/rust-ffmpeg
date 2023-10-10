@@ -38,6 +38,7 @@ av-frame-sample-rate : func(frameId:u32) -> s32
 av-frame-set-sample-rate : func(frameId:u32,sample-rate:s32) -> s32
 av-frame-channels : func(frameId:u32) -> s32
 av-frame-channel-layout : func(frameId:u32) -> u64
+av-frame-best-effort-timestamp : func(frameId:u32) -> s64
 
 // pixfmt.h
 avpixfmtdescriptor-nb-components : func(AvPixFormatId:u32) -> s32

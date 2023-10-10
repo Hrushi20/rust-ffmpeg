@@ -17,6 +17,7 @@ pub use self::audio::Audio;
 
 // use {Dictionary, DictionaryRef};
 
+const AV_NOPTS_VALUE: i64 = 0x8000000000000000u64 as i64;
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 pub struct Packet {
     pub duration: i64,
@@ -108,16 +109,16 @@ impl Frame {
     //         (*self.as_mut_ptr()).pts = value.unwrap_or(AV_NOPTS_VALUE);
     //     }
     // }
-    //
-    // #[inline]
-    // pub fn timestamp(&self) -> Option<i64> {
-    //     unsafe {
-    //         match (*self.as_ptr()).best_effort_timestamp {
-    //             AV_NOPTS_VALUE => None,
-    //             t => Some(t),
-    //         }
-    //     }
-    // }
+
+    #[inline]
+    pub fn timestamp(&self) -> Option<i64> {
+        unsafe {
+            match avutil_wasmedge::av_frame_best_effort_timestamp(self.ptr()) {
+                AV_NOPTS_VALUE => None,
+                t => Some(t),
+            }
+        }
+    }
 
     // #[inline]
     // pub fn quality(&self) -> usize {
