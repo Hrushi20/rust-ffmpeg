@@ -1,11 +1,11 @@
 use std::{mem, ptr};
 
 use super::Delay;
-use libc::c_int;
-use std::ffi::c_void;
+use std::mem::MaybeUninit;
 use util::format;
-// use Dictionary;
+use Dictionary;
 use {frame, ChannelLayout, Error};
+use avUtilTypes::AVDictionary;
 use software::resampling::types::SwrContext;
 use swresample_wasmedge;
 
@@ -34,81 +34,83 @@ impl Context {
 
 impl Context {
     /// Create a resampler with the given definitions.
-    // pub fn get(
-    //     src_format: format::Sample,
-    //     src_channel_layout: ChannelLayout,
-    //     src_rate: u32,
-    //     dst_format: format::Sample,
-    //     dst_channel_layout: ChannelLayout,
-    //     dst_rate: u32,
-    // ) -> Result<Self, Error> {
-    //     Self::get_with(
-    //         src_format,
-    //         src_channel_layout,
-    //         src_rate,
-    //         dst_format,
-    //         dst_channel_layout,
-    //         dst_rate,
-    //         Dictionary::new(),
-    //     )
-    // }
+    pub fn get(
+        src_format: format::Sample,
+        src_channel_layout: ChannelLayout,
+        src_rate: u32,
+        dst_format: format::Sample,
+        dst_channel_layout: ChannelLayout,
+        dst_rate: u32,
+    ) -> Result<Self, Error> {
+        Self::get_with(
+            src_format,
+            src_channel_layout,
+            src_rate,
+            dst_format,
+            dst_channel_layout,
+            dst_rate,
+            Dictionary::new(),
+        )
+    }
 
     /// Create a resampler with the given definitions and custom options dictionary.
-    // pub fn get_with(
-    //     src_format: format::Sample,
-    //     src_channel_layout: ChannelLayout,
-    //     src_rate: u32,
-    //     dst_format: format::Sample,
-    //     dst_channel_layout: ChannelLayout,
-    //     dst_rate: u32,
-    //     options: Dictionary,
-    // ) -> Result<Self, Error> {
-    //     unsafe {
-    //         let ptr = swresample_wasmedge::swr_alloc_set_opts(
-    //             ptr::null_mut(),
-    //             dst_channel_layout.bits() as i64,
-    //             dst_format.into(),
-    //             dst_rate as c_int,
-    //             src_channel_layout.bits() as i64,
-    //             src_format.into(),
-    //             src_rate as c_int,
-    //             0,
-    //             ptr::null_mut(),
-    //         );
-    //
-    //         let mut opts = options.disown();
-    //         let res = swresample_wasmedge::av_opt_set_dict(ptr as *mut c_void, &mut opts);
-    //         Dictionary::own(opts);
-    //
-    //         if res != 0 {
-    //             return Err(Error::from(res));
-    //         }
-    //
-    //         if !ptr.is_null() {
-    //             match swresample_wasmedge::swr_init(ptr) {
-    //                 e if e < 0 => Err(Error::from(e)),
-    //
-    //                 _ => Ok(Context {
-    //                     ptr,
-    //
-    //                     input: Definition {
-    //                         format: src_format,
-    //                         channel_layout: src_channel_layout,
-    //                         rate: src_rate,
-    //                     },
-    //
-    //                     output: Definition {
-    //                         format: dst_format,
-    //                         channel_layout: dst_channel_layout,
-    //                         rate: dst_rate,
-    //                     },
-    //                 }),
-    //             }
-    //         } else {
-    //             Err(Error::InvalidData)
-    //         }
-    //     }
-    // }
+    pub fn get_with(
+        src_format: format::Sample,
+        src_channel_layout: ChannelLayout,
+        src_rate: u32,
+        dst_format: format::Sample,
+        dst_channel_layout: ChannelLayout,
+        dst_rate: u32,
+        options: Dictionary,
+    ) -> Result<Self, Error> {
+        unsafe {
+            let swr_context = MaybeUninit::<SwrContext>::uninit();
+            swresample_wasmedge::swr_alloc_set_opts(
+                swr_context.as_ptr() as u32,
+                mem::zeroed::<AVDictionary>(),
+                dst_channel_layout.bits() as i64,
+                dst_format.into(),
+                dst_rate,
+                src_channel_layout.bits() as i64,
+                src_format.into(),
+                src_rate,
+                0,
+            );
+
+            let swr_context = ptr::read(swr_context.as_ptr());
+            let opts = options.disown();
+            let res = swresample_wasmedge::av_opt_set_dict(swr_context,opts);
+            Dictionary::own(opts);
+
+            if res != 0 {
+                return Err(Error::from(res));
+            }
+
+            if swr_context > 0 {
+                match swresample_wasmedge::swr_init(swr_context) {
+                    e if e < 0 => Err(Error::from(e)),
+
+                    _ => Ok(Context {
+                        ptr: swr_context,
+
+                        input: Definition {
+                            format: src_format,
+                            channel_layout: src_channel_layout,
+                            rate: src_rate,
+                        },
+
+                        output: Definition {
+                            format: dst_format,
+                            channel_layout: dst_channel_layout,
+                            rate: dst_rate,
+                        },
+                    }),
+                }
+            } else {
+                Err(Error::InvalidData)
+            }
+        }
+    }
 
     /// Get the input definition.
     pub fn input(&self) -> &Definition {

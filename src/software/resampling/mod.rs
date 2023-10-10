@@ -16,7 +16,7 @@ pub use self::delay::Delay;
 pub mod context;
 pub use self::context::Context;
 
-// mod extensions;
+mod extensions;
 mod types;
 
 use std::ffi::CStr;
