@@ -36,10 +36,8 @@ impl<'a> Owned<'a> {
 impl<'a> Owned<'a> {
     pub fn new() -> Self {
         unsafe {
-            let av_dict = MaybeUninit::<AVDictionary>::uninit();
-            avutil_wasmedge::av_dict_new(av_dict.as_ptr() as u32);
             Owned {
-                inner: mutable::Ref::wrap(ptr::read(av_dict.as_ptr())),
+                inner: mutable::Ref::wrap(mem::zeroed::<AVDictionary>()),
             }
         }
     }
@@ -108,6 +106,7 @@ impl<'a> DerefMut for Owned<'a> {
     }
 }
 
+// Can throw an error if Owned (Source Dictionary) is NULL(0).
 impl<'a> Clone for Owned<'a> {
     fn clone(&self) -> Self {
         let mut dictionary = Owned::new();
@@ -118,9 +117,9 @@ impl<'a> Clone for Owned<'a> {
 
     fn clone_from(&mut self, source: &Self) {
         unsafe {
-            let ptr = self.ptr();
-            avutil_wasmedge::av_dict_copy(ptr, source.ptr(), 0);
-            self.inner = mutable::Ref::wrap(ptr);
+            let av_dict = MaybeUninit::<AVDictionary>::new(self.ptr());
+            avutil_wasmedge::av_dict_copy(av_dict.as_ptr() as u32, source.ptr(), 0);
+            self.inner = mutable::Ref::wrap(ptr::read(av_dict.as_ptr()));
         }
     }
 }
@@ -133,8 +132,8 @@ impl<'a> Drop for Owned<'a> {
     }
 }
 
-// impl<'a> fmt::Debug for Owned<'a> {
-//     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-//         self.inner.fmt(fmt)
-//     }
-// }
+impl<'a> fmt::Debug for Owned<'a> {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        self.inner.fmt(fmt)
+    }
+}

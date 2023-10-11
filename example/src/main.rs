@@ -14,6 +14,8 @@ use ffmpeg_next::codec::Context;
 use ffmpeg_next::util::format;
 use std::ops::Index;
 use std::process::exit;
+use std::str::from_utf8_unchecked;
+use std::time::Duration;
 use ffmpeg_next::Dictionary;
 
 const RESOURCE_TEMPORARILY_UNAVAILABLE: ffmpeg_next::Error = ffmpeg_next::Error::Other {
@@ -179,5 +181,13 @@ fn main() {
     // println!("Data: {:?}",data);
     // println!("Data Size: {}",data.len());
 
+    ffmpeg_next::init();
+    let mut dict = ffmpeg_next::dictionary::Owned::new();
+    dict.set("Name","Hrushi");
+    dict.set("Gender","Male");
+    dict.set("College","Jntuceh");
+
+    let gender = dict.get("Gender");
+    println!("Dict:{:?}",dict);
 
 }

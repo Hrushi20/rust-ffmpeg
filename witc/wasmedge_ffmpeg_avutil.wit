@@ -62,7 +62,8 @@ av-get-channel-layout-nb-channels : func(ChannelLayoutId:u64) -> s32
 av-get-default-channel-layout : func(Number:s32) -> u64
 
 // dict.h
-av-dict-new: func(DictPtr:u32) -> s32
 av-dict-set: func(DictId:u32,Key:string,Value:string,Flags:s32) -> s32
+av-dict-get: func(DictId:u32,Key:string,PrevDictEntryIdx:u32,Flags:s32,KeyLenPtr:u32,ValueLenPtr:u32) -> s32
+av-dict-get-key-value: func(DictId:u32,Key:string,ValBuf:list<u8>,KeyBuf:list<u8>,PrevDictEntryIdx:u32,Flags:s32) -> s32
 av-dict-copy: func(DestDictId:u32,SrcDictId:u32,Flags:s32) -> s32
 av-dict-free: func(DictId:u32) -> s32
