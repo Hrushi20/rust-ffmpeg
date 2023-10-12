@@ -14,6 +14,11 @@ mod avcodec_wasmedge {
     include!(concat!(env!("OUT_DIR"), "/avcodec.rs"));
 }
 
+mod avdevice_wasmedge{
+    #![allow(non_camel_case_types)]
+    include!(concat!(env!("OUT_DIR"), "/avdevice.rs"));
+}
+
 mod avfilter_wasmedge {
     #![allow(non_camel_case_types)]
     include!(concat!(env!("OUT_DIR"), "/avfilter.rs"));
@@ -92,7 +97,7 @@ pub use codec::{decoder};
 // pub use codec::{decoder, encoder};
 
 // #[cfg(feature = "device")]
-// pub mod device;
+pub mod device;
 //
 // #[cfg(feature = "filter")]
 pub mod filter;
@@ -146,7 +151,7 @@ pub fn init() -> Result<(), Error> {
     init_error();
     // #[cfg(not(feature = "ffmpeg_5_0"))]
     // init_format();
-    // init_device();
+    init_device();
     // #[cfg(not(feature = "ffmpeg_5_0"))]
     // init_filter();
 

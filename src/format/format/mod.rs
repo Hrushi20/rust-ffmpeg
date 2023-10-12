@@ -1,11 +1,12 @@
-// pub mod flag;
-// pub use self::flag::Flags;
-//
+pub mod flag;
+pub use self::flag::Flags;
+
 mod input;
 pub use self::input::Input;
-//
-// mod output;
-// pub use self::output::Output;
+
+mod output;
+pub use self::output::Output;
+
 //
 // #[cfg(not(feature = "ffmpeg_5_0"))]
 // mod iter;

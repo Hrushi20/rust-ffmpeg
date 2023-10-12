@@ -1,4 +1,7 @@
+use std::io::Read;
+use std::str::from_utf8_unchecked;
 use format::types::AVInputFormat;
+use avformat_wasmedge;
 
 pub struct Input {
     ptr: AVInputFormat,
@@ -9,54 +12,74 @@ impl Input {
         Input { ptr }
     }
 
-    pub unsafe fn as_ptr(&self) -> *const AVInputFormat {
-        self.ptr as *const _
+    pub unsafe fn ptr(&self) -> AVInputFormat {
+        self.ptr
     }
-
 }
 
 impl Input {
-    // pub fn name(&self) -> &str {
-    //     unsafe {
-    //
-    //         let name = MaybeUninit::<u8>::uninit();
-    //         avInputFormat_name(self.as_ptr() as u32,name.as_ptr() as u32);
-    //         let name = name.assume_init();
-    //         println!("{:?}",from_utf8_unchecked(CStr::from_ptr(name as *const ffi::c_char).to_bytes()));
-    //         from_utf8_unchecked(CStr::from_ptr(name as *const ffi::c_char).to_bytes())
-    //
-    //     }
-    // }
+    pub fn name(&self) -> String {
+        unsafe {
 
-    // pub fn description(&self) -> &str {
-    //     unsafe { from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).long_name).to_bytes()) }
-    // }
-    //
-    // pub fn extensions(&self) -> Vec<&str> {
-    //     unsafe {
-    //         let ptr = (*self.as_ptr()).extensions;
-    //
-    //         if ptr.is_null() {
-    //             Vec::new()
-    //         } else {
-    //             from_utf8_unchecked(CStr::from_ptr(ptr).to_bytes())
-    //                 .split(',')
-    //                 .collect()
-    //         }
-    //     }
-    // }
-    //
-    // pub fn mime_types(&self) -> Vec<&str> {
-    //     unsafe {
-    //         let ptr = (*self.as_ptr()).mime_type;
-    //
-    //         if ptr.is_null() {
-    //             Vec::new()
-    //         } else {
-    //             from_utf8_unchecked(CStr::from_ptr(ptr).to_bytes())
-    //                 .split(',')
-    //                 .collect()
-    //         }
-    //     }
-    // }
+            let name_length = avformat_wasmedge::avIOFormat_name_length(self.ptr(),0) as usize;
+            let name = vec![0u8;name_length];
+            avformat_wasmedge::avInputFormat_name(self.ptr(),name.as_ptr(),name_length);
+
+            String::from_utf8_unchecked(name)
+        }
+    }
+
+    pub fn description(&self) -> String {
+        unsafe {
+
+            let long_name_length = avformat_wasmedge::avIOFormat_long_name_length(self.ptr(),0) as usize;
+            let long_name = vec![0u8;long_name_length];
+            avformat_wasmedge::avInputFormat_long_name(self.ptr(),long_name.as_ptr(),long_name_length);
+            String::from_utf8_unchecked(long_name)
+        }
+    }
+
+    pub fn extensions(&self) -> Vec<String> {
+        unsafe {
+
+            let extensions_length = avformat_wasmedge::avIOFormat_extensions_length(self.ptr(),0) as usize;
+
+            if extensions_length == 0 {
+                Vec::new()
+            } else {
+
+                let extensions = vec![0u8;extensions_length];
+                avformat_wasmedge::avInputFormat_extensions(self.ptr(),extensions.as_ptr(),extensions_length);
+                String::from_utf8_unchecked(extensions)
+                    .split(",")
+                    .map(|s| s.to_string())
+                    .collect()
+            }
+        }
+    }
+
+    pub fn mime_types(&self) -> Vec<String> {
+        unsafe {
+            let mime_type_length = avformat_wasmedge::avIOFormat_mime_type_length(self.ptr(),0) as usize;
+
+            if mime_type_length == 0 {
+                Vec::new()
+            } else {
+                let mime_type = vec![0u8;mime_type_length];
+                avformat_wasmedge::avInputFormat_mime_type(self.ptr(),mime_type.as_ptr(),mime_type_length);
+                String::from_utf8_unchecked(mime_type)
+                    .split(",")
+                    .map(|s| s.to_string())
+                    .collect()
+            }
+        }
+    }
+}
+
+impl Drop for Input{
+    fn drop(&mut self) {
+        unsafe{
+            avformat_wasmedge::avInputOutputFormat_free(self.ptr());
+        }
+    }
 }

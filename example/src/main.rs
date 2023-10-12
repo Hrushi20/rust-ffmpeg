@@ -190,4 +190,16 @@ fn main() {
     let gender = dict.get("Gender");
     println!("Dict:{:?}",dict);
 
+
+    let path = Path::new("/Users/pc/my/code/openSource/wasmedge/rust-ffmpeg/example/assets/bunny.mp4");
+    ffmpeg_next::init();
+    ffmpeg_next::device::register_all();
+    let mut input = ffmpeg_next::format::input::<&Path>(&path).unwrap();
+
+    let input_format = input.format();
+
+    println!("Name: {:?}",input_format.name());
+    println!("Name: {:?}",input_format.description());
+    println!("Name: {:?}",input_format.extensions());
+    println!("Name: {:?}",input_format.mime_types());
 }

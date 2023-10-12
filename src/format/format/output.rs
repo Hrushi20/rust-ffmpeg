@@ -1,84 +1,108 @@
-use std::path::Path;
-
-use std::ffi::{CStr, CString};
-use std::ptr;
-use std::str::from_utf8_unchecked;
-
 use super::Flags;
-use ffi::*;
 use {codec, media};
+use format::AVOutputFormat;
+use avformat_wasmedge;
 
 pub struct Output {
-    ptr: *mut AVOutputFormat,
+    ptr: AVOutputFormat,
 }
 
 impl Output {
-    pub unsafe fn wrap(ptr: *mut AVOutputFormat) -> Self {
+    pub unsafe fn wrap(ptr: AVOutputFormat) -> Self {
         Output { ptr }
     }
 
-    pub unsafe fn as_ptr(&self) -> *const AVOutputFormat {
-        self.ptr as *const _
-    }
-
-    pub unsafe fn as_mut_ptr(&mut self) -> *mut AVOutputFormat {
+    pub unsafe fn ptr(&self) -> AVOutputFormat {
         self.ptr
     }
+
 }
 
 impl Output {
-    pub fn name(&self) -> &str {
-        unsafe { from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).name).to_bytes()) }
-    }
-
-    pub fn description(&self) -> &str {
-        unsafe { from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).long_name).to_bytes()) }
-    }
-
-    pub fn extensions(&self) -> Vec<&str> {
+    pub fn name(&self) -> String {
         unsafe {
-            let ptr = (*self.as_ptr()).extensions;
+            let name_length = avformat_wasmedge::avIOFormat_name_length(self.ptr(),1) as usize;
+            let name = vec![0u8;name_length];
+            avformat_wasmedge::avOutputFormat_name(self.ptr(),name.as_ptr(),name_length);
 
-            if ptr.is_null() {
+            String::from_utf8_unchecked(name)
+        }
+    }
+
+    pub fn description(&self) -> String {
+        unsafe {
+
+            let long_name_length = avformat_wasmedge::avIOFormat_long_name_length(self.ptr(),1) as usize;
+            let long_name = vec![0u8;long_name_length];
+            avformat_wasmedge::avOutputFormat_long_name(self.ptr(),long_name.as_ptr(),long_name_length);
+            String::from_utf8_unchecked(long_name)
+        }
+    }
+
+    pub fn extensions(&self) -> Vec<String> {
+        unsafe {
+
+            let extensions_length = avformat_wasmedge::avIOFormat_extensions_length(self.ptr(),1) as usize;
+
+            if extensions_length == 0 {
                 Vec::new()
             } else {
-                from_utf8_unchecked(CStr::from_ptr(ptr).to_bytes())
-                    .split(',')
+
+                let extensions = vec![0u8;extensions_length];
+                avformat_wasmedge::avOutputFormat_extensions(self.ptr(),extensions.as_ptr(),extensions_length);
+                String::from_utf8_unchecked(extensions)
+                    .split(",")
+                    .map(|s| s.to_string())
                     .collect()
             }
         }
     }
 
-    pub fn mime_types(&self) -> Vec<&str> {
+    pub fn mime_types(&self) -> Vec<String> {
         unsafe {
-            let ptr = (*self.as_ptr()).mime_type;
 
-            if ptr.is_null() {
+            let mime_type_length = avformat_wasmedge::avIOFormat_mime_type_length(self.ptr(),1) as usize;
+
+            if mime_type_length == 0 {
                 Vec::new()
             } else {
-                from_utf8_unchecked(CStr::from_ptr(ptr).to_bytes())
-                    .split(',')
+                let mime_type = vec![0u8;mime_type_length];
+                avformat_wasmedge::avOutputFormat_mime_type(self.ptr(),mime_type.as_ptr(),mime_type_length);
+                String::from_utf8_unchecked(mime_type)
+                    .split(",")
+                    .map(|s| s.to_string())
                     .collect()
             }
         }
     }
 
-    pub fn codec<P: AsRef<Path>>(&self, path: &P, kind: media::Type) -> codec::Id {
-        // XXX: use to_cstring when stable
-        let path = CString::new(path.as_ref().as_os_str().to_str().unwrap()).unwrap();
-
-        unsafe {
-            codec::Id::from(av_guess_codec(
-                self.as_ptr() as *mut _,
-                ptr::null(),
-                path.as_ptr(),
-                ptr::null(),
-                kind.into(),
-            ))
-        }
-    }
+    // pub fn codec<P: AsRef<Path>>(&self, path: &P, kind: media::Type) -> codec::Id {
+    //     let path = path.as_ref().as_os_str().to_str().unwrap();
+    //
+    //     unsafe {
+    //         codec::Id::from(av_guess_codec(
+    //             self.as_ptr() as *mut _,
+    //             ptr::null(),
+    //             path.as_ptr(),
+    //             path.len(),
+    //             ptr::null(),
+    //             kind.into(),
+    //         ))
+    //     }
+    // }
 
     pub fn flags(&self) -> Flags {
-        unsafe { Flags::from_bits_truncate((*self.as_ptr()).flags) }
+        unsafe {
+            let flags = avformat_wasmedge::avOutputFormat_flags(self.ptr());
+            Flags::from_bits_truncate(flags)
+        }
+    }
+}
+
+impl Drop for Output {
+    fn drop(&mut self) {
+        unsafe{
+            avformat_wasmedge::avInputOutputFormat_free(self.ptr());
+        }
     }
 }

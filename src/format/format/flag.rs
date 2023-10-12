@@ -1,26 +1,24 @@
-use ffi::*;
-use libc::c_int;
 
 bitflags! {
-    pub struct Flags: c_int {
-        const NO_FILE       = AVFMT_NOFILE;
-        const NEED_NUMBER   = AVFMT_NEEDNUMBER;
-        const SHOW_IDS      = AVFMT_SHOW_IDS;
+    pub struct Flags: i32 {
+        const NO_FILE       = 0x0001;
+        const NEED_NUMBER   = 0x0002;
+        const SHOW_IDS      = 0x0008;
         #[cfg(not(feature = "ffmpeg_4_0"))]
-        const RAW_PICTURE   = AVFMT_RAWPICTURE;
-        const GLOBAL_HEADER = AVFMT_GLOBALHEADER;
-        const NO_TIMESTAMPS = AVFMT_NOTIMESTAMPS;
-        const GENERIC_INDEX = AVFMT_GENERIC_INDEX;
-        const TS_DISCONT    = AVFMT_TS_DISCONT;
-        const VARIABLE_FPS  = AVFMT_VARIABLE_FPS;
-        const NO_DIMENSIONS = AVFMT_NODIMENSIONS;
-        const NO_STREAMS    = AVFMT_NOSTREAMS;
-        const NO_BINSEARCH  = AVFMT_NOBINSEARCH;
-        const NO_GENSEARCH  = AVFMT_NOGENSEARCH;
-        const NO_BYTE_SEEK  = AVFMT_NO_BYTE_SEEK;
-        const ALLOW_FLUSH   = AVFMT_ALLOW_FLUSH;
-        const TS_NONSTRICT  = AVFMT_TS_NONSTRICT;
-        const TS_NEGATIVE   = AVFMT_TS_NEGATIVE;
-        const SEEK_TO_PTS   = AVFMT_SEEK_TO_PTS;
+        const RAW_PICTURE   = 0x0020;
+        const GLOBAL_HEADER = 0x0040;
+        const NO_TIMESTAMPS = 0x0080;
+        const GENERIC_INDEX = 0x0100;
+        const TS_DISCONT    = 0x0200;
+        const VARIABLE_FPS  = 0x0400;
+        const NO_DIMENSIONS = 0x0800;
+        const NO_STREAMS    = 0x1000;
+        const NO_BINSEARCH  = 0x2000;
+        const NO_GENSEARCH  = 0x4000;
+        const NO_BYTE_SEEK  = 0x8000;
+        const ALLOW_FLUSH   = 0x10000;
+        const TS_NONSTRICT  = 0x20000;
+        const TS_NEGATIVE   = 0x40000;
+        const SEEK_TO_PTS   = 0x4000000;
     }
 }
