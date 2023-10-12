@@ -1,6 +1,5 @@
 use std::ptr;
 
-use ffi::*;
 use format;
 use Format;
 

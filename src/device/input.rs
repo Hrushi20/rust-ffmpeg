@@ -1,17 +1,17 @@
 use std::ptr;
+use avFormatTypes::AVInputFormat;
 
-use ffi::*;
 use format;
 use Format;
 
-pub struct AudioIter(*mut AVInputFormat);
+pub struct AudioIter(AVInputFormat);
 
 impl Iterator for AudioIter {
     type Item = Format;
 
     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
         unsafe {
-            let ptr = av_input_audio_device_next(self.0) as *mut AVInputFormat;
+            let ptr = av_input_audio_device_next(self.0) as AVInputFormat;
 
             if ptr.is_null() && !self.0.is_null() {
                 None

@@ -1,0 +1,1 @@
+pub type AVDeviceInfoList = u32;

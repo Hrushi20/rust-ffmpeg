@@ -1,62 +1,61 @@
 pub mod extensions;
-pub mod input;
-pub mod output;
+// pub mod input;
+// pub mod output;
+pub mod types;
 
-use std::ffi::CStr;
 use std::marker::PhantomData;
-use std::str::from_utf8_unchecked;
-
-use ffi::*;
+use device::types::{AVDeviceInfoList};
+use avdevice_wasmedge;
 
 pub struct Info<'a> {
-    ptr: *mut AVDeviceInfo,
-
+    ptr: AVDeviceInfoList,
+    idx: isize,
     _marker: PhantomData<&'a ()>,
 }
 
 impl<'a> Info<'a> {
-    pub unsafe fn wrap(ptr: *mut AVDeviceInfo) -> Self {
+    pub unsafe fn wrap(ptr: AVDeviceInfoList,idx:isize) -> Self {
         Info {
             ptr,
+            idx,
             _marker: PhantomData,
         }
     }
 
-    pub unsafe fn as_ptr(&self) -> *const AVDeviceInfo {
-        self.ptr as *const _
-    }
-
-    pub unsafe fn as_mut_ptr(&mut self) -> *mut AVDeviceInfo {
+    pub unsafe fn ptr(&self) -> AVDeviceInfoList {
         self.ptr
     }
+
 }
 
-impl<'a> Info<'a> {
-    pub fn name(&self) -> &str {
-        unsafe { from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).device_name).to_bytes()) }
-    }
-
-    pub fn description(&self) -> &str {
-        unsafe {
-            from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).device_description).to_bytes())
-        }
-    }
-}
-
+// impl<'a> Info<'a> {
+//     pub fn name(&self) -> &str {
+//         unsafe { from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).device_name).to_bytes()) }
+//     }
+//
+//     pub fn description(&self) -> &str {
+//         unsafe {
+//             from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).device_description).to_bytes())
+//         }
+//     }
+// }
+//
 pub fn register_all() {
     unsafe {
-        avdevice_register_all();
+        avdevice_wasmedge::avdevice_register_all();
     }
 }
 
 pub fn version() -> u32 {
-    unsafe { avdevice_version() }
+    unsafe {
+        avdevice_wasmedge::avdevice_version()
+    }
 }
 
-pub fn configuration() -> &'static str {
-    unsafe { from_utf8_unchecked(CStr::from_ptr(avdevice_configuration()).to_bytes()) }
-}
-
-pub fn license() -> &'static str {
-    unsafe { from_utf8_unchecked(CStr::from_ptr(avdevice_license()).to_bytes()) }
-}
+// pub fn configuration() -> &'static str {
+//     unsafe { from_utf8_unchecked(CStr::from_ptr(avdevice_configuration()).to_bytes()) }
+// }
+//
+// pub fn license() -> &'static str {
+//     unsafe { from_utf8_unchecked(CStr::from_ptr(avdevice_license()).to_bytes()) }
+// }

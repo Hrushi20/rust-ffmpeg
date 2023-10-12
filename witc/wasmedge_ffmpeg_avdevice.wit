@@ -1,0 +1,6 @@
+avdevice-register-all: func() -> unit
+avdevice-version: func() -> u32
+avdevice-list-devices: func(AVFormatCtxId:u32,AVDeviceInfoListPtr:u32) -> s32
+avdevice-free-list-devices: func(AVDeviceInfoListId:u32) -> s32
+avdevice-nb-devices: func(AVDeviceInfoListId:u32) -> s32
+avdevice-default-device: func(AVDeviceInfoListId:u32) -> s32
