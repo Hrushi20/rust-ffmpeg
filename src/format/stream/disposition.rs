@@ -1,20 +1,18 @@
-use libc::c_int;
-
 bitflags! {
-    pub struct Disposition: c_int {
-        const DEFAULT          = AV_DISPOSITION_DEFAULT;
-        const DUB              = AV_DISPOSITION_DUB;
-        const ORIGINAL         = AV_DISPOSITION_ORIGINAL;
-        const COMMENT          = AV_DISPOSITION_COMMENT;
-        const LYRICS           = AV_DISPOSITION_LYRICS;
-        const KARAOKE          = AV_DISPOSITION_KARAOKE;
-        const FORCED           = AV_DISPOSITION_FORCED;
-        const HEARING_IMPAIRED = AV_DISPOSITION_HEARING_IMPAIRED;
-        const VISUAL_IMPAIRED  = AV_DISPOSITION_VISUAL_IMPAIRED;
-        const CLEAN_EFFECTS    = AV_DISPOSITION_CLEAN_EFFECTS;
-        const ATTACHED_PIC     = AV_DISPOSITION_ATTACHED_PIC;
-        const CAPTIONS         = AV_DISPOSITION_CAPTIONS;
-        const DESCRIPTIONS     = AV_DISPOSITION_DESCRIPTIONS;
-        const METADATA         = AV_DISPOSITION_METADATA;
+    pub struct Disposition: i32 {
+        const DEFAULT          = 1 << 0;
+        const DUB              = 1 << 1;
+        const ORIGINAL         = 1 << 2;
+        const COMMENT          = 1 << 3;
+        const LYRICS           = 1 << 4;
+        const KARAOKE          = 1 << 5;
+        const FORCED           = 1 << 6;
+        const HEARING_IMPAIRED = 1 << 7;
+        const VISUAL_IMPAIRED  = 1 << 8;
+        const CLEAN_EFFECTS    = 1 << 9;
+        const ATTACHED_PIC     = 1 << 10;
+        const CAPTIONS         = 1 << 16;
+        const DESCRIPTIONS     = 1 << 17;
+        const METADATA         = 1 << 18;
     }
 }
