@@ -50,3 +50,19 @@ impl Iterator for VideoIter {
 pub fn video() -> VideoIter {
     VideoIter(ptr::null_mut())
 }
+
+impl Drop for AudioIter {
+    fn drop(&mut self) {
+        unsafe{
+
+        }
+    }
+}
+
+impl Drop for VideoIter {
+    fn drop(&mut self) {
+        unsafe{
+
+        }
+    }
+}

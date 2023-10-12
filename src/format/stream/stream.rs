@@ -1,8 +1,7 @@
 use std::mem::MaybeUninit;
 use std::ptr;
-// use super::Disposition;
-use codec::{self};
-// use codec::{self, packet};
+use super::Disposition;
+use codec::{self, packet};
 use format::context::common::Context;
 use avCodecType::AVCodecParameters;
 // use {DictionaryRef, Discard, Rational};
