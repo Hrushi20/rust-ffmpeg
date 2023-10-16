@@ -33,6 +33,8 @@ impl<'a> Owned<'a> {
     }
 }
 
+// Can throw error. If No property is set, Get function can throw error as AVDictionary is
+// Not yet set in C++ Plugin.
 impl<'a> Owned<'a> {
     pub fn new() -> Self {
         unsafe {

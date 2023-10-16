@@ -127,79 +127,79 @@ fn main() {
     //     }
     // }
 
-    // let path = Path::new("/Users/pc/my/code/openSource/wasmedge/rust-ffmpeg/example/assets/bunny.mp4");
-    // ffmpeg_next::init();
-    // let mut input = ffmpeg_next::format::input::<&Path>(&path).unwrap();
-    // println!("Probe score {:?}",input.probe_score());
-    // println!("{:?}",*input);
-    // let input_stream = input
-    //     .streams()
-    //     .best(ffmpeg_next::media::Type::Video).unwrap();
-    // let input_stream_index = input_stream.index();
-    // let context = Context::from_parameters(input_stream.parameters()).unwrap();
-    // let mut decoder = context.decoder().video().unwrap();
-    // decoder.set_parameters(input_stream.parameters()).unwrap();
-    //
-    // let mut frame = ffmpeg_next::frame::Video::empty();
-    // println!("Width: {}",frame.width());
-    // println!("Height: {}",frame.height());
-    // let mut decoder_has_sent_eof = false;
-    // while let Err(err) = decoder.receive_frame(&mut frame) {
-    //     if err == RESOURCE_TEMPORARILY_UNAVAILABLE {
-    //         if !decoder_has_sent_eof {
-    //             let mut is_eof = true;
-    //             while let Some((stream, package)) = input.packets().next() {
-    //                 if stream.index() != input_stream_index {
-    //                     continue;
-    //                 }
-    //                 decoder.send_packet(&package);
-    //                 is_eof = false;
-    //                 break;
-    //             }
-    //             if is_eof {
-    //                 decoder.send_eof();
-    //                 decoder_has_sent_eof = true;
-    //             }
-    //         }else{
-    //             println!("Decoder sent end of file");
-    //         }
-    //     }else {
-    //         if let ffmpeg_next::Error::Eof = err {
-    //             println!("False");
-    //             break;
-    //         } else {
-    //             println!("Error");
-    //             break;
-    //         };
-    //     }
-    // }
-    //
-    //
-    // let src_format = frame.format();
-    // println!("Src_format: {:?}",src_format);
-    // let data = frame.data(0);
-    // println!("Data: {:?}",data);
-    // println!("Data Size: {}",data.len());
-
-    ffmpeg_next::init();
-    let mut dict = ffmpeg_next::dictionary::Owned::new();
-    dict.set("Name","Hrushi");
-    dict.set("Gender","Male");
-    dict.set("College","Jntuceh");
-
-    let gender = dict.get("Gender");
-    println!("Dict:{:?}",dict);
-
-
     let path = Path::new("/Users/pc/my/code/openSource/wasmedge/rust-ffmpeg/example/assets/bunny.mp4");
     ffmpeg_next::init();
-    ffmpeg_next::device::register_all();
     let mut input = ffmpeg_next::format::input::<&Path>(&path).unwrap();
+    println!("Probe score {:?}",input.probe_score());
+    println!("{:?}",*input);
+    let input_stream = input
+        .streams()
+        .best(ffmpeg_next::media::Type::Video).unwrap();
+    let input_stream_index = input_stream.index();
+    let context = Context::from_parameters(input_stream.parameters()).unwrap();
+    let mut decoder = context.decoder().video().unwrap();
+    decoder.set_parameters(input_stream.parameters()).unwrap();
 
-    let input_format = input.format();
+    let mut frame = ffmpeg_next::frame::Video::empty();
+    println!("Width: {}",frame.width());
+    println!("Height: {}",frame.height());
+    let mut decoder_has_sent_eof = false;
+    while let Err(err) = decoder.receive_frame(&mut frame) {
+        if err == RESOURCE_TEMPORARILY_UNAVAILABLE {
+            if !decoder_has_sent_eof {
+                let mut is_eof = true;
+                while let Some((stream, package)) = input.packets().next() {
+                    if stream.index() != input_stream_index {
+                        continue;
+                    }
+                    decoder.send_packet(&package);
+                    is_eof = false;
+                    break;
+                }
+                if is_eof {
+                    decoder.send_eof();
+                    decoder_has_sent_eof = true;
+                }
+            }else{
+                println!("Decoder sent end of file");
+            }
+        }else {
+            if let ffmpeg_next::Error::Eof = err {
+                println!("False");
+                break;
+            } else {
+                println!("Error");
+                break;
+            };
+        }
+    }
 
-    println!("Name: {:?}",input_format.name());
-    println!("Name: {:?}",input_format.description());
-    println!("Name: {:?}",input_format.extensions());
-    println!("Name: {:?}",input_format.mime_types());
+
+    let src_format = frame.format();
+    println!("Src_format: {:?}",src_format);
+    let data = frame.data(0);
+    println!("Data: {:?}",data);
+    println!("Data Size: {}",data.len());
+
+    // ffmpeg_next::init();
+    // let mut dict = ffmpeg_next::dictionary::Owned::new();
+    // dict.set("Name","Hrushi");
+    // dict.set("Gender","Male");
+    // dict.set("College","Jntuceh");
+    //
+    // let gender = dict.get("Gender");
+    // println!("Dict:{:?}",dict);
+    //
+    //
+    // let path = Path::new("/Users/pc/my/code/openSource/wasmedge/rust-ffmpeg/example/assets/bunny.mp4");
+    // ffmpeg_next::init();
+    // ffmpeg_next::device::register_all();
+    // let mut input = ffmpeg_next::format::input::<&Path>(&path).unwrap();
+    //
+    // let input_format = input.format();
+    //
+    // println!("Name: {:?}",input_format.name());
+    // println!("Name: {:?}",input_format.description());
+    // println!("Name: {:?}",input_format.extensions());
+    // println!("Name: {:?}",input_format.mime_types());
 }

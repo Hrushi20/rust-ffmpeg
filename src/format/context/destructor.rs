@@ -22,7 +22,9 @@ impl Drop for Destructor {
     fn drop(&mut self) {
         unsafe {
             match self.mode {
-                Mode::Input => avformat_wasmedge::avformat_close_input( self.ptr as u32),
+                Mode::Input => {
+                    avformat_wasmedge::avformat_close_input( self.ptr as u32);
+                },
 
                 Mode::Output => {
                     avformat_wasmedge::avio_close(self.ptr);
