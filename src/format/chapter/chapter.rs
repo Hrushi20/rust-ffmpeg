@@ -21,7 +21,6 @@ impl<'a> Chapter<'a> {
 
     pub unsafe fn ptr(&self) -> AVFormatContext {
         self.context.ptr()
-        // *(*self.context.as_ptr()).chapters.add(self.index)
     }
 }
 
