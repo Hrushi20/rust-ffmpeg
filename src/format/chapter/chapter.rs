@@ -62,7 +62,7 @@ impl<'a> Chapter<'a> {
     pub fn metadata(&self) -> DictionaryRef {
         unsafe {
             let av_dictionary = MaybeUninit::<AVDictionary>::uninit();
-            avformat_wasmedge::avChapter_metadata(self.ptr(),av_dictionary.as_ptr() as u32);
+            avformat_wasmedge::avChapter_metadata(self.ptr(),self.index as u32,av_dictionary.as_ptr() as u32);
             DictionaryRef::wrap(ptr::read(av_dictionary.as_ptr()))
         }
     }

@@ -65,14 +65,14 @@ impl<'a> ChapterMut<'a> {
             let mut dictionary = Dictionary::own(self.metadata().ptr());
             dictionary.set(key.as_ref(), value.as_ref());
             let av_dictionary = dictionary.disown();
-            avformat_wasmedge::avChapter_set_metadata(self.ptr(),av_dictionary);
+            avformat_wasmedge::avChapter_set_metadata(self.ptr(),self.index as u32,av_dictionary);
         }
     }
 
     pub fn metadata(&mut self) -> DictionaryMut {
         unsafe {
             let av_dictionary = MaybeUninit::<AVDictionary>::uninit();
-            avformat_wasmedge::avChapter_metadata(self.ptr(),av_dictionary.as_ptr() as u32);
+            avformat_wasmedge::avChapter_metadata(self.ptr(),self.index as u32,av_dictionary.as_ptr() as u32);
             DictionaryMut::wrap(ptr::read(av_dictionary.as_ptr()))
         }
     }
