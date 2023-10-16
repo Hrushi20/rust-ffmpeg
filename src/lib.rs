@@ -66,8 +66,7 @@ pub use util::rational::{self, Rational};
 // #[cfg(feature = "format")]
 pub mod format;
 // #[cfg(feature = "format")]
-pub use format::chapter::{Chapter};
-// pub use format::chapter::{Chapter, ChapterMut};
+pub use format::chapter::{Chapter, ChapterMut};
 // #[cfg(feature = "format")]
 pub use format::format::Format;
 // #[cfg(feature = "format")

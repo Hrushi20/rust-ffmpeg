@@ -132,11 +132,18 @@ fn main() {
     let mut input = ffmpeg_next::format::input::<&Path>(&path).unwrap();
     println!("Probe score {:?}",input.probe_score());
     println!("{:?}",*input);
-    let chapter = input.chapter(0).unwrap();
-    println!("ChapterID: {}",chapter.id());
-    println!("TimeBase: {}",chapter.time_base());
-    println!("Start: {}",chapter.start());
-    println!("End: {}",chapter.end());
+    // let chapter = input.chapter(0).unwrap();
+    let mut chapter_mut = input.chapter_mut(0).unwrap();
+    chapter_mut.set_id(100);
+    chapter_mut.set_start(5000);
+    chapter_mut.set_end(10000);
+    chapter_mut.set_metadata("NickName","BooBox20");
+    chapter_mut.set_time_base(ffmpeg_next::Rational::new(3,4));
+    println!("ChapterID: {}",chapter_mut.id());
+    println!("TimeBase: {}",chapter_mut.time_base());
+    println!("Start: {}",chapter_mut.start());
+    println!("End: {}",chapter_mut.end());
+    println!("Metadata: {:?}",chapter_mut.metadata());
     // let input_stream = input
     //     .streams()
     //     .best(ffmpeg_next::media::Type::Video).unwrap();

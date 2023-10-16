@@ -45,9 +45,15 @@ avStream-codecpar : func(avFormatCtxId:u32,streamIdx:u32,codecParameter:u32) -> 
 
 // Functions to fetch avChapter data fields.
 avChapter-id : func(avFormatCtxId:u32,chapterIdx:u32) -> s64
+avChapter-set-id : func(avFormatCtxId:u32,chapterId:u32,ChapterId:s64) -> s32
 avChapter-timebase : func(NumPtr:u32,DenPtr:u32,avFormatCtxId:u32,chapterIdx:u32) -> s32
+avChapter-set-timebase : func(Num:s32,Den:s32,avFormatCtxId:u32,chapterIdx:u32) -> s32
 avChapter-start : func(avFormatCtxId:u32,chapterIdx:u32) -> s64
+avChapter-set-start : func(avFormatCtxId:u32,chapterIdx:u32,StartValue:s64) -> s32
 avChapter-end : func(avFormatCtxId:u32,chapterIdx:u32) -> s64
+avChapter-set-end : func(avFormatCtxId:u32,chapterIdx:u32,EndValue:s64) -> s32
+avChapter-metadata : func(avFormatCtxId:u32,avDictionaryPtr:u32) -> s32
+avChapter-set-metadata : func(avFormatCtxId:u32,avDictionaryId:u32) -> s32
 
 
 // Need to update Parameter Names....

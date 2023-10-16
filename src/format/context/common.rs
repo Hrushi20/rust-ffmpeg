@@ -4,9 +4,8 @@ use std::rc::Rc;
 use super::destructor::{self, Destructor};
 use libc::{c_uint};
 use format::types::AVFormatContext;
-use { media, Chapter };
+use { media, Chapter, ChapterMut, DictionaryRef, Stream };
 // use {media, Chapter, ChapterMut, DictionaryRef, Stream, StreamMut};
-use format::stream::Stream;
 use avformat_wasmedge;
 
 pub struct Context {
@@ -107,18 +106,18 @@ impl Context {
         }
     }
 
-    // pub fn chapter_mut<'a, 'b>(&'a mut self, index: usize) -> Option<ChapterMut<'b>>
-    // where
-    //     'a: 'b,
-    // {
-    //     unsafe {
-    //         if index >= self.nb_chapters() as usize {
-    //             None
-    //         } else {
-    //             Some(ChapterMut::wrap(self, index))
-    //         }
-    //     }
-    // }
+    pub fn chapter_mut<'a, 'b>(&'a mut self, index: usize) -> Option<ChapterMut<'b>>
+    where
+        'a: 'b,
+    {
+        unsafe {
+            if index >= self.nb_chapters() as usize {
+                None
+            } else {
+                Some(ChapterMut::wrap(self, index))
+            }
+        }
+    }
 
     // pub fn chapters(&self) -> ChapterIter {
     //     ChapterIter::new(self)
@@ -127,7 +126,7 @@ impl Context {
     // pub fn chapters_mut(&mut self) -> ChapterIterMut {
     //     ChapterIterMut::new(self)
     // }
-
+    //
     // pub fn metadata(&self) -> DictionaryRef {
     //     unsafe { DictionaryRef::wrap((*self.as_ptr()).metadata) }
     // }

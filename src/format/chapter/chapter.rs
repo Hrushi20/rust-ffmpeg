@@ -1,9 +1,9 @@
 use std::mem::MaybeUninit;
 use std::ptr;
-use {Rational};
+use {DictionaryRef,Rational};
 use avFormatTypes::AVFormatContext;
 use avformat_wasmedge;
-// use {DictionaryRef, Rational};
+use avUtilTypes::AVDictionary;
 
 use format::context::common::Context;
 
@@ -59,9 +59,13 @@ impl<'a> Chapter<'a> {
         }
     }
 
-    // pub fn metadata(&self) -> DictionaryRef {
-    //     unsafe { DictionaryRef::wrap((*self.as_ptr()).metadata) }
-    // }
+    pub fn metadata(&self) -> DictionaryRef {
+        unsafe {
+            let av_dictionary = MaybeUninit::<AVDictionary>::uninit();
+            avformat_wasmedge::avChapter_metadata(self.ptr(),av_dictionary.as_ptr() as u32);
+            DictionaryRef::wrap(ptr::read(av_dictionary.as_ptr()))
+        }
+    }
 }
 
 impl<'a> PartialEq for Chapter<'a> {
