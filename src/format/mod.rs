@@ -10,8 +10,8 @@ pub mod stream;
 pub mod chapter;
 
 pub mod context;
-// pub use self::context::Context;
-//
+pub use self::context::Context;
+
 
 pub mod types;
 use util::types::AVDictionary;
@@ -19,19 +19,15 @@ use util::types::AVDictionary;
 pub mod format;
 // #[cfg(not(feature = "ffmpeg_5_0"))]
 // pub use self::format::list;
-// pub use self::format::{flag, Flags};
+pub use self::format::{flag, Flags};
 pub use self::format::{Input};
-//
-// pub mod network;
-//
-// use std::ffi::{CStr, CString};
+
+pub mod network;
+
 use std::path::Path;
 use std::{mem, ptr};
 
-//
-// use ffi::*;
-// use {Dictionary, Error, Format};
-use { Error };
+use {Dictionary, Error, Format};
 pub use format::types::*;
 
 //

@@ -9,6 +9,8 @@ avformat-seek-file : func(avFormatCtxId:u32,streamIdx:s32,min-ts:s64,ts:s64,max-
 avformat-free-context : func(avFormatCtxId:u32) ->s32
 av-find-best-stream : func(avFormatCtxId:u32,avMediaType:s32,wanted-stream-nb:s32,related-stream:s32,avCodecPtr:u32,flags:s32) -> s32
 av-read-frame : func(avFormatCtxId:u32,avPacketId:u32) -> s32
+avformat-network-init : func() -> s32
+avformat-network-deinit : func() -> s32
 
 // Functions to fetch avFormatContext data fields
 avformatContext-iformat : func(avFormatCtxPtr:u32,avInputFormatPtr:u32) -> s32
