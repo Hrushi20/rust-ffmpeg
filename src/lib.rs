@@ -70,8 +70,7 @@ pub use format::chapter::{Chapter, ChapterMut};
 // #[cfg(feature = "format")]
 pub use format::format::Format;
 // #[cfg(feature = "format")
-pub use format::stream::{Stream};
-// pub use format::stream::{Stream, StreamMut};
+pub use format::stream::{Stream, StreamMut};
 
 // #[cfg(feature = "codec")]
 pub mod codec;

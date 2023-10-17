@@ -132,22 +132,39 @@ fn main() {
     let mut input = ffmpeg_next::format::input::<&Path>(&path).unwrap();
     println!("Probe score {:?}",input.probe_score());
     println!("{:?}",*input);
+    println!("Metadata: {:?}",input.metadata());
+    let mut stream_mut = input.stream_mut(1).unwrap();
+    stream_mut.set_time_base(ffmpeg_next::Rational::new(3,4));
+    stream_mut.set_rate(ffmpeg_next::Rational::new(3,4));
+    stream_mut.set_avg_frame_rate(ffmpeg_next::Rational::new(3,4));
+    println!("Timebase Set: {:?}",stream_mut.time_base());
+    println!("Rate Set: {:?}",stream_mut.rate());
+    println!("AVGFrameRate Set: {:?}",stream_mut.avg_frame_rate());
     // let chapter = input.chapter(0).unwrap();
-    let mut chapter_mut = input.chapter_mut(0).unwrap();
-    chapter_mut.set_id(100);
-    chapter_mut.set_start(5000);
-    chapter_mut.set_end(10000);
-    chapter_mut.set_metadata("NickName","BooBox20");
-    chapter_mut.set_time_base(ffmpeg_next::Rational::new(3,4));
-    println!("ChapterID: {}",chapter_mut.id());
-    println!("TimeBase: {}",chapter_mut.time_base());
-    println!("Start: {}",chapter_mut.start());
-    println!("End: {}",chapter_mut.end());
-    println!("Metadata: {:?}",chapter_mut.metadata());
-    // let input_stream = input
-    //     .streams()
-    //     .best(ffmpeg_next::media::Type::Video).unwrap();
-    // let input_stream_index = input_stream.index();
+    // let mut chapter_mut = input.chapter_mut(0).unwrap();
+    // chapter_mut.set_id(100);
+    // chapter_mut.set_start(5000);
+    // chapter_mut.set_end(10000);
+    // chapter_mut.set_metadata("NickName","BooBox20");
+    // chapter_mut.set_time_base(ffmpeg_next::Rational::new(3,4));
+    // println!("ChapterID: {}",chapter_mut.id());
+    // println!("TimeBase: {}",chapter_mut.time_base());
+    // println!("Start: {}",chapter_mut.start());
+    // println!("End: {}",chapter_mut.end());
+    // println!("Metadata: {:?}",chapter_mut.metadata());
+    let input_stream = input
+        .streams()
+        .best(ffmpeg_next::media::Type::Video).unwrap();
+    let input_stream_index = input_stream.index();
+    println!("Stream ID: {:?}",input_stream.id());
+    println!("Stream Metadata: {:?}",input_stream.metadata());
+    println!("Stream Avg Frame Rate: {:?}",input_stream.avg_frame_rate());
+    println!("Stream Rate: {:?}",input_stream.rate());
+    println!("Stream Disposition: {:?}",input_stream.disposition());
+    println!("Stream Frames: {:?}",input_stream.frames());
+    println!("Stream Duration: {:?}",input_stream.duration());
+    println!("Stream Start Time: {:?}",input_stream.start_time());
+    println!("Stream Timebase: {:?}",input_stream.time_base());
     // let context = Context::from_parameters(input_stream.parameters()).unwrap();
     // let mut decoder = context.decoder().video().unwrap();
     // decoder.set_parameters(input_stream.parameters()).unwrap();

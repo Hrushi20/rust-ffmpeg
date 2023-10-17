@@ -18,6 +18,7 @@ avformatContext-duration : func(avFormatCtxPtr:u32) -> s64
 avformatContext-bit-rate : func(avFormatCtxPtr:u32) -> s64
 avformatContext-nb-chapters : func(avFormatCtxPtr:u32) -> u32
 avformatContext-avstream: func(avFormatCtxPtr:u32,avStreamPtr:u32) -> unit
+avformatContext-metadata: func(avFormatCtxPtr:u32,avDictPtr:u32) -> s32
 
 // Functions to fetch avInputFormat data fields.
 avIOFormat-name-length : func(avInputFormatId:u32,avFormatType:u32) -> s32
@@ -42,14 +43,18 @@ avio-close : func(avFormatCtxPtr:u32) -> s32
 avStream-id : func(avFormatCtxId:u32,streamIdx:u32) -> s32
 avStream-index : func(avFormatCtxId:u32, streamIdx:u32) -> s32
 avStream-codecpar : func(avFormatCtxId:u32,streamIdx:u32,codecParameter:u32) -> s32
-avStream-timebase : func(NumPtr:s32,DenPtr:s32,avFormatCtxId:u32,streamIdx:u32) -> s32
+avStream-timebase : func(NumPtr:u32,DenPtr:u32,avFormatCtxId:u32,streamIdx:u32) -> s32
+avStream-set-timebase : func(Num:s32,Den:s32,avFormatCtxId:u32,streamIdx:u32) -> s32
 avStream-duration : func(avFormatCtxId:u32,streamIdx:u32) -> s64
 avStream-start-time : func(avFormatCtxId:u32,streamIdx:u32) -> s64
 avStream-nb-frames : func(avFormatCtxId:u32,streamIdx:u32) -> s64
 avStream-disposition : func(avFormatCtxId:u32,streamIdx:u32) -> s32
-avStream-r-frame-rate : func(NumPtr:s32,DenPtr:s32,avFormatCtxId:u32,streamIdx:u32) -> s32
-avStream-avg-frame-rate : func(NumPtr:s32,DenPtr:s32,avFormatCtxId:u32,streamIdx:u32) -> s32
+avStream-r-frame-rate : func(NumPtr:u32,DenPtr:u32,avFormatCtxId:u32,streamIdx:u32) -> s32
+avStream-set-r-frame-rate : func(Num:s32,Den:s32,avFormatCtxId:u32,streamIdx:u32) -> s32
+avStream-avg-frame-rate : func(NumPtr:u32,DenPtr:u32,avFormatCtxId:u32,streamIdx:u32) -> s32
+avStream-set-avg-frame-rate : func(Num:s32,Den:s32,avFormatCtxId:u32,streamIdx:u32) -> s32
 avStream-metadata : func(avFormatCtxId:u32,streamIdx:u32,avDictionaryPtr:u32) -> s32
+avStream-set-metadata : func(avFormatCtxId:u32,streamIdx:u32,avDictionaryId:u32) -> s32
 
 // Functions to fetch avChapter data fields.
 avChapter-id : func(avFormatCtxId:u32,chapterIdx:u32) -> s64
