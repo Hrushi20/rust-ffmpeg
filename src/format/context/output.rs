@@ -1,58 +1,61 @@
 use std::ffi::CString;
-use std::mem::size_of;
+use std::mem::{MaybeUninit, size_of};
 use std::ops::{Deref, DerefMut};
-use std::ptr;
+use std::{mem, ptr};
 
 use libc;
 
 use super::common::Context;
 use super::destructor;
 use codec::traits;
-use ffi::*;
 use {format, ChapterMut, Dictionary, Error, Rational, StreamMut};
+use avFormatTypes::AVFormatContext;
+use avformat_wasmedge;
+use format::{AVChapter, AVOutputFormat};
 
 pub struct Output {
-    ptr: *mut AVFormatContext,
+    ptr: AVFormatContext,
     ctx: Context,
 }
 
 unsafe impl Send for Output {}
 
 impl Output {
-    pub unsafe fn wrap(ptr: *mut AVFormatContext) -> Self {
+    pub unsafe fn wrap(ptr: AVFormatContext) -> Self {
         Output {
             ptr,
             ctx: Context::wrap(ptr, destructor::Mode::Output),
         }
     }
 
-    pub unsafe fn as_ptr(&self) -> *const AVFormatContext {
-        self.ptr as *const _
-    }
-
-    pub unsafe fn as_mut_ptr(&mut self) -> *mut AVFormatContext {
+    pub unsafe fn ptr(&self) -> AVFormatContext {
         self.ptr
     }
+
 }
 
 impl Output {
     pub fn format(&self) -> format::Output {
-        unsafe { format::Output::wrap((*self.as_ptr()).oformat as *mut AVOutputFormat) }
+        unsafe {
+            let av_output_format = MaybeUninit::<AVOutputFormat>::uninit();
+            avformat_wasmedge::avformatContext_oformat(self.ptr(),av_output_format.as_ptr() as u32);
+            format::Output::wrap(ptr::read(av_output_format.as_ptr()))
+        }
     }
 
-    pub fn write_header(&mut self) -> Result<(), Error> {
+    pub fn write_header(self) -> Result<(), Error> {
         unsafe {
-            match avformat_write_header(self.as_mut_ptr(), ptr::null_mut()) {
+            match avformat_wasmedge::avformat_write_header(self.ptr(), mem::zeroed()) {
                 0 => Ok(()),
                 e => Err(Error::from(e)),
             }
         }
     }
 
-    pub fn write_header_with(&mut self, options: Dictionary) -> Result<Dictionary, Error> {
+    pub fn write_header_with(self, options: Dictionary) -> Result<Dictionary, Error> {
         unsafe {
-            let mut opts = options.disown();
-            let res = avformat_write_header(self.as_mut_ptr(), &mut opts);
+            let opts = options.disown();
+            let res = avformat_wasmedge::avformat_write_header(self.ptr(), opts);
 
             match res {
                 0 => Ok(Dictionary::own(opts)),
@@ -61,30 +64,30 @@ impl Output {
         }
     }
 
-    pub fn write_trailer(&mut self) -> Result<(), Error> {
+    pub fn write_trailer(&self) -> Result<(), Error> {
         unsafe {
-            match av_write_trailer(self.as_mut_ptr()) {
+            match avformat_wasmedge::avformat_write_trailer(self.ptr()) {
                 0 => Ok(()),
                 e => Err(Error::from(e)),
             }
         }
     }
 
-    pub fn add_stream<E: traits::Encoder>(&mut self, codec: E) -> Result<StreamMut, Error> {
-        unsafe {
-            let codec = codec.encoder();
-            let codec = codec.map_or(ptr::null(), |c| c.as_ptr());
-            let ptr = avformat_new_stream(self.as_mut_ptr(), codec);
-
-            if ptr.is_null() {
-                return Err(Error::Unknown);
-            }
-
-            let index = (*self.ctx.as_ptr()).nb_streams - 1;
-
-            Ok(StreamMut::wrap(&mut self.ctx, index as usize))
-        }
-    }
+    // pub fn add_stream<E: traits::Encoder>(&mut self, codec: E) -> Result<StreamMut, Error> {
+    //     unsafe {
+    //         let codec = codec.encoder();
+    //         let codec = codec.map_or(ptr::null(), |c| c.as_ptr());
+    //         let ptr = avformat_new_stream(self.as_mut_ptr(), codec);
+    //
+    //         if ptr.is_null() {
+    //             return Err(Error::Unknown);
+    //         }
+    //
+    //         let index = (*self.ctx.as_ptr()).nb_streams - 1;
+    //
+    //         Ok(StreamMut::wrap(&mut self.ctx, index as usize))
+    //     }
+    // }
 
     pub fn add_chapter<R: Into<Rational>, S: AsRef<str>>(
         &mut self,
@@ -111,25 +114,26 @@ impl Output {
         let index = match existing {
             Some(index) => index,
             None => unsafe {
-                let ptr = av_mallocz(size_of::<AVChapter>())
-                    .as_mut()
-                    .ok_or(Error::Bug)?;
-                let mut nb_chapters = (*self.as_ptr()).nb_chapters as i32;
-
+                let av_chapter = MaybeUninit::<AVChapter>::uninit();
+                avformat_wasmedge::avchapter_mallocz(av_chapter.as_ptr() as u32);
+                let nb_chapters = avformat_wasmedge::avformatContext_nb_chapters(self.ptr()) as i32;
+                let av_chapter = ptr::read(av_chapter.as_ptr());
                 // chapters array will be freed by `avformat_free_context`
-                av_dynarray_add(
-                    &mut (*self.as_mut_ptr()).chapters as *mut _ as *mut libc::c_void,
-                    &mut nb_chapters,
-                    ptr,
+                let nb_chapters = MaybeUninit::<i32>::new(nb_chapters);
+                avformat_wasmedge::avchapter_dynarray_add(
+                    self.ptr(),
+                    nb_chapters.as_ptr() as u32,
+                    av_chapter,
                 );
+                let nb_chapters = ptr::read(nb_chapters.as_ptr());
 
                 if nb_chapters > 0 {
-                    (*self.as_mut_ptr()).nb_chapters = nb_chapters as u32;
-                    let index = (*self.ctx.as_ptr()).nb_chapters - 1;
+                    avformat_wasmedge::avformatContext_set_nb_chapters(self.ptr(),nb_chapters as u32);
+                    let index = avformat_wasmedge::avformatContext_nb_chapters(self.ptr()) - 1;
                     index as usize
                 } else {
                     // failed to add the chapter
-                    av_freep(ptr);
+                    avformat_wasmedge::avformat_avfreep(av_chapter);
                     return Err(Error::Bug);
                 }
             },
@@ -148,7 +152,8 @@ impl Output {
 
     pub fn set_metadata(&mut self, dictionary: Dictionary) {
         unsafe {
-            (*self.as_mut_ptr()).metadata = dictionary.disown();
+            let dict = dictionary.disown();
+            avformat_wasmedge::avformatContext_set_metadata(self.ptr(),dict);
         }
     }
 }
@@ -168,13 +173,13 @@ impl DerefMut for Output {
 }
 
 pub fn dump(ctx: &Output, index: i32, url: Option<&str>) {
-    let url = url.map(|u| CString::new(u).unwrap());
-
     unsafe {
-        av_dump_format(
-            ctx.as_ptr() as *mut _,
+        avformat_wasmedge::av_dump_format(
+            ctx.ptr(),
             index,
-            url.unwrap_or_else(|| CString::new("").unwrap()).as_ptr(),
+            url.unwrap_or_else(|| "").as_ptr(),
+
+            url.unwrap_or_else(|| "").len(),
             1,
         );
     }

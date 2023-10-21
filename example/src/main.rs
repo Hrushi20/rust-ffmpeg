@@ -127,19 +127,19 @@ fn main() {
     //     }
     // }
 
-    let path = Path::new("/Users/pc/my/code/openSource/wasmedge/rust-ffmpeg/example/assets/bunny.mp4");
-    ffmpeg_next::init();
-    let mut input = ffmpeg_next::format::input::<&Path>(&path).unwrap();
-    println!("Probe score {:?}",input.probe_score());
-    println!("{:?}",*input);
-    println!("Metadata: {:?}",input.metadata());
-    let mut stream_mut = input.stream_mut(1).unwrap();
-    stream_mut.set_time_base(ffmpeg_next::Rational::new(3,4));
-    stream_mut.set_rate(ffmpeg_next::Rational::new(3,4));
-    stream_mut.set_avg_frame_rate(ffmpeg_next::Rational::new(3,4));
-    println!("Timebase Set: {:?}",stream_mut.time_base());
-    println!("Rate Set: {:?}",stream_mut.rate());
-    println!("AVGFrameRate Set: {:?}",stream_mut.avg_frame_rate());
+    // let path = Path::new("/Users/pc/my/code/openSource/wasmedge/rust-ffmpeg/example/assets/bunny.mp4");
+    // ffmpeg_next::init();
+    // let mut input = ffmpeg_next::format::input::<&Path>(&path).unwrap();
+    // println!("Probe score {:?}",input.probe_score());
+    // println!("{:?}",*input);
+    // println!("Metadata: {:?}",input.metadata());
+    // let mut stream_mut = input.stream_mut(1).unwrap();
+    // stream_mut.set_time_base(ffmpeg_next::Rational::new(3,4));
+    // stream_mut.set_rate(ffmpeg_next::Rational::new(3,4));
+    // stream_mut.set_avg_frame_rate(ffmpeg_next::Rational::new(3,4));
+    // println!("Timebase Set: {:?}",stream_mut.time_base());
+    // println!("Rate Set: {:?}",stream_mut.rate());
+    // println!("AVGFrameRate Set: {:?}",stream_mut.avg_frame_rate());
     // let chapter = input.chapter(0).unwrap();
     // let mut chapter_mut = input.chapter_mut(0).unwrap();
     // chapter_mut.set_id(100);
@@ -152,19 +152,19 @@ fn main() {
     // println!("Start: {}",chapter_mut.start());
     // println!("End: {}",chapter_mut.end());
     // println!("Metadata: {:?}",chapter_mut.metadata());
-    let input_stream = input
-        .streams()
-        .best(ffmpeg_next::media::Type::Video).unwrap();
-    let input_stream_index = input_stream.index();
-    println!("Stream ID: {:?}",input_stream.id());
-    println!("Stream Metadata: {:?}",input_stream.metadata());
-    println!("Stream Avg Frame Rate: {:?}",input_stream.avg_frame_rate());
-    println!("Stream Rate: {:?}",input_stream.rate());
-    println!("Stream Disposition: {:?}",input_stream.disposition());
-    println!("Stream Frames: {:?}",input_stream.frames());
-    println!("Stream Duration: {:?}",input_stream.duration());
-    println!("Stream Start Time: {:?}",input_stream.start_time());
-    println!("Stream Timebase: {:?}",input_stream.time_base());
+    // let input_stream = input
+    //     .streams()
+    //     .best(ffmpeg_next::media::Type::Video).unwrap();
+    // let input_stream_index = input_stream.index();
+    // println!("Stream ID: {:?}",input_stream.id());
+    // println!("Stream Metadata: {:?}",input_stream.metadata());
+    // println!("Stream Avg Frame Rate: {:?}",input_stream.avg_frame_rate());
+    // println!("Stream Rate: {:?}",input_stream.rate());
+    // println!("Stream Disposition: {:?}",input_stream.disposition());
+    // println!("Stream Frames: {:?}",input_stream.frames());
+    // println!("Stream Duration: {:?}",input_stream.duration());
+    // println!("Stream Start Time: {:?}",input_stream.start_time());
+    // println!("Stream Timebase: {:?}",input_stream.time_base());
     // let context = Context::from_parameters(input_stream.parameters()).unwrap();
     // let mut decoder = context.decoder().video().unwrap();
     // decoder.set_parameters(input_stream.parameters()).unwrap();
@@ -211,24 +211,89 @@ fn main() {
     // println!("Data Size: {}",data.len());
 
     // ffmpeg_next::init();
-    // let mut dict = ffmpeg_next::dictionary::Owned::new();
-    // dict.set("Name","Hrushi");
-    // dict.set("Gender","Male");
-    // dict.set("College","Jntuceh");
     //
     // let gender = dict.get("Gender");
     // println!("Dict:{:?}",dict);
     //
     //
-    // let path = Path::new("/Users/pc/my/code/openSource/wasmedge/rust-ffmpeg/example/assets/bunny.mp4");
-    // ffmpeg_next::init();
-    // ffmpeg_next::device::register_all();
-    // let mut input = ffmpeg_next::format::input::<&Path>(&path).unwrap();
-    //
-    // let input_format = input.format();
-    //
-    // println!("Name: {:?}",input_format.name());
-    // println!("Name: {:?}",input_format.description());
-    // println!("Name: {:?}",input_format.extensions());
-    // println!("Name: {:?}",input_format.mime_types());
+    let path = Path::new("/Users/pc/my/code/openSource/wasmedge/rust-ffmpeg/example/assets/bunny.mp4");
+    ffmpeg_next::init();
+    ffmpeg_next::device::register_all();
+
+    let mut dict = ffmpeg_next::dictionary::Owned::new();
+    dict.set("Name","Hrushi");
+    dict.set("Gender","Male");
+    dict.set("College","Jntuceh");
+    let mut input = ffmpeg_next::format::input_with_dictionary::<&Path>(&path,dict).unwrap();
+
+    let input_format = input.format();
+
+    println!("Name: {:?}",input_format.name());
+    println!("Name: {:?}",input_format.description());
+    println!("Name: {:?}",input_format.extensions());
+    println!("Name: {:?}",input_format.mime_types());
 }
+
+// extern crate ffmpeg_next as ffmpeg;
+//
+// use std::env;
+//
+// fn main() {
+//     ffmpeg::init().unwrap();
+//
+
+//     let path = Path::new("/Users/pc/my/code/openSource/wasmedge/rust-ffmpeg/example/assets/bunny.mp4");
+//     // let mut input = ffmpeg_next::format::input::<&Path>(&path).unwrap();
+//     match ffmpeg::format::input_with_dictionary::<&path>(&path,dict) {
+//         Ok(ictx) => {
+//             println!("Nb chapters: {}", ictx.nb_chapters());
+//
+//             for chapter in ictx.chapters() {
+//                 println!("chapter id {}:", chapter.id());
+//                 println!("\ttime_base: {}", chapter.time_base());
+//                 println!("\tstart: {}", chapter.start());
+//                 println!("\tend: {}", chapter.end());
+//
+//                 for (k, v) in chapter.metadata().iter() {
+//                     println!("\t{}: {}", k, v);
+//                 }
+//             }
+//
+//             //     let mut octx = ffmpeg::format::output_as_with(&"test.mkv","matroska",dict).expect("Couldn't open test file");
+//             //
+//             //     for chapter in ictx.chapters() {
+//             //         let title = match chapter.metadata().get("title") {
+//             //             Some(title) => String::from(title),
+//             //             None => String::new(),
+//             //         };
+//             //
+//             //         match octx.add_chapter(
+//             //             chapter.id(),
+//             //             chapter.time_base(),
+//             //             chapter.start(),
+//             //             chapter.end(),
+//             //             &title,
+//             //         ) {
+//             //             Ok(chapter) => println!("Added chapter with id {} to output", chapter.id()),
+//             //             Err(error) => {
+//             //                 println!("Error adding chapter with id: {} - {}", chapter.id(), error)
+//             //             }
+//             //         }
+//             //     }
+//             //
+//             //     println!("\nOuput: nb chapters: {}", octx.nb_chapters());
+//             //     for chapter in octx.chapters() {
+//             //         println!("chapter id {}:", chapter.id());
+//             //         println!("\ttime_base: {}", chapter.time_base());
+//             //         println!("\tstart: {}", chapter.start());
+//             //         println!("\tend: {}", chapter.end());
+//             //         for (k, v) in chapter.metadata().iter() {
+//             //             println!("\t{}: {}", k, v);
+//             //         }
+//             //     }
+//             // }
+//             //
+//             Err(error) => println!("error: {}", error),
+//         }
+//     }
+// }

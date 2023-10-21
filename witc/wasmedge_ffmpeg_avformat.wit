@@ -11,16 +11,28 @@ av-find-best-stream : func(avFormatCtxId:u32,avMediaType:s32,wanted-stream-nb:s3
 av-read-frame : func(avFormatCtxId:u32,avPacketId:u32) -> s32
 avformat-network-init : func() -> s32
 avformat-network-deinit : func() -> s32
+avformat-write-header : func(avFormatCtxId:u32,avDictionaryId:u32) -> s32
+avformat-write-trailer : func(avFormatCtxId:u32) -> s32
+avformat-alloc-output-context2 : func(avFormatCtxId:u32,avOutputFormatId:u32,formatNamePtr:string,fileNamePtr:string) -> s32
+avio-open : func(avFormatCtxId:u32,fileNamePtr:string,flags:s32) -> s32
+avio-open2 : func(avFormatCtxId:u32,urlPtr:string,flags:s32,avIoInterruptCBId:u32,avDictionaryId:u32) -> s32
+avformat-version : func() -> u32
+avchapter-mallocz : func(avChapterPtr:u32) -> s32
+avchapter-dynarray-add : func(avFormatCtxId:u32,nbChapterPtr:u32,avChapterId:u32) -> s32
+avformat-avfreep : func(avChapterId:u32) -> s32
 
 // Functions to fetch avFormatContext data fields
 avformatContext-iformat : func(avFormatCtxPtr:u32,avInputFormatPtr:u32) -> s32
+avformatContext-oformat : func(avFormatCtxPtr:u32,avOutputFormatPtr:u32) -> s32
 avformatContext-probescope : func(avFormatCtxPtr:u32) -> s32
 avformatContext-nb-streams : func(avFormatCtxPtr:u32) -> u32
 avformatContext-duration : func(avFormatCtxPtr:u32) -> s64
 avformatContext-bit-rate : func(avFormatCtxPtr:u32) -> s64
 avformatContext-nb-chapters : func(avFormatCtxPtr:u32) -> u32
+avformatContext-set-nb-chapters : func(avFormatCtxPtr:u32,nbChapters:u32) -> s32
 avformatContext-avstream: func(avFormatCtxPtr:u32,avStreamPtr:u32) -> unit
-avformatContext-metadata: func(avFormatCtxPtr:u32,avDictPtr:u32) -> s32
+avformatContext-metadata: func(avFormatCtxPtr:u32,avDictionaryPtr:u32) -> s32
+avformatContext-set-metadata: func(avFormatCtxPtr:u32,avDictionaryId:u32) -> s32
 
 // Functions to fetch avInputFormat data fields.
 avIOFormat-name-length : func(avInputFormatId:u32,avFormatType:u32) -> s32
