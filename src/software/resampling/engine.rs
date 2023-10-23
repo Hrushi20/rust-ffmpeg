@@ -20,6 +20,6 @@ impl From<SwrEngine> for Engine {
 
 impl From<Engine> for SwrEngine {
     fn from(value: Engine) -> SwrEngine {
-        value as u32
+        value as SwrEngine
     }
 }

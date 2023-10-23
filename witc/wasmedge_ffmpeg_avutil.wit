@@ -67,3 +67,9 @@ av-dict-get: func(DictId:u32,Key:string,PrevDictEntryIdx:u32,Flags:s32,KeyLenPtr
 av-dict-get-key-value: func(DictId:u32,Key:string,ValBuf:list<u8>,KeyBuf:list<u8>,PrevDictEntryIdx:u32,Flags:s32) -> s32
 av-dict-copy: func(DestDictId:u32,SrcDictId:u32,Flags:s32) -> s32
 av-dict-free: func(DictId:u32) -> s32
+
+// avutil_func.h
+av-log-set-level: func(logLevelId:s32) -> unit
+av-log-get-level: func() -> s32
+av-log-set-flags: func(flagId:s32) -> unit
+av-log-get-flags: func() -> s32

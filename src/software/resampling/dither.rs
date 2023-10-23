@@ -1,4 +1,4 @@
-use software::resampling::dither::SwrDitherType::*;
+use software::resampling::types::SwrDitherType;
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub enum Dither {
@@ -16,60 +16,30 @@ pub enum Dither {
     NoiseShapingHighShibata = 10,
 }
 
-impl From<u32> for Dither {
-    fn from(value: u32) -> Dither {
+impl From<SwrDitherType> for Dither {
+    fn from(value: SwrDitherType) -> Dither {
         match value {
-            i if i == SWR_DITHER_NONE as u32 => Dither::None,
-            i if i == SWR_DITHER_RECTANGULAR as u32 => Dither::Rectangular,
-            i if i == SWR_DITHER_TRIANGULAR as u32 => Dither::Triangular,
-            i if i == SWR_DITHER_TRIANGULAR_HIGHPASS as u32 => Dither::TriangularHighPass,
+            i if i == 0 => Dither::None,
+            i if i == 1 => Dither::Rectangular,
+            i if i == 2 => Dither::Triangular,
+            i if i == 3 => Dither::TriangularHighPass,
 
-            i if i == SWR_DITHER_NS as u32 => Dither::None,
-            i if i == SWR_DITHER_NS_LIPSHITZ as u32 => Dither::NoiseShapingLipshitz,
-            i if i == SWR_DITHER_NS_F_WEIGHTED as u32 => Dither::NoiseShapingFWeighted,
-            i if i == SWR_DITHER_NS_MODIFIED_E_WEIGHTED as u32 => Dither::NoiseShapingModifiedEWeighted,
-            i if i == SWR_DITHER_NS_IMPROVED_E_WEIGHTED as u32 => Dither::NoiseShapingImprovedEWeighted,
-            i if i == SWR_DITHER_NS_SHIBATA as u32 => Dither::NoiseShapingShibata,
-            i if i == SWR_DITHER_NS_LOW_SHIBATA as u32 => Dither::NoiseShapingLowShibata,
-            i if i == SWR_DITHER_NS_HIGH_SHIBATA as u32 => Dither::NoiseShapingHighShibata,
-            i if i == SWR_DITHER_NB as u32 => Dither::None,
+            i if i == 64 => Dither::None,
+            i if i == 4 => Dither::NoiseShapingLipshitz,
+            i if i == 5 => Dither::NoiseShapingFWeighted,
+            i if i == 6 => Dither::NoiseShapingModifiedEWeighted,
+            i if i == 7 => Dither::NoiseShapingImprovedEWeighted,
+            i if i == 8 => Dither::NoiseShapingShibata,
+            i if i == 9 => Dither::NoiseShapingLowShibata,
+            i if i == 10 => Dither::NoiseShapingHighShibata,
+            i if i == 11 => Dither::None,
             _ => Dither::None
         }
     }
 }
 
-enum SwrDitherType {
-    SWR_DITHER_NONE = 0,
-    SWR_DITHER_RECTANGULAR = 1,
-    SWR_DITHER_TRIANGULAR = 2,
-    SWR_DITHER_TRIANGULAR_HIGHPASS = 3,
-
-    SWR_DITHER_NS  = 64,
-    SWR_DITHER_NS_LIPSHITZ = 4,
-    SWR_DITHER_NS_F_WEIGHTED = 5,
-    SWR_DITHER_NS_MODIFIED_E_WEIGHTED = 6,
-    SWR_DITHER_NS_IMPROVED_E_WEIGHTED = 7,
-    SWR_DITHER_NS_SHIBATA = 8,
-    SWR_DITHER_NS_LOW_SHIBATA = 9 ,
-    SWR_DITHER_NS_HIGH_SHIBATA = 10,
-    SWR_DITHER_NB = 11,
-}
-
-impl From<Dither> for u32 {
-    fn from(value: Dither) -> u32 {
-        match value {
-            Dither::None => SWR_DITHER_NONE as u32,
-            Dither::Rectangular => SWR_DITHER_RECTANGULAR as u32,
-            Dither::Triangular => SWR_DITHER_TRIANGULAR as u32,
-            Dither::TriangularHighPass => SWR_DITHER_TRIANGULAR_HIGHPASS as u32,
-
-            Dither::NoiseShapingLipshitz => SWR_DITHER_NS_LIPSHITZ as u32,
-            Dither::NoiseShapingFWeighted => SWR_DITHER_NS_F_WEIGHTED as u32,
-            Dither::NoiseShapingModifiedEWeighted => SWR_DITHER_NS_MODIFIED_E_WEIGHTED as u32,
-            Dither::NoiseShapingImprovedEWeighted => SWR_DITHER_NS_IMPROVED_E_WEIGHTED as u32,
-            Dither::NoiseShapingShibata => SWR_DITHER_NS_SHIBATA as u32,
-            Dither::NoiseShapingLowShibata => SWR_DITHER_NS_LOW_SHIBATA as u32,
-            Dither::NoiseShapingHighShibata => SWR_DITHER_NS_HIGH_SHIBATA as u32,
-        }
+impl From<Dither> for SwrDitherType {
+    fn from(value: Dither) -> SwrDitherType {
+       value as SwrDitherType
     }
 }

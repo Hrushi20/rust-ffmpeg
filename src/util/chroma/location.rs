@@ -1,42 +1,33 @@
-use ffi::AVChromaLocation::*;
-use ffi::*;
+use avUtilTypes::AVChromaLocation;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Location {
-    Unspecified,
-    Left,
-    Center,
-    TopLeft,
-    Top,
-    BottomLeft,
-    Bottom,
+    Unspecified = 0,
+    Left = 1,
+    Center = 2,
+    TopLeft = 3,
+    Top = 4,
+    BottomLeft = 5,
+    Bottom = 6,
 }
 
 impl From<AVChromaLocation> for Location {
     fn from(value: AVChromaLocation) -> Self {
         match value {
-            AVCHROMA_LOC_UNSPECIFIED => Location::Unspecified,
-            AVCHROMA_LOC_LEFT => Location::Left,
-            AVCHROMA_LOC_CENTER => Location::Center,
-            AVCHROMA_LOC_TOPLEFT => Location::TopLeft,
-            AVCHROMA_LOC_TOP => Location::Top,
-            AVCHROMA_LOC_BOTTOMLEFT => Location::BottomLeft,
-            AVCHROMA_LOC_BOTTOM => Location::Bottom,
-            AVCHROMA_LOC_NB => Location::Unspecified,
+            value if value == 0 => Location::Unspecified,
+            value if value == 1 => Location::Left,
+            value if value == 2 => Location::Center,
+            value if value == 3 => Location::TopLeft,
+            value if value == 4 => Location::Top,
+            value if value == 5 => Location::BottomLeft,
+            value if value == 6 => Location::Bottom,
+            _ => Location::Unspecified,
         }
     }
 }
 
 impl From<Location> for AVChromaLocation {
     fn from(value: Location) -> AVChromaLocation {
-        match value {
-            Location::Unspecified => AVCHROMA_LOC_UNSPECIFIED,
-            Location::Left => AVCHROMA_LOC_LEFT,
-            Location::Center => AVCHROMA_LOC_CENTER,
-            Location::TopLeft => AVCHROMA_LOC_TOPLEFT,
-            Location::Top => AVCHROMA_LOC_TOP,
-            Location::BottomLeft => AVCHROMA_LOC_BOTTOMLEFT,
-            Location::Bottom => AVCHROMA_LOC_BOTTOM,
-        }
+        value as AVChromaLocation
     }
 }

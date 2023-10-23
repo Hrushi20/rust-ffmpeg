@@ -20,6 +20,6 @@ impl From<SwrFilterType> for Filter {
 
 impl From<Filter> for SwrFilterType {
     fn from(value: Filter) -> u32 {
-        value as u32
+        value as SwrFilterType
     }
 }

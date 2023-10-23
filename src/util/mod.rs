@@ -1,17 +1,17 @@
 #[macro_use]
 pub mod dictionary;
 pub mod channel_layout;
-// pub mod chroma;
-// pub mod color;
+pub mod chroma;
+pub mod color;
 pub mod error;
 pub mod format;
 pub mod frame;
 // pub mod interrupt;
-// pub mod log;
-// pub mod mathematics;
+pub mod log;
+pub mod mathematics;
 pub mod media;
-// pub mod option;
-// pub mod picture;
+pub mod option;
+pub mod picture;
 pub mod range;
 pub mod types;
 pub mod rational;

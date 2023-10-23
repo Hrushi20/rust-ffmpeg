@@ -1,87 +1,69 @@
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
-
-use ffi::AVColorSpace::*;
-use ffi::*;
+use avUtilTypes::AVColorSpace;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Space {
-    RGB,
-    BT709,
-    Unspecified,
-    Reserved,
-    FCC,
-    BT470BG,
-    SMPTE170M,
-    SMPTE240M,
-    YCGCO,
-    BT2020NCL,
-    BT2020CL,
-    SMPTE2085,
+    RGB = 0,
+    BT709 = 1,
+    Unspecified = 2,
+    Reserved = 3,
+    FCC = 4,
+    BT470BG = 5,
+    SMPTE170M = 6,
+    SMPTE240M = 7,
+    YCGCO = 8,
+    BT2020NCL = 9,
+    BT2020CL = 10,
+    SMPTE2085 = 11,
 
-    ChromaDerivedNCL,
-    ChromaDerivedCL,
-    ICTCP,
+    ChromaDerivedNCL = 12,
+    ChromaDerivedCL = 13,
+    ICTCP = 14
 }
 
-impl Space {
-    pub const YCOCG: Space = Space::YCGCO;
-
-    pub fn name(&self) -> Option<&'static str> {
-        if *self == Space::Unspecified {
-            return None;
-        }
-        unsafe {
-            let ptr = av_color_space_name((*self).into());
-            ptr.as_ref()
-                .map(|ptr| from_utf8_unchecked(CStr::from_ptr(ptr).to_bytes()))
-        }
-    }
-}
+// impl Space {
+//     pub const YCOCG: Space = Space::YCGCO;
+//
+//     pub fn name(&self) -> Option<&'static str> {
+//         if *self == Space::Unspecified {
+//             return None;
+//         }
+//         unsafe {
+//             let ptr = av_color_space_name((*self).into());
+//             ptr.as_ref()
+//                 .map(|ptr| from_utf8_unchecked(CStr::from_ptr(ptr).to_bytes()))
+//         }
+//     }
+// }
 
 impl From<AVColorSpace> for Space {
     fn from(value: AVColorSpace) -> Self {
         match value {
-            AVCOL_SPC_RGB => Space::RGB,
-            AVCOL_SPC_BT709 => Space::BT709,
-            AVCOL_SPC_UNSPECIFIED => Space::Unspecified,
-            AVCOL_SPC_RESERVED => Space::Reserved,
-            AVCOL_SPC_FCC => Space::FCC,
-            AVCOL_SPC_BT470BG => Space::BT470BG,
-            AVCOL_SPC_SMPTE170M => Space::SMPTE170M,
-            AVCOL_SPC_SMPTE240M => Space::SMPTE240M,
-            AVCOL_SPC_YCGCO => Space::YCGCO,
-            AVCOL_SPC_BT2020_NCL => Space::BT2020NCL,
-            AVCOL_SPC_BT2020_CL => Space::BT2020CL,
-            AVCOL_SPC_SMPTE2085 => Space::SMPTE2085,
-            AVCOL_SPC_NB => Space::Unspecified,
+            value if value == 0 => Space::RGB,
+            value if value == 1 => Space::BT709,
+            value if value == 2 => Space::Unspecified,
+            value if value == 3 => Space::Reserved,
+            value if value == 4 => Space::FCC,
+            value if value == 5 => Space::BT470BG,
+            value if value == 6 => Space::SMPTE170M,
+            value if value == 7 => Space::SMPTE240M,
+            value if value == 8 => Space::YCGCO,
+            value if value == 9 => Space::BT2020NCL,
+            value if value == 10 => Space::BT2020CL,
+            value if value == 11 => Space::SMPTE2085,
 
-            AVCOL_SPC_CHROMA_DERIVED_NCL => Space::ChromaDerivedNCL,
-            AVCOL_SPC_CHROMA_DERIVED_CL => Space::ChromaDerivedCL,
-            AVCOL_SPC_ICTCP => Space::ICTCP,
+            value if value == 12  => Space::ChromaDerivedNCL,
+            value if value == 13 => Space::ChromaDerivedCL,
+            value if value == 14 => Space::ICTCP,
+            value if value == 15 => Space::Unspecified,
+            _ => Space::RGB
         }
     }
 }
 
 impl From<Space> for AVColorSpace {
     fn from(value: Space) -> AVColorSpace {
-        match value {
-            Space::RGB => AVCOL_SPC_RGB,
-            Space::BT709 => AVCOL_SPC_BT709,
-            Space::Unspecified => AVCOL_SPC_UNSPECIFIED,
-            Space::Reserved => AVCOL_SPC_RESERVED,
-            Space::FCC => AVCOL_SPC_FCC,
-            Space::BT470BG => AVCOL_SPC_BT470BG,
-            Space::SMPTE170M => AVCOL_SPC_SMPTE170M,
-            Space::SMPTE240M => AVCOL_SPC_SMPTE240M,
-            Space::YCGCO => AVCOL_SPC_YCGCO,
-            Space::BT2020NCL => AVCOL_SPC_BT2020_NCL,
-            Space::BT2020CL => AVCOL_SPC_BT2020_CL,
-            Space::SMPTE2085 => AVCOL_SPC_SMPTE2085,
-
-            Space::ChromaDerivedNCL => AVCOL_SPC_CHROMA_DERIVED_NCL,
-            Space::ChromaDerivedCL => AVCOL_SPC_CHROMA_DERIVED_CL,
-            Space::ICTCP => AVCOL_SPC_ICTCP,
-        }
+        value as AVColorSpace
     }
 }
