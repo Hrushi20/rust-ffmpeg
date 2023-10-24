@@ -48,7 +48,7 @@ mod swresample_wasmedge {
 pub mod util;
 pub use util::channel_layout::{self, ChannelLayout};
 pub use util::chroma;
-// pub use util::color;
+pub use util::color;
 pub use util::dictionary;
 pub use util::dictionary::Mut as DictionaryMut;
 pub use util::dictionary::Owned as Dictionary;
@@ -58,10 +58,10 @@ pub use util::frame::{self, Frame};
 pub use util::log;
 // pub use util::mathematics::{self, rescale, Rescale, Rounding};
 pub use util::media;
-// pub use util::option;
-// pub use util::picture;
+pub use util::option;
+pub use util::picture;
 pub use util::rational::{self, Rational};
-// pub use util::time;
+pub use util::time;
 
 // #[cfg(feature = "format")]
 pub mod format;

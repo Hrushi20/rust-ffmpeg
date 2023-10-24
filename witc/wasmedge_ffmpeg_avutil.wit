@@ -73,3 +73,9 @@ av-log-set-level: func(logLevelId:s32) -> unit
 av-log-get-level: func() -> s32
 av-log-set-flags: func(flagId:s32) -> unit
 av-log-get-flags: func() -> s32
+
+// time.h
+av-gettime: func() -> s64
+av-gettime-relative: func() -> s64
+av-gettime-relative-is-monotonic: func() -> s64
+av-usleep: func(USec:u32) -> s32
