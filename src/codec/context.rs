@@ -51,7 +51,7 @@ impl Context {
 
         unsafe {
             // To Context
-            match avcodec_wasmedge::avcodec_parameters_to_context(context.ptr() as u32, parameters.ptr()) {
+            match avcodec_wasmedge::avcodec_parameters_to_context(context.ptr(), parameters.ptr()) {
                 e if e < 0 => Err(Error::from(e)),
                 _ => Ok(context),
             }

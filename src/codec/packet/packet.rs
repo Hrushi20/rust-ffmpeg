@@ -25,7 +25,6 @@ impl Packet {
     #[inline]
     pub fn empty() -> Self {
         unsafe {
-            // let mut pkt: AVPacket = mem::zeroed();
             let av_packet = MaybeUninit::<AVPacket>::uninit();
 
             avcodec_wasmedge::av_packet_alloc(av_packet.as_ptr() as u32);

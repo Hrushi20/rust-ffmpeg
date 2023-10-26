@@ -16,14 +16,18 @@ pub mod range;
 pub mod types;
 pub mod rational;
 pub mod time;
+
+use avutil_wasmedge;
 //
 // use std::ffi::CStr;
 // use std::str::from_utf8_unchecked;
 //
-// #[inline(always)]
-// pub fn version() -> u32 {
-//     unsafe { avutil_version() }
-// }
+#[inline(always)]
+pub fn version() -> u32 {
+    unsafe {
+        avutil_wasmedge::avutil_version()
+    }
+}
 //
 // #[inline(always)]
 // pub fn configuration() -> &'static str {

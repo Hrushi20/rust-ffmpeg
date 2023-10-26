@@ -19,10 +19,10 @@ av-reduce: func(ANumPtr:u32,ADenPtr:u32,BNum:s64,BDen:s64,Max:s64) -> s32
 // frame.h
 av-frame-alloc: func(framePtr:u32) -> s32
 av-frame-free: func(frameId:u32) -> s32
-av-frame-width: func(frameId:u32) -> u32
-av-frame-height: func(frameId:u32) -> u32
-av-frame-set-width: func(frameId:u32,width:u32) -> unit
-av-frame-set-height: func(frameId:u32,height:u32) -> unit
+av-frame-width: func(frameId:u32) -> s32
+av-frame-height: func(frameId:u32) -> s32
+av-frame-set-width: func(frameId:u32,width:u32) -> s32
+av-frame-set-height: func(frameId:u32,height:u32) -> s32
 av-frame-video-format: func(frameId:u32) -> s32
 av-frame-set-video-format : func(frameId:u32,AvPixFormatId:u32) -> s32
 av-frame-isnull : func(avPacketId:u32) -> s32
@@ -98,6 +98,9 @@ av-log-set-level: func(logLevelId:s32) -> unit
 av-log-get-level: func() -> s32
 av-log-set-flags: func(flagId:s32) -> unit
 av-log-get-flags: func() -> s32
+av-rescale-q: func(a:s64,bNum:s32,bDen:s32,cNum:s32,cDen:s32) -> s64
+av-rescale-q-rnd: func(a:s64,bNum:s32,bDen:s32,cNum:s32,cDen:s32,roundingId:s32) -> s64
+avutil-version: func() -> u32
 
 // time.h
 av-gettime: func() -> s64

@@ -210,7 +210,10 @@ fn main() {
 
     let src_format = frame.format();
     println!("Src_format: {:?}",src_format);
+    println!("Width: {:?}",frame.width());
+    println!("Format: {:?}",frame.format());
     println!("IsKey: {:?}",frame.is_key());
+    println!("Stride: {:?}",frame.stride(0));
     println!("IsCorrupt: {:?}",frame.is_corrupt());
     println!("Pts: {:?}",frame.pts());
     println!("Quality: {:?}",frame.quality());

@@ -56,7 +56,7 @@ pub use util::dictionary::Ref as DictionaryRef;
 pub use util::error::{self, Error};
 pub use util::frame::{self, Frame};
 pub use util::log;
-// pub use util::mathematics::{self, rescale, Rescale, Rounding};
+pub use util::mathematics::{self, rescale, Rescale, Rounding};
 pub use util::media;
 pub use util::option;
 pub use util::picture;

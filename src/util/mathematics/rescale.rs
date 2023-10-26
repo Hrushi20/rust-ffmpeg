@@ -1,7 +1,7 @@
-use ffi::*;
 use {Rational, Rounding};
+use avutil_wasmedge;
 
-pub const TIME_BASE: Rational = Rational(AV_TIME_BASE_Q.num, AV_TIME_BASE_Q.den);
+pub const TIME_BASE: Rational = Rational(1, 1000000);
 
 pub trait Rescale {
     fn rescale<S, D>(&self, source: S, destination: D) -> i64
@@ -21,11 +21,16 @@ impl<T: Into<i64> + Clone> Rescale for T {
         S: Into<Rational>,
         D: Into<Rational>,
     {
+        let src_rational = source.into();
+        let dest_rational = destination.into();
+
         unsafe {
-            av_rescale_q(
+            avutil_wasmedge::av_rescale_q(
                 self.clone().into(),
-                source.into().into(),
-                destination.into().into(),
+                src_rational.numerator(),
+                src_rational.denominator(),
+                dest_rational.numerator(),
+               dest_rational.denominator()
             )
         }
     }
@@ -36,10 +41,16 @@ impl<T: Into<i64> + Clone> Rescale for T {
         D: Into<Rational>,
     {
         unsafe {
-            av_rescale_q_rnd(
+
+            let src_rational = source.into();
+            let dest_rational = destination.into();
+
+            avutil_wasmedge::av_rescale_q_rnd(
                 self.clone().into(),
-                source.into().into(),
-                destination.into().into(),
+                src_rational.numerator(),
+                src_rational.denominator(),
+                dest_rational.numerator(),
+                dest_rational.denominator(),
                 rounding.into(),
             )
         }

@@ -3,8 +3,6 @@
 use std::ffi::CString;
 use std::mem;
 
-use ffi::*;
-use libc::{c_int, c_void};
 use util::format;
 use {ChannelLayout, Error, Rational};
 

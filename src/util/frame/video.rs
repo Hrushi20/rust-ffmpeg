@@ -106,14 +106,14 @@ impl Video {
     pub fn width(&self) -> u32 {
         unsafe {
             // How to differentiate between wasmError and width
-            avutil_wasmedge::av_frame_width(self.ptr())
+            avutil_wasmedge::av_frame_width(self.ptr()) as u32
         }
     }
 
     #[inline]
     pub fn set_width(&self, value: u32) {
         unsafe {
-            avutil_wasmedge::av_frame_set_width(self.ptr(),value)
+            avutil_wasmedge::av_frame_set_width(self.ptr(),value);
         }
     }
 
@@ -121,14 +121,14 @@ impl Video {
     pub fn height(&self) -> u32 {
         unsafe {
             // How to differentiate between wasmError and height
-            avutil_wasmedge::av_frame_height(self.ptr())
+            avutil_wasmedge::av_frame_height(self.ptr()) as u32
         }
     }
 
     #[inline]
     pub fn set_height(&self, value: u32) {
         unsafe {
-            avutil_wasmedge::av_frame_set_height(self.ptr(),value)
+            avutil_wasmedge::av_frame_set_height(self.ptr(),value);
         }
     }
 
