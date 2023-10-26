@@ -28,6 +28,6 @@ impl From<AVRounding> for Rounding {
 impl From<Rounding> for AVRounding {
     #[inline(always)]
     fn from(value: Rounding) -> AVRounding {
-        value as u32
+        value as AVRounding
     }
 }

@@ -82,13 +82,13 @@ impl Audio {
             avutil_wasmedge::av_frame_channels(self.ptr()) as u16
         }
     }
-    //
-    // #[inline]
-    // pub fn set_channels(&mut self, value: u16) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).channels = i32::from(value);
-    //     }
-    // }
+
+    #[inline]
+    pub fn set_channels(&mut self, value: u16) {
+        unsafe {
+            avutil_wasmedge::av_frame_set_channels(self.ptr(),i32::from(value));
+        }
+    }
 
     #[inline]
     pub fn rate(&self) -> u32 {
@@ -107,7 +107,6 @@ impl Audio {
     #[inline]
     pub fn samples(&self) -> usize {
         unsafe {
-            // avutil_wasmedge:av_frame_set_nb_samples(self.pt) as usize
             avutil_wasmedge::av_frame_nb_samples(self.ptr()) as usize
         }
     }
@@ -241,21 +240,21 @@ impl ::std::fmt::Debug for Audio {
     }
 }
 
-// impl Clone for Audio {
-//     fn clone(&self) -> Self {
-//         let mut cloned = Audio::new(self.format(), self.samples(), self.channel_layout());
-//         cloned.clone_from(self);
-//
-//         cloned
-//     }
+impl Clone for Audio {
+    fn clone(&self) -> Self {
+        let mut cloned = Audio::new(self.format(), self.samples(), self.channel_layout());
+        cloned.clone_from(self);
 
-    // fn clone_from(&mut self, source: &Self) {
-    //     unsafe {
-    //         av_frame_copy(self.as_mut_ptr(), source.as_ptr());
-    //         av_frame_copy_props(self.as_mut_ptr(), source.as_ptr());
-    //     }
-    // }
-// }
+        cloned
+    }
+
+    fn clone_from(&mut self, source: &Self) {
+        unsafe {
+            avutil_wasmedge::av_frame_copy(self.ptr(), source.ptr());
+            avutil_wasmedge::av_frame_copy_props(self.ptr(), source.ptr());
+        }
+    }
+}
 
 impl From<Frame> for Audio {
     fn from(frame: Frame) -> Self {

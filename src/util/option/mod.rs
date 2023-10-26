@@ -59,6 +59,6 @@ impl From<AVOptionType> for Type {
 
 impl From<Type> for AVOptionType {
     fn from(value: Type) -> AVOptionType {
-        value as u32
+        value as AVOptionType
     }
 }

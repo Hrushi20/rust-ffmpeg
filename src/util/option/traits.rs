@@ -19,7 +19,6 @@ macro_rules! check {
 
 pub unsafe trait Target {
     fn as_ptr(&self) -> *const c_void;
-    fn as_mut_ptr(&mut self) -> *mut c_void;
 }
 
 pub trait Settable: Target {

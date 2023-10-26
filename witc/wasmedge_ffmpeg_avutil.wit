@@ -37,8 +37,33 @@ av-frame-nb-samples : func(frameId:u32) -> s32
 av-frame-sample-rate : func(frameId:u32) -> s32
 av-frame-set-sample-rate : func(frameId:u32,sample-rate:s32) -> s32
 av-frame-channels : func(frameId:u32) -> s32
+av-frame-set-channels : func(frameId:u32,Channels:s32) -> s32
 av-frame-channel-layout : func(frameId:u32) -> u64
 av-frame-best-effort-timestamp : func(frameId:u32) -> s64
+av-frame-pict-type : func(frameId:u32) -> s32
+av-frame-set-pict-type : func(frameId:u32,pictTypeId:s32) -> s32
+av-frame-interlaced-frame : func(frameId:u32) -> s32
+av-frame-top-field-first : func(frameId:u32) -> s32
+av-frame-palette-has-changed : func(frameId:u32) -> s32
+av-frame-colorspace : func(frameId:u32) -> s32
+av-frame-set-colorspace : func(frameId:u32,colorSpaceId:s32) -> s32
+av-frame-color-range : func(frameId:u32) -> s32
+av-frame-set-color-range : func(frameId:u32,colorRangeId:s32) -> s32
+av-frame-color-trc : func(frameId:u32) -> s32
+av-frame-set-color-trc : func(frameId:u32,colorTransferCharacteristicId:s32) -> s32
+av-frame-chroma-location : func(frameId:u32) -> s32
+av-frame-coded-picture-number : func(frameId:u32) -> s32
+av-frame-display-picture-number : func(frameId:u32) -> s32
+av-frame-repeat-pict : func(frameId:u32) -> s32
+av-frame-flags : func(frameId:u32) -> s32
+av-frame-quality : func(frameId:u32) -> s32
+av-frame-metadata : func(frameId:u32,dictPtr:u32) -> s32
+av-frame-set-metadata : func(frameId:u32,dictId:u32) -> s32
+av-frame-key-frame : func(frameId:u32) -> s32
+av-frame-pts : func(frameId:u32) -> s64
+av-frame-set-pts : func(frameId:u32,pts:s64) -> s32
+av-frame-copy : func(destFrameId:u32,srcFrameId:u32) -> s32
+av-frame-copy-props : func(destFrameId:u32,srcFrameId:u32) -> s32
 
 // pixfmt.h
 avpixfmtdescriptor-nb-components : func(AvPixFormatId:u32) -> s32

@@ -2,7 +2,7 @@
 
 use std::mem::MaybeUninit;
 use std::ptr;
-use avUtilTypes::AVFrame;
+use avUtilTypes::{AVDictionary, AVFrame};
 use avutil_wasmedge;
 // pub use self::side_data::SideData;
 
@@ -15,7 +15,7 @@ pub use self::audio::Audio;
 pub mod flag;
 pub use self::flag::Flags;
 
-// use {Dictionary, DictionaryRef};
+use {Dictionary, DictionaryRef};
 
 const AV_NOPTS_VALUE: i64 = 0x8000000000000000u64 as i64;
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
@@ -68,16 +68,19 @@ impl Frame {
 }
 
 impl Frame {
-    // #[inline]
-    // pub fn is_key(&self) -> bool {
-    //     unsafe { (*self.as_ptr()).key_frame == 1 }
-    // }
-    //
-    // #[inline]
-    // pub fn is_corrupt(&self) -> bool {
-    //     self.flags().contains(Flags::CORRUPT)
-    // }
-    //
+
+    #[inline]
+    pub fn is_key(&self) -> bool {
+        unsafe {
+            avutil_wasmedge::av_frame_key_frame(self.ptr()) == 1
+        }
+    }
+
+    #[inline]
+    pub fn is_corrupt(&self) -> bool {
+        self.flags().contains(Flags::CORRUPT)
+    }
+
     // #[inline]
     // pub fn packet(&self) -> Packet {
     //     unsafe {
@@ -92,23 +95,23 @@ impl Frame {
     //         }
     //     }
     // }
-    //
-    // #[inline]
-    // pub fn pts(&self) -> Option<i64> {
-    //     unsafe {
-    //         match (*self.as_ptr()).pts {
-    //             AV_NOPTS_VALUE => None,
-    //             pts => Some(pts),
-    //         }
-    //     }
-    // }
-    //
-    // #[inline]
-    // pub fn set_pts(&mut self, value: Option<i64>) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).pts = value.unwrap_or(AV_NOPTS_VALUE);
-    //     }
-    // }
+
+    #[inline]
+    pub fn pts(&self) -> Option<i64> {
+        unsafe {
+            match avutil_wasmedge::av_frame_pts(self.ptr()) {
+                AV_NOPTS_VALUE => None,
+                pts => Some(pts),
+            }
+        }
+    }
+
+    #[inline]
+    pub fn set_pts(&mut self, value: Option<i64>) {
+        unsafe {
+            avutil_wasmedge::av_frame_set_pts(self.ptr(),value.unwrap_or(AV_NOPTS_VALUE));
+        }
+    }
 
     #[inline]
     pub fn timestamp(&self) -> Option<i64> {
@@ -120,25 +123,36 @@ impl Frame {
         }
     }
 
-    // #[inline]
-    // pub fn quality(&self) -> usize {
-    //     unsafe { (*self.as_ptr()).quality as usize }
-    // }
-    //
-    // #[inline]
-    // pub fn flags(&self) -> Flags {
-    //     unsafe { Flags::from_bits_truncate((*self.as_ptr()).flags) }
-    // }
+    #[inline]
+    pub fn quality(&self) -> usize {
+        unsafe {
+            avutil_wasmedge::av_frame_quality(self.ptr()) as usize
+        }
+    }
 
-    // #[inline]
-    // pub fn metadata(&self) -> DictionaryRef {
-    //     unsafe { DictionaryRef::wrap((*self.as_ptr()).metadata) }
-    // }
-    //
-    // #[inline]
-    // pub fn set_metadata(&mut self, value: Dictionary) {
-    //     unsafe { (*self.as_mut_ptr()).metadata = value.disown() }
-    // }
+    #[inline]
+    pub fn flags(&self) -> Flags {
+        unsafe {
+            let flags = avutil_wasmedge::av_frame_flags(self.ptr());
+            Flags::from_bits_truncate(flags)
+        }
+    }
+
+    #[inline]
+    pub fn metadata(&self) -> DictionaryRef {
+        unsafe {
+            let dict = MaybeUninit::<AVDictionary>::uninit();
+            avutil_wasmedge::av_frame_metadata(self.ptr(),dict.as_ptr() as AVDictionary);
+            DictionaryRef::wrap(ptr::read(dict.as_ptr()))
+        }
+    }
+
+    #[inline]
+    pub fn set_metadata(&mut self, value: Dictionary) {
+        unsafe {
+             avutil_wasmedge::av_frame_set_metadata(self.ptr(),value.disown());
+        }
+    }
 
     // #[inline]
     // pub fn side_data(&self, kind: side_data::Type) -> Option<SideData> {

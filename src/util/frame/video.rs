@@ -1,12 +1,12 @@
 use std::ops::{Deref, DerefMut};
-use std::slice;
+use std::{mem, slice};
 use std::slice::from_raw_parts;
 
 use super::Frame;
-// use color;
+use color;
 use avUtilTypes::{AVFrame};
-// use picture;
-// use util::chroma;
+use picture;
+use util::chroma;
 use util::format;
 use Rational;
 use util::format::Pixel;
@@ -37,15 +37,15 @@ impl Video {
         unsafe { Video(Frame::empty()) }
     }
 
-    // #[inline]
-    // pub fn new(format: format::Pixel, width: u32, height: u32) -> Self {
-    //     unsafe {
-    //         let mut frame = Video::empty();
-    //         frame.alloc(format, width, height);
-    //
-    //         frame
-    //     }
-    // }
+    #[inline]
+    pub fn new(format: format::Pixel, width: u32, height: u32) -> Self {
+        unsafe {
+            let mut frame = Video::empty();
+            frame.alloc(format, width, height);
+
+            frame
+        }
+    }
 
     #[inline]
     pub fn format(&self) -> format::Pixel {
@@ -66,32 +66,41 @@ impl Video {
         }
     }
 
-    // #[inline]
-    // pub fn kind(&self) -> picture::Type {
-    //     unsafe { picture::Type::from((*self.as_ptr()).pict_type) }
-    // }
-    //
-    // #[inline]
-    // pub fn set_kind(&mut self, value: picture::Type) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).pict_type = value.into();
-    //     }
-    // }
-    //
-    // #[inline]
-    // pub fn is_interlaced(&self) -> bool {
-    //     unsafe { (*self.as_ptr()).interlaced_frame != 0 }
-    // }
-    //
-    // #[inline]
-    // pub fn is_top_first(&self) -> bool {
-    //     unsafe { (*self.as_ptr()).top_field_first != 0 }
-    // }
-    //
-    // #[inline]
-    // pub fn has_palette_changed(&self) -> bool {
-    //     unsafe { (*self.as_ptr()).palette_has_changed != 0 }
-    // }
+    #[inline]
+    pub fn kind(&self) -> picture::Type {
+        unsafe {
+            let pict_type = avutil_wasmedge::av_frame_pict_type(self.ptr());
+            picture::Type::from(pict_type)
+        }
+    }
+
+    #[inline]
+    pub fn set_kind(&mut self, value: picture::Type) {
+        unsafe {
+            avutil_wasmedge::av_frame_set_pict_type(self.ptr(),value.into());
+        }
+    }
+
+    #[inline]
+    pub fn is_interlaced(&self) -> bool {
+        unsafe {
+            avutil_wasmedge::av_frame_interlaced_frame(self.ptr()) != 0
+        }
+    }
+
+    #[inline]
+    pub fn is_top_first(&self) -> bool {
+        unsafe {
+            avutil_wasmedge::av_frame_top_field_first(self.ptr()) != 0
+        }
+    }
+
+    #[inline]
+    pub fn has_palette_changed(&self) -> bool {
+        unsafe {
+            avutil_wasmedge::av_frame_palette_has_changed(self.ptr()) != 0
+        }
+    }
 
     #[inline]
     pub fn width(&self) -> u32 {
@@ -123,30 +132,36 @@ impl Video {
         }
     }
 
-    // #[inline]
-    // pub fn color_space(&self) -> color::Space {
-    //     unsafe { color::Space::from((*self.as_ptr()).colorspace) }
-    // }
-    //
-    // #[inline]
-    // pub fn set_color_space(&mut self, value: color::Space) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).colorspace = value.into();
-    //     }
-    // }
-    //
-    // #[inline]
-    // pub fn color_range(&self) -> color::Range {
-    //     unsafe { color::Range::from((*self.as_ptr()).color_range) }
-    // }
-    //
-    // #[inline]
-    // pub fn set_color_range(&mut self, value: color::Range) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).color_range = value.into();
-    //     }
-    // }
-    //
+    #[inline]
+    pub fn color_space(&self) -> color::Space {
+        unsafe {
+            let color_space = avutil_wasmedge::av_frame_colorspace(self.ptr());
+            color::Space::from(color_space)
+        }
+    }
+
+    #[inline]
+    pub fn set_color_space(&mut self, value: color::Space) {
+        unsafe {
+            avutil_wasmedge::av_frame_set_colorspace(self.ptr(),value.into());
+        }
+    }
+
+    #[inline]
+    pub fn color_range(&self) -> color::Range {
+        unsafe {
+            let color_range = avutil_wasmedge::av_frame_color_range(self.ptr());
+            color::Range::from(color_range)
+        }
+    }
+
+    #[inline]
+    pub fn set_color_range(&mut self, value: color::Range) {
+        unsafe {
+            avutil_wasmedge::av_frame_set_color_range(self.ptr(),value.into());
+        }
+    }
+
     // #[inline]
     // pub fn color_primaries(&self) -> color::Primaries {
     //     unsafe { color::Primaries::from((*self.as_ptr()).color_primaries) }
@@ -158,43 +173,56 @@ impl Video {
     //         (*self.as_mut_ptr()).color_primaries = value.into();
     //     }
     // }
-    //
-    // #[inline]
-    // pub fn color_transfer_characteristic(&self) -> color::TransferCharacteristic {
-    //     unsafe { color::TransferCharacteristic::from((*self.as_ptr()).color_trc) }
-    // }
-    //
-    // #[inline]
-    // pub fn set_color_transfer_characteristic(&mut self, value: color::TransferCharacteristic) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).color_trc = value.into();
-    //     }
-    // }
-    //
-    // #[inline]
-    // pub fn chroma_location(&self) -> chroma::Location {
-    //     unsafe { chroma::Location::from((*self.as_ptr()).chroma_location) }
-    // }
-    //
+
+    #[inline]
+    pub fn color_transfer_characteristic(&self) -> color::TransferCharacteristic {
+        unsafe {
+            let color_trc = avutil_wasmedge::av_frame_color_trc(self.ptr());
+            color::TransferCharacteristic::from(color_trc)
+        }
+    }
+
+    #[inline]
+    pub fn set_color_transfer_characteristic(&mut self, value: color::TransferCharacteristic) {
+        unsafe {
+            avutil_wasmedge::av_frame_set_color_trc(self.ptr(),value.into());
+        }
+    }
+
+    #[inline]
+    pub fn chroma_location(&self) -> chroma::Location {
+        unsafe {
+            let chroma_location = avutil_wasmedge::av_frame_chroma_location(self.ptr());
+            chroma::Location::from(chroma_location)
+        }
+    }
+
     // #[inline]
     // pub fn aspect_ratio(&self) -> Rational {
     //     unsafe { Rational::from((*self.as_ptr()).sample_aspect_ratio) }
     // }
-    //
-    // #[inline]
-    // pub fn coded_number(&self) -> usize {
-    //     unsafe { (*self.as_ptr()).coded_picture_number as usize }
-    // }
-    //
-    // #[inline]
-    // pub fn display_number(&self) -> usize {
-    //     unsafe { (*self.as_ptr()).display_picture_number as usize }
-    // }
-    //
-    // #[inline]
-    // pub fn repeat(&self) -> f64 {
-    //     unsafe { f64::from((*self.as_ptr()).repeat_pict) }
-    // }
+
+    #[inline]
+    pub fn coded_number(&self) -> usize {
+        unsafe {
+            avutil_wasmedge::av_frame_coded_picture_number(self.ptr()) as usize
+        }
+    }
+
+    #[inline]
+    pub fn display_number(&self) -> usize {
+        unsafe {
+            avutil_wasmedge::av_frame_display_picture_number(self.ptr()) as usize
+        }
+    }
+
+    #[inline]
+    pub fn repeat(&self) -> f64 {
+        unsafe {
+            let repeat_pict = avutil_wasmedge::av_frame_repeat_pict(self.ptr());
+            f64::from(repeat_pict)
+        }
+    }
 
     #[inline]
     pub fn stride(&self, index: usize) -> usize {
@@ -219,25 +247,25 @@ impl Video {
 
         8
     }
-    //
-    // #[inline]
-    // pub fn plane_width(&self, index: usize) -> u32 {
-    //     if index >= self.planes() {
-    //         panic!("out of bounds");
-    //     }
-    //
-    //     // Logic taken from image_get_linesize().
-    //     if index != 1 && index != 2 {
-    //         return self.width();
-    //     }
-    //
-    //     if let Some(desc) = self.format().descriptor() {
-    //         let s = desc.log2_chroma_w();
-    //         (self.width() + (1 << s) - 1) >> s
-    //     } else {
-    //         self.width()
-    //     }
-    // }
+
+    #[inline]
+    pub fn plane_width(&self, index: usize) -> u32 {
+        if index >= self.planes() {
+            panic!("out of bounds");
+        }
+
+        // Logic taken from image_get_linesize().
+        if index != 1 && index != 2 {
+            return self.width();
+        }
+
+        if let Some(desc) = self.format().descriptor() {
+            let s = desc.log2_chroma_w();
+            (self.width() + (1 << s) - 1) >> s
+        } else {
+            self.width()
+        }
+    }
 
     #[inline]
     pub fn plane_height(&self, index: usize) -> u32 {
@@ -342,23 +370,23 @@ impl DerefMut for Video {
     }
 }
 
-// impl Clone for Video {
-//     #[inline]
-//     fn clone(&self) -> Self {
-//         let mut cloned = Video::new(self.format(), self.width(), self.height());
-//         cloned.clone_from(self);
-//
-//         cloned
-//     }
-//
-//     #[inline]
-//     fn clone_from(&mut self, source: &Self) {
-//         unsafe {
-//             av_frame_copy(self.as_mut_ptr(), source.as_ptr());
-//             av_frame_copy_props(self.as_mut_ptr(), source.as_ptr());
-//         }
-//     }
-// }
+impl Clone for Video {
+    #[inline]
+    fn clone(&self) -> Self {
+        let mut cloned = Video::new(self.format(), self.width(), self.height());
+        cloned.clone_from(self);
+
+        cloned
+    }
+
+    #[inline]
+    fn clone_from(&mut self, source: &Self) {
+        unsafe {
+            avutil_wasmedge::av_frame_copy(self.ptr(), source.ptr());
+            avutil_wasmedge::av_frame_copy_props(self.ptr(), source.ptr());
+        }
+    }
+}
 
 impl From<Frame> for Video {
     #[inline]
@@ -366,73 +394,73 @@ impl From<Frame> for Video {
         Video(frame)
     }
 }
-//
-// pub unsafe trait Component {
-//     fn is_valid(format: format::Pixel) -> bool;
-// }
-//
-// #[cfg(feature = "image")]
-// unsafe impl Component for ::image::Luma<u8> {
-//     #[inline(always)]
-//     fn is_valid(format: format::Pixel) -> bool {
-//         format == format::Pixel::GRAY8
-//     }
-// }
-//
-// #[cfg(feature = "image")]
-// unsafe impl Component for ::image::Rgb<u8> {
-//     #[inline(always)]
-//     fn is_valid(format: format::Pixel) -> bool {
-//         format == format::Pixel::RGB24
-//     }
-// }
-//
-// #[cfg(feature = "image")]
-// unsafe impl Component for ::image::Rgba<u8> {
-//     #[inline(always)]
-//     fn is_valid(format: format::Pixel) -> bool {
-//         format == format::Pixel::RGBA
-//     }
-// }
-//
-// unsafe impl Component for [u8; 3] {
-//     #[inline(always)]
-//     fn is_valid(format: format::Pixel) -> bool {
-//         format == format::Pixel::RGB24 || format == format::Pixel::BGR24
-//     }
-// }
-//
-// unsafe impl Component for (u8, u8, u8) {
-//     #[inline(always)]
-//     fn is_valid(format: format::Pixel) -> bool {
-//         format == format::Pixel::RGB24 || format == format::Pixel::BGR24
-//     }
-// }
-//
-// unsafe impl Component for [u8; 4] {
-//     #[inline(always)]
-//     fn is_valid(format: format::Pixel) -> bool {
-//         format == format::Pixel::RGBA
-//             || format == format::Pixel::BGRA
-//             || format == format::Pixel::ARGB
-//             || format == format::Pixel::ABGR
-//             || format == format::Pixel::RGBZ
-//             || format == format::Pixel::BGRZ
-//             || format == format::Pixel::ZRGB
-//             || format == format::Pixel::ZBGR
-//     }
-// }
-//
-// unsafe impl Component for (u8, u8, u8, u8) {
-//     #[inline(always)]
-//     fn is_valid(format: format::Pixel) -> bool {
-//         format == format::Pixel::RGBA
-//             || format == format::Pixel::BGRA
-//             || format == format::Pixel::ARGB
-//             || format == format::Pixel::ABGR
-//             || format == format::Pixel::RGBZ
-//             || format == format::Pixel::BGRZ
-//             || format == format::Pixel::ZRGB
-//             || format == format::Pixel::ZBGR
-//     }
-// }
+
+pub unsafe trait Component {
+    fn is_valid(format: format::Pixel) -> bool;
+}
+
+#[cfg(feature = "image")]
+unsafe impl Component for ::image::Luma<u8> {
+    #[inline(always)]
+    fn is_valid(format: format::Pixel) -> bool {
+        format == format::Pixel::GRAY8
+    }
+}
+
+#[cfg(feature = "image")]
+unsafe impl Component for ::image::Rgb<u8> {
+    #[inline(always)]
+    fn is_valid(format: format::Pixel) -> bool {
+        format == format::Pixel::RGB24
+    }
+}
+
+#[cfg(feature = "image")]
+unsafe impl Component for ::image::Rgba<u8> {
+    #[inline(always)]
+    fn is_valid(format: format::Pixel) -> bool {
+        format == format::Pixel::RGBA
+    }
+}
+
+unsafe impl Component for [u8; 3] {
+    #[inline(always)]
+    fn is_valid(format: format::Pixel) -> bool {
+        format == format::Pixel::RGB24 || format == format::Pixel::BGR24
+    }
+}
+
+unsafe impl Component for (u8, u8, u8) {
+    #[inline(always)]
+    fn is_valid(format: format::Pixel) -> bool {
+        format == format::Pixel::RGB24 || format == format::Pixel::BGR24
+    }
+}
+
+unsafe impl Component for [u8; 4] {
+    #[inline(always)]
+    fn is_valid(format: format::Pixel) -> bool {
+        format == format::Pixel::RGBA
+            || format == format::Pixel::BGRA
+            || format == format::Pixel::ARGB
+            || format == format::Pixel::ABGR
+            || format == format::Pixel::RGBZ
+            || format == format::Pixel::BGRZ
+            || format == format::Pixel::ZRGB
+            || format == format::Pixel::ZBGR
+    }
+}
+
+unsafe impl Component for (u8, u8, u8, u8) {
+    #[inline(always)]
+    fn is_valid(format: format::Pixel) -> bool {
+        format == format::Pixel::RGBA
+            || format == format::Pixel::BGRA
+            || format == format::Pixel::ARGB
+            || format == format::Pixel::ABGR
+            || format == format::Pixel::RGBZ
+            || format == format::Pixel::BGRZ
+            || format == format::Pixel::ZRGB
+            || format == format::Pixel::ZBGR
+    }
+}
