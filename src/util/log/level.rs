@@ -20,15 +20,15 @@ impl TryFrom<i32> for Level {
 
     fn try_from(value: i32) -> Result<Self, &'static str> {
         match value {
-            0 => Ok(Level::Quiet),
-            1 => Ok(Level::Panic),
-            2 => Ok(Level::Fatal),
-            3 => Ok(Level::Error),
-            4 => Ok(Level::Warning),
-            5 => Ok(Level::Info),
-            6 => Ok(Level::Verbose),
-            7 => Ok(Level::Debug),
-            8 => Ok(Level::Trace),
+            -8 => Ok(Level::Quiet),
+            0 => Ok(Level::Panic),
+            8 => Ok(Level::Fatal),
+            16 => Ok(Level::Error),
+            24 => Ok(Level::Warning),
+            32 => Ok(Level::Info),
+            40 => Ok(Level::Verbose),
+            48 => Ok(Level::Debug),
+            56 => Ok(Level::Trace),
             _ => Err("illegal log level"),
         }
     }
