@@ -56,10 +56,10 @@ impl Decoder for Video {
     }
 }
 
-// pub trait Encoder {
-//     fn encoder(self) -> Option<Codec>;
-// }
-//
+pub trait Encoder {
+    fn encoder(self) -> Option<Codec>;
+}
+
 // impl<'a> Encoder for &'a str {
 //     fn encoder(self) -> Option<Codec> {
 //         encoder::find_by_name(self)

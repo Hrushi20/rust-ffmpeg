@@ -10,5 +10,5 @@ pub use self::packet::Packet;
 // pub mod side_data;
 // pub use self::side_data::SideData;
 
-// pub mod flag;
-// pub use self::flag::Flags;
+pub mod flag;
+pub use self::flag::Flags;

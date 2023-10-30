@@ -1,8 +1,5 @@
-use ffi::*;
-use libc::c_int;
-
 bitflags! {
-    pub struct Flags: c_int {
-        const FORCED = AV_SUBTITLE_FLAG_FORCED;
+    pub struct Flags: i32 {
+        const FORCED =  0x00000001;
     }
 }

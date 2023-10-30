@@ -1,29 +1,26 @@
-use ffi::*;
-use libc::c_int;
-
 bitflags! {
-    pub struct Debug: c_int {
-        const PICT_INFO   = FF_DEBUG_PICT_INFO;
-        const RC          = FF_DEBUG_RC;
-        const BITSTREAM   = FF_DEBUG_BITSTREAM;
-        const MB_TYPE     = FF_DEBUG_MB_TYPE;
-        const QP          = FF_DEBUG_QP;
+    pub struct Debug: i32 {
+        const PICT_INFO   = 1;
+        const RC          = 2;
+        const BITSTREAM   = 4;
+        const MB_TYPE     = 8;
+        const QP          = 16;
         #[cfg(not(feature = "ffmpeg_4_0"))]
-        const MV          = FF_DEBUG_MV;
-        const DCT_COEFF   = FF_DEBUG_DCT_COEFF;
-        const SKIP        = FF_DEBUG_SKIP;
-        const STARTCODE   = FF_DEBUG_STARTCODE;
+        const MV          = 32;
+        const DCT_COEFF   = 0x00000040;
+        const SKIP        = 0x00000080;
+        const STARTCODE   = 0x00000100;
         #[cfg(not(feature = "ffmpeg_4_0"))]
-        const PTS         = FF_DEBUG_PTS;
-        const ER          = FF_DEBUG_ER;
-        const MMCO        = FF_DEBUG_MMCO;
-        const BUGS        = FF_DEBUG_BUGS;
+        const PTS         = 0x00000200;
+        const ER          = 0x00000400;
+        const MMCO        = 0x00000800;
+        const BUGS        = 0x00001000;
         #[cfg(not(feature = "ffmpeg_4_0"))]
-        const VIS_QP      = FF_DEBUG_VIS_QP;
+        const VIS_QP      = 0x00002000;
         #[cfg(not(feature = "ffmpeg_4_0"))]
-        const VIS_MB_TYPE = FF_DEBUG_VIS_MB_TYPE;
-        const BUFFERS     = FF_DEBUG_BUFFERS;
-        const THREADS     = FF_DEBUG_THREADS;
-        const NOMC        = FF_DEBUG_NOMC;
+        const VIS_MB_TYPE = 0x00004000;
+        const BUFFERS     = 0x00008000;
+        const THREADS     = 0x00010000;
+        const NOMC        = 0x01000000;
     }
 }

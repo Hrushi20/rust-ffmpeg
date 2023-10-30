@@ -10,18 +10,17 @@ pub use self::audio::Audio;
 // pub mod subtitle;
 // pub use self::subtitle::Subtitle;
 
-// pub mod slice;
-//
+pub mod slice;
+
 // pub mod conceal;
 // pub use self::conceal::Conceal;
-//
-// pub mod check;
-// pub use self::check::Check;
-//
+
+pub mod check;
+pub use self::check::Check;
+
 pub mod opened;
 pub use self::opened::Opened;
 
-use std::ffi::CString;
 use std::mem::MaybeUninit;
 use std::ptr;
 use avCodecType::AVCodec;
@@ -37,13 +36,13 @@ pub fn new() -> Decoder {
 
 pub fn find(id: Id) -> Option<Codec> {
     unsafe {
-        let avCodec = MaybeUninit::<AVCodec>::uninit();
-        avcodec_wasmedge::avcodec_find_decoder(id.into(),avCodec.as_ptr() as u32);
+        let av_codec = MaybeUninit::<AVCodec>::uninit();
+        avcodec_wasmedge::avcodec_find_decoder(id.into(),av_codec.as_ptr() as u32);
 
-        if ptr::read(avCodec.as_ptr()) == 0 {
+        if ptr::read(av_codec.as_ptr()) == 0 {
             None
         } else {
-            Some(Codec::wrap(ptr::read(avCodec.as_ptr())))
+            Some(Codec::wrap(ptr::read(av_codec.as_ptr())))
         }
     }
 }

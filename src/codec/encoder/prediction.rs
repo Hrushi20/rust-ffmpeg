@@ -1,31 +1,24 @@
-use ffi::*;
-use libc::c_int;
-
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Prediction {
-    Left,
-    Plane,
-    Median,
+    Left = 0,
+    Plane = 1,
+    Median = 2,
 }
 
-impl From<c_int> for Prediction {
-    fn from(value: c_int) -> Prediction {
+impl From<i32> for Prediction {
+    fn from(value: i32) -> Prediction {
         match value {
-            FF_PRED_LEFT => Prediction::Left,
-            FF_PRED_PLANE => Prediction::Plane,
-            FF_PRED_MEDIAN => Prediction::Median,
+            value if value == 0 => Prediction::Left,
+            value if value == 1 => Prediction::Plane,
+            value if value == 2 => Prediction::Median,
 
             _ => Prediction::Left,
         }
     }
 }
 
-impl From<Prediction> for c_int {
-    fn from(value: Prediction) -> c_int {
-        match value {
-            Prediction::Left => FF_PRED_LEFT,
-            Prediction::Plane => FF_PRED_PLANE,
-            Prediction::Median => FF_PRED_MEDIAN,
-        }
+impl From<Prediction> for i32 {
+    fn from(value: Prediction) -> i32 {
+        value as i32
     }
 }

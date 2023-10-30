@@ -3,8 +3,8 @@ use libc::c_int;
 
 bitflags! {
     pub struct Conceal: c_int {
-        const GUESS_MVS   = FF_EC_GUESS_MVS;
-        const DEBLOCK     = FF_EC_DEBLOCK;
-        const FAVOR_INTER = FF_EC_FAVOR_INTER;
+        const GUESS_MVS   = 1;
+        const DEBLOCK     = 2;
+        const FAVOR_INTER = 256;
     }
 }

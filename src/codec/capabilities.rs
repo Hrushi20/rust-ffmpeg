@@ -1,30 +1,27 @@
-use ffi::*;
-use libc::c_uint;
-
 bitflags! {
-    pub struct Capabilities: c_uint {
-        const DRAW_HORIZ_BAND     = AV_CODEC_CAP_DRAW_HORIZ_BAND;
-        const DR1                 = AV_CODEC_CAP_DR1;
+    pub struct Capabilities: u32 {
+        const DRAW_HORIZ_BAND     = 1 << 0;
+        const DR1                 = 1 << 1;
         #[cfg(not(feature = "ffmpeg_6_0"))]
-        const TRUNCATED           = AV_CODEC_CAP_TRUNCATED;
-        const DELAY               = AV_CODEC_CAP_DELAY;
-        const SMALL_LAST_FRAME    = AV_CODEC_CAP_SMALL_LAST_FRAME;
+        const TRUNCATED           = 1 << 3;
+        const DELAY               = 1 << 5;
+        const SMALL_LAST_FRAME    = 1 << 6;
         #[cfg(not(feature = "ffmpeg_4_0"))]
-        const HWACCEL_VDPAU       = AV_CODEC_CAP_HWACCEL_VDPAU;
-        const SUBFRAMES           = AV_CODEC_CAP_SUBFRAMES;
-        const EXPERIMENTAL        = AV_CODEC_CAP_EXPERIMENTAL;
-        const CHANNEL_CONF        = AV_CODEC_CAP_CHANNEL_CONF;
-        const FRAME_THREADS       = AV_CODEC_CAP_FRAME_THREADS;
-        const SLICE_THREADS       = AV_CODEC_CAP_SLICE_THREADS;
-        const PARAM_CHANGE        = AV_CODEC_CAP_PARAM_CHANGE;
+        const HWACCEL_VDPAU       = 1 << 7;
+        const SUBFRAMES           = 1 << 8;
+        const EXPERIMENTAL        = 1 << 9;
+        const CHANNEL_CONF        = 1 << 10;
+        const FRAME_THREADS       = 1 << 12;
+        const SLICE_THREADS       = 1 << 13;
+        const PARAM_CHANGE        = 1 << 14;
         #[cfg(not(feature = "ffmpeg_6_0"))]
-        const AUTO_THREADS        = AV_CODEC_CAP_AUTO_THREADS;
+        const AUTO_THREADS        = 1 << 15;
         #[cfg(feature = "ffmpeg_6_0")]
-        const OTHER_THREADS       = AV_CODEC_CAP_OTHER_THREADS;
-        const VARIABLE_FRAME_SIZE = AV_CODEC_CAP_VARIABLE_FRAME_SIZE;
+        const OTHER_THREADS       = 1 << 15;
+        const VARIABLE_FRAME_SIZE = 1 << 16;
         #[cfg(not(feature = "ffmpeg_6_0"))]
-        const INTRA_ONLY          = AV_CODEC_CAP_INTRA_ONLY;
+        const INTRA_ONLY          =  0x40000000;
         #[cfg(not(feature = "ffmpeg_6_0"))]
-        const LOSSLESS            = AV_CODEC_CAP_LOSSLESS;
+        const LOSSLESS            =  0x80000000;
     }
 }

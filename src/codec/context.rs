@@ -61,11 +61,11 @@ impl Context {
     pub fn decoder(self) -> Decoder {
         Decoder(self)
     }
-    //
+
     // pub fn encoder(self) -> Encoder {
     //     Encoder(self)
     // }
-    //
+
     // pub fn codec(&self) -> Option<Codec> {
     //     unsafe {
     //         if (*self.as_ptr()).codec.is_null() {

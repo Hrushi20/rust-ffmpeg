@@ -1,4 +1,3 @@
-use libc::c_int;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum MotionEstimation {
@@ -14,8 +13,8 @@ pub enum MotionEstimation {
     Tesa,
 }
 
-impl From<c_int> for MotionEstimation {
-    fn from(value: c_int) -> MotionEstimation {
+impl From<i32> for MotionEstimation {
+    fn from(value: i32) -> MotionEstimation {
         match value {
             1 => MotionEstimation::Zero,
             2 => MotionEstimation::Full,
@@ -33,8 +32,8 @@ impl From<c_int> for MotionEstimation {
     }
 }
 
-impl From<MotionEstimation> for c_int {
-    fn from(value: MotionEstimation) -> c_int {
+impl From<MotionEstimation> for i32 {
+    fn from(value: MotionEstimation) -> i32 {
         match value {
             MotionEstimation::Zero => 1,
             MotionEstimation::Full => 2,

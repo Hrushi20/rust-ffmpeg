@@ -1,37 +1,28 @@
-use ffi::*;
-use libc::c_int;
-
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Compliance {
-    VeryStrict,
-    Strict,
-    Normal,
-    Unofficial,
-    Experimental,
+    VeryStrict = 2,
+    Strict = 1,
+    Normal = 0,
+    Unofficial = -1,
+    Experimental = -2,
 }
 
-impl From<c_int> for Compliance {
-    fn from(value: c_int) -> Self {
+impl From<i32> for Compliance {
+    fn from(value: i32) -> Self {
         match value {
-            FF_COMPLIANCE_VERY_STRICT => Compliance::VeryStrict,
-            FF_COMPLIANCE_STRICT => Compliance::Strict,
-            FF_COMPLIANCE_NORMAL => Compliance::Normal,
-            FF_COMPLIANCE_UNOFFICIAL => Compliance::Unofficial,
-            FF_COMPLIANCE_EXPERIMENTAL => Compliance::Experimental,
+            value if value == 2 => Compliance::VeryStrict,
+            value if value == 1 => Compliance::Strict,
+            value if value == 0 => Compliance::Normal,
+            value if value == -1 => Compliance::Unofficial,
+            value if value == -2 => Compliance::Experimental,
 
             _ => Compliance::Normal,
         }
     }
 }
 
-impl From<Compliance> for c_int {
-    fn from(value: Compliance) -> c_int {
-        match value {
-            Compliance::VeryStrict => FF_COMPLIANCE_VERY_STRICT,
-            Compliance::Strict => FF_COMPLIANCE_STRICT,
-            Compliance::Normal => FF_COMPLIANCE_NORMAL,
-            Compliance::Unofficial => FF_COMPLIANCE_UNOFFICIAL,
-            Compliance::Experimental => FF_COMPLIANCE_EXPERIMENTAL,
-        }
+impl From<Compliance> for i32 {
+    fn from(value: Compliance) -> i32 {
+        value as i32
     }
 }

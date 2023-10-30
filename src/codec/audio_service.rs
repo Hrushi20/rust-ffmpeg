@@ -1,48 +1,37 @@
-use ffi::AVAudioServiceType::*;
-use ffi::*;
+use avCodecType::AVAudioServiceType;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum AudioService {
-    Main,
-    Effects,
-    VisuallyImpaired,
-    HearingImpaired,
-    Dialogue,
-    Commentary,
-    Emergency,
-    VoiceOver,
-    Karaoke,
+    Main = 0,
+    Effects = 1,
+    VisuallyImpaired = 2,
+    HearingImpaired = 3,
+    Dialogue = 4,
+    Commentary = 5,
+    Emergency = 6,
+    VoiceOver = 7,
+    Karaoke = 8,
 }
 
 impl From<AVAudioServiceType> for AudioService {
     fn from(value: AVAudioServiceType) -> Self {
         match value {
-            AV_AUDIO_SERVICE_TYPE_MAIN => AudioService::Main,
-            AV_AUDIO_SERVICE_TYPE_EFFECTS => AudioService::Effects,
-            AV_AUDIO_SERVICE_TYPE_VISUALLY_IMPAIRED => AudioService::VisuallyImpaired,
-            AV_AUDIO_SERVICE_TYPE_HEARING_IMPAIRED => AudioService::HearingImpaired,
-            AV_AUDIO_SERVICE_TYPE_DIALOGUE => AudioService::Dialogue,
-            AV_AUDIO_SERVICE_TYPE_COMMENTARY => AudioService::Commentary,
-            AV_AUDIO_SERVICE_TYPE_EMERGENCY => AudioService::Emergency,
-            AV_AUDIO_SERVICE_TYPE_VOICE_OVER => AudioService::VoiceOver,
-            AV_AUDIO_SERVICE_TYPE_KARAOKE => AudioService::Karaoke,
-            AV_AUDIO_SERVICE_TYPE_NB => AudioService::Main,
+            value if value == 0 => AudioService::Main,
+            value if value == 1 => AudioService::Effects,
+            value if value == 2 => AudioService::VisuallyImpaired,
+            value if value == 3 => AudioService::HearingImpaired,
+            value if value == 4 => AudioService::Dialogue,
+            value if value == 5 => AudioService::Commentary,
+            value if value == 6 => AudioService::Emergency,
+            value if value == 7 => AudioService::VoiceOver,
+            value if value == 8 => AudioService::Karaoke,
+             _ => AudioService::Main,
         }
     }
 }
 
 impl From<AudioService> for AVAudioServiceType {
     fn from(value: AudioService) -> AVAudioServiceType {
-        match value {
-            AudioService::Main => AV_AUDIO_SERVICE_TYPE_MAIN,
-            AudioService::Effects => AV_AUDIO_SERVICE_TYPE_EFFECTS,
-            AudioService::VisuallyImpaired => AV_AUDIO_SERVICE_TYPE_VISUALLY_IMPAIRED,
-            AudioService::HearingImpaired => AV_AUDIO_SERVICE_TYPE_HEARING_IMPAIRED,
-            AudioService::Dialogue => AV_AUDIO_SERVICE_TYPE_DIALOGUE,
-            AudioService::Commentary => AV_AUDIO_SERVICE_TYPE_COMMENTARY,
-            AudioService::Emergency => AV_AUDIO_SERVICE_TYPE_EMERGENCY,
-            AudioService::VoiceOver => AV_AUDIO_SERVICE_TYPE_VOICE_OVER,
-            AudioService::Karaoke => AV_AUDIO_SERVICE_TYPE_KARAOKE,
-        }
+        value as AVAudioServiceType
     }
 }

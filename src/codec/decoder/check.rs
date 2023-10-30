@@ -1,16 +1,13 @@
-use ffi::*;
-use libc::c_int;
-
 bitflags! {
-    pub struct Check: c_int {
-        const CRC      = AV_EF_CRCCHECK;
-        const BISTREAM = AV_EF_BITSTREAM;
-        const BUFFER   = AV_EF_BUFFER;
-        const EXPLODE  = AV_EF_EXPLODE;
+    pub struct Check: i32 {
+        const CRC      = 1 << 0;
+        const BISTREAM = 1 << 1;
+        const BUFFER   = 1 << 2;
+        const EXPLODE  = 1 << 3;
 
-        const IGNORE_ERROR = AV_EF_IGNORE_ERR;
-        const CAREFUL      = AV_EF_CAREFUL;
-        const COMPLIANT    = AV_EF_COMPLIANT;
-        const AGGRESSIVE   = AV_EF_AGGRESSIVE;
+        const IGNORE_ERROR = 1 << 15;
+        const CAREFUL      = 1 << 16;
+        const COMPLIANT    = 1 << 17;
+        const AGGRESSIVE   = 1 << 18;
     }
 }

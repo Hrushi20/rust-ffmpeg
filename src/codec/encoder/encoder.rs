@@ -1,7 +1,6 @@
 use std::ops::{Deref, DerefMut};
 use std::ptr;
 
-use ffi::*;
 use libc::c_int;
 
 use super::{audio, subtitle, video};

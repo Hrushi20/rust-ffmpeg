@@ -52,13 +52,13 @@ impl Video {
 
     pub fn width(&self) -> u32 {
         unsafe {
-            avcodec_wasmedge::avcodeccontext_width(self.ptr())
+            avcodec_wasmedge::avcodeccontext_width(self.ptr()) as u32
         }
     }
 
     pub fn height(&self) -> u32 {
         unsafe {
-            avcodec_wasmedge::avcodeccontext_height(self.ptr())
+            avcodec_wasmedge::avcodeccontext_height(self.ptr()) as u32
         }
     }
 

@@ -1,41 +1,33 @@
-use ffi::AVDiscard::*;
-use ffi::*;
+use avCodecType::AVDiscard;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Discard {
-    None,
-    Default,
-    NonReference,
-    Bidirectional,
-    NonIntra,
-    NonKey,
-    All,
+    None = -16,
+    Default = 0,
+    NonReference = 8,
+    Bidirectional = 16,
+    NonIntra = 24,
+    NonKey = 32,
+    All = 48,
 }
 
 impl From<AVDiscard> for Discard {
     fn from(value: AVDiscard) -> Self {
         match value {
-            AVDISCARD_NONE => Discard::None,
-            AVDISCARD_DEFAULT => Discard::Default,
-            AVDISCARD_NONREF => Discard::NonReference,
-            AVDISCARD_BIDIR => Discard::Bidirectional,
-            AVDISCARD_NONINTRA => Discard::NonIntra,
-            AVDISCARD_NONKEY => Discard::NonKey,
-            AVDISCARD_ALL => Discard::All,
+            value if value == -16 => Discard::None,
+            value if value == 0 => Discard::Default,
+            value if value == 8 => Discard::NonReference,
+            value if value == 16 => Discard::Bidirectional,
+            value if value == 24 => Discard::NonIntra,
+            value if value == 32 => Discard::NonKey,
+            value if value == 48 => Discard::All,
+            _ => Discard::None
         }
     }
 }
 
 impl From<Discard> for AVDiscard {
     fn from(value: Discard) -> AVDiscard {
-        match value {
-            Discard::None => AVDISCARD_NONE,
-            Discard::Default => AVDISCARD_DEFAULT,
-            Discard::NonReference => AVDISCARD_NONREF,
-            Discard::Bidirectional => AVDISCARD_BIDIR,
-            Discard::NonIntra => AVDISCARD_NONINTRA,
-            Discard::NonKey => AVDISCARD_NONKEY,
-            Discard::All => AVDISCARD_ALL,
-        }
+        value as AVDiscard
     }
 }

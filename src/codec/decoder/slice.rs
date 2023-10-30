@@ -1,10 +1,7 @@
-use ffi::*;
-use libc::c_int;
-
 bitflags! {
-    pub struct Flags: c_int {
-        const CODED_ORDER = SLICE_FLAG_CODED_ORDER;
-        const ALLOW_FIELD = SLICE_FLAG_ALLOW_FIELD;
-        const ALLOW_PLANE = SLICE_FLAG_ALLOW_PLANE;
+    pub struct Flags: i32 {
+        const CODED_ORDER = 0x0001;
+        const ALLOW_FIELD = 0x0002;
+        const ALLOW_PLANE = 0x0004;
     }
 }

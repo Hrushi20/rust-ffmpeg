@@ -1,70 +1,49 @@
-use ffi::*;
-use libc::c_int;
-
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Comparison {
-    SAD,
-    SSE,
-    SATD,
-    DCT,
-    PSNR,
-    BIT,
-    RD,
-    ZERO,
-    VSAD,
-    VSSE,
-    NSSE,
-    W53,
-    W97,
-    DCTMAX,
-    DCT264,
-    CHROMA,
+    SAD = 0,
+    SSE = 1,
+    SATD = 2,
+    DCT = 3,
+    PSNR = 4,
+    BIT = 5,
+    RD = 6,
+    ZERO = 7,
+    VSAD = 8,
+    VSSE = 9,
+    NSSE = 10,
+    W53 = 11,
+    W97 = 12,
+    DCTMAX = 13,
+    DCT264 = 14,
+    CHROMA = 256,
 }
 
-impl From<c_int> for Comparison {
-    fn from(value: c_int) -> Comparison {
+impl From<i32> for Comparison {
+    fn from(value: i32) -> Comparison {
         match value {
-            FF_CMP_SAD => Comparison::SAD,
-            FF_CMP_SSE => Comparison::SSE,
-            FF_CMP_SATD => Comparison::SATD,
-            FF_CMP_DCT => Comparison::DCT,
-            FF_CMP_PSNR => Comparison::PSNR,
-            FF_CMP_BIT => Comparison::BIT,
-            FF_CMP_RD => Comparison::RD,
-            FF_CMP_ZERO => Comparison::ZERO,
-            FF_CMP_VSAD => Comparison::VSAD,
-            FF_CMP_VSSE => Comparison::VSSE,
-            FF_CMP_NSSE => Comparison::NSSE,
-            FF_CMP_W53 => Comparison::W53,
-            FF_CMP_W97 => Comparison::W97,
-            FF_CMP_DCTMAX => Comparison::DCTMAX,
-            FF_CMP_DCT264 => Comparison::DCT264,
-            FF_CMP_CHROMA => Comparison::CHROMA,
-
+            value if value == 0 => Comparison::SAD,
+            value if value == 1 => Comparison::SSE,
+            value if value == 2 => Comparison::SATD,
+            value if value == 3 => Comparison::DCT,
+            value if value == 4 => Comparison::PSNR,
+            value if value == 5 => Comparison::BIT,
+            value if value == 6 => Comparison::RD,
+            value if value == 7 => Comparison::ZERO,
+            value if value == 8 => Comparison::VSAD,
+            value if value == 9 => Comparison::VSSE,
+            value if value == 10 => Comparison::NSSE,
+            value if value == 11  => Comparison::W53,
+            value if value == 12 => Comparison::W97,
+            value if value == 13 => Comparison::DCTMAX,
+            value if value == 14 => Comparison::DCT264,
+            value if value == 256 => Comparison::CHROMA,
             _ => Comparison::ZERO,
         }
     }
 }
 
-impl From<Comparison> for c_int {
-    fn from(value: Comparison) -> c_int {
-        match value {
-            Comparison::SAD => FF_CMP_SAD,
-            Comparison::SSE => FF_CMP_SSE,
-            Comparison::SATD => FF_CMP_SATD,
-            Comparison::DCT => FF_CMP_DCT,
-            Comparison::PSNR => FF_CMP_PSNR,
-            Comparison::BIT => FF_CMP_BIT,
-            Comparison::RD => FF_CMP_RD,
-            Comparison::ZERO => FF_CMP_ZERO,
-            Comparison::VSAD => FF_CMP_VSAD,
-            Comparison::VSSE => FF_CMP_VSSE,
-            Comparison::NSSE => FF_CMP_NSSE,
-            Comparison::W53 => FF_CMP_W53,
-            Comparison::W97 => FF_CMP_W97,
-            Comparison::DCTMAX => FF_CMP_DCTMAX,
-            Comparison::DCT264 => FF_CMP_DCT264,
-            Comparison::CHROMA => FF_CMP_CHROMA,
-        }
+impl From<Comparison> for i32 {
+    fn from(value: Comparison) -> i32 {
+       value as i32
     }
 }

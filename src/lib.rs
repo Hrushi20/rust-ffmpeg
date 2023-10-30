@@ -75,11 +75,11 @@ pub use format::stream::{Stream, StreamMut};
 // #[cfg(feature = "codec")]
 pub mod codec;
 // #[cfg(feature = "codec")]
-// pub use codec::audio_service::AudioService;
+pub use codec::audio_service::AudioService;
 // #[cfg(feature = "codec")]
 pub use codec::codec::Codec;
 // #[cfg(feature = "codec")]
-// pub use codec::discard::Discard;
+pub use codec::discard::Discard;
 // #[cfg(feature = "codec")]
 // pub use codec::field_order::FieldOrder;
 // #[cfg(feature = "codec")]
@@ -91,8 +91,7 @@ pub use codec::packet::{self, Packet};
 // #[cfg(feature = "codec")]
 // pub use codec::threading;
 // #[cfg(feature = "codec")]
-pub use codec::{decoder};
-// pub use codec::{decoder, encoder};
+pub use codec::{decoder,encoder};
 
 // #[cfg(feature = "device")]
 pub mod device;
