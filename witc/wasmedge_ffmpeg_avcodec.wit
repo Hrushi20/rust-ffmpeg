@@ -6,28 +6,86 @@ avcodec-free-context : func(avCodecCtxId:u32) -> s32
 avcodec-parameters-alloc : func(avCodecParamPtr:u32) -> s32
 avcodec-get-type : func(avCodecIDIndex:u32) -> s32
 avcodec-open2 : func(avCodecCtxId:u32,avCodecId:u32,avDictionaryId:u32) -> s32
-avcodec-find-decoder : func(avCodecIDIndex:u32,avCodecPtr:u32) -> s32
+avcodec-find-decoder : func(ID:u32,avCodecPtr:u32) -> s32
 av-codec-is-encoder : func(avCodecId:u32) -> s32
 av-codec-is-decoder : func(avCodecId:u32) -> s32
 avcodec-close : func(avCodecCtxId:u32) -> s32
 avcodec-receive-frame : func(avCodecCtxId:u32,frameId:u32) -> s32
 avcodec-send-packet : func(avCodecCtx:u32,packetId:u32) -> s32
+avcodec-find-encoder : func(ID:u32,avCodecPtr:u32) -> s32
+avcodec-send-frame: func(avCodecCtxId:u32,frameId:u32) -> s32
+avcodec-receive-packet: func(avCodecCtxId:u32,packetId:u32) -> s32
+avcodec-find-decoder-by-name: func(avCodecPtr:u32,name:string) -> s32
+avcodec-find-encoder-by-name: func(avCodecPtr:u32,name:string) -> s32
 
 // AVCodecContext struct fields
 avcodeccontext-codec-id : func(avCodecCtxId:u32) -> u32
 avcodeccontext-codec-type : func(avCodecCtxId:u32) -> s32
+avcodeccontext-set-codec-type : func(avCodecCtxId:u32,CodecTypeId:s32) -> s32
 avcodeccontext-time-base : func(avCodecCtxId:u32,NumPtr:u32,DenPtr:u32) -> s32
 avcodeccontext-width : func(avCodecCtxId:u32) -> s32
+avcodeccontext-set-width: func(avCodecCtxId:u32,width:s32) -> s32
 avcodeccontext-height : func(avCodecCtxId:u32) -> s32
+avcodeccontext-set-height: func(avCodecCtxId:u32,height:s32) -> s32
 avcodeccontext-sample-aspect-ratio : func(avCodecCtxId:u32,NumPtr:u32,DenPtr:u32) -> s32
 avcodeccontext-channel-layout : func(AvCodecCtxId:u32) -> u64
 avcodeccontext-pix-fmt : func(AvCodecCtxId:u32) -> u32
 avcodeccontext-sample-format : func(AvCodecCtxId:u32) -> u32
 avcodeccontext-sample-rate : func(AvCodecCtxId:u32) -> s32
+avcodeccontext-set-gop-size : func(avCodecCtxId:u32,GopSize:s32) -> s32
+avcodeccontext-set-max-b-frames : func(avCodecCtxId:u32,MaxBFrames:s32) -> s32
+avcodeccontext-set-b-quant-factor : func(avCodecCtxId:u32,BQuantFactor:f32) -> s32
+avcodeccontext-set-b-quant-offset : func(avCodecCtxId:u32,BQuantOffset:f32) -> s32
+avcodeccontext-set-i-quant-factor : func(avCodecCtxId:u32,IQuantFactor:f32) -> s32
+avcodeccontext-set-i-quant-offset : func(avCodecCtxId:u32,IQuantOffset:f32) -> s32
+avcodeccontext-set-lumi-masking : func(avCodecCtxId:u32,LumiMasking:f32) -> s32
+avcodeccontext-set-temporal-cplx-masking : func(avCodecCtxId:u32,TemporalCplxMasking:f32) -> s32
+avcodeccontext-set-spatial-cplx-masking : func(avCodecCtxId:u32,SpatialCplxMasking:f32) -> s32
+avcodeccontext-set-p-masking : func(avCodecCtxId:u32,PMasking:f32) -> s32
+avcodeccontext-set-dark-masking: func(avCodecCtxId:u32,DarkMasking:f32) -> s32
+avcodeccontext-set-me-cmp: func(avCodecCtxId:u32,MeCmp:s32) -> s32
+avcodeccontext-set-me-sub-cmp: func(avCodecCtxId:u32,MeSubCmp:s32) -> s32
+avcodeccontext-set-mb-cmp: func(avCodecCtxId:u32,MbCmp:s32) -> s32
+avcodeccontext-set-ildct-cmp: func(avCodecCtxId:u32,IldctCmp:s32) -> s32
+avcodeccontext-set-dia-size: func(avCodecCtxId:u32,DiaSize:s32) -> s32
+avcodeccontext-set-last-predictor-count: func(avCodecCtxId:u32,LastPredictorCount:s32) -> s32
+avcodeccontext-set-me-pre-cmp: func(avCodecCtxId:u32,MePreCmp:s32) -> s32
+avcodeccontext-set-pre-dia-size: func(avCodecCtxId:u32,PreDiaSize:s32) -> s32
+avcodeccontext-set-me-subpel-quality: func(avCodecCtxId:u32,MeSubpelQuality:s32) -> s32
+avcodeccontext-set-me-range: func(avCodecCtxId:u32,MeRange:s32) -> s32
+avcodeccontext-set-mb-decision: func(avCodecCtxId:u32,MbDecision:s32) -> s32
+avcodeccontext-set-mb-lmin: func(avCodecCtxId:u32,MbLMin:s32) -> s32
+avcodeccontext-set-mb-lmax: func(avCodecCtxId:u32,MbLMax:s32) -> s32
+avcodeccontext-set-intra-dc-precision: func(avCodecCtxId:u32,IntraDcPrecision:s32) -> s32
+avcodeccontext-set-qmin: func(avCodecCtxId:u32,QMin:s32) -> s32
+avcodeccontext-set-qmax: func(avCodecCtxId:u32,QMax:s32) -> s32
+avcodeccontext-set-global-quality: func(avCodecCtxId:u32,GlobalQuality:s32) -> s32
+avcodeccontext-set-colorspace: func(avCodecCtxId:u32,ColorspaceId:s32) -> s32
+avcodeccontext-colorspace: func(avCodecCtxId:u32) -> s32
+avcodeccontext-set-color-range: func(avCodecCtxId:u32,ColorRange:s32) -> s32
+avcodeccontext-color-range: func(avCodecCtxId:u32) -> s32
+avcodeccontext-frame-size: func(avCodecCtxId:u32) -> s32
+avcodeccontext-set-bit-rate: func(avCodecCtxId:u32,BitRate:s64) -> s32
+avcodeccontext-set-rc-max-rate: func(avCodecCtxId:u32,RcMaxRate:s64) -> s32
+avcodeccontext-set-bit-rate-tolerance: func(avCodecCtxId:u32,BitRateTolerance:s32) -> s32
+avcodeccontext-set-compression-level: func(avCodecCtxId:u32,CompressionLevel:s32) -> s32
+avcodeccontext-set-time-base: func(avCodecCtxId:u32,Num:s32,Den:s32) -> s32
+avcodeccontext-set-framerate: func(avCodecCtxId:u32,Num:s32,Den:s32) -> s32
 
 // AVCodec struct fields
-avcodec-id : func(avCodec:u32) -> u32
-avcodec-type : func(avCodec:u32) -> s32
+avcodec-id : func(avCodecId:u32) -> u32
+avcodec-type : func(avCodecId:u32) -> s32
+avcodec-max-lowres: func(avCodecId:u32) -> s32
+avcodec-capabilities: func(avCodecId:u32) -> s32
+avcodec-get-name-len: func(avCodecId:u32) -> s32
+avcodec-get-name: func(avCodecId:u32,name:string) -> s32
+avcodec-get-long-name-len: func(avCodecId:u32) -> s32
+avcodec-get-long-name: func(avCodecId:u32,longName:string) -> s32
+avcodec-profiles: func(avCodecId:u32) -> s32
+avcodec-pix-fmts-is-null: func(avCodecId:u32) -> s32
+avcodec-pix-fmts-iter: func(avCodecId:u32,idx:u32) -> u32
+avcodec-supported-framerate-is-null: func(avCodecId:u32) -> s32
+avcodec-supported-framerate-iter: func(avCodecId:u32,idx:u32,NumPtr:u32,DenPtr:u32) -> s32
 
 // AVCodecParams struct fields.
 avcodecparam-codec-id : func(avCodecParams:u32) -> u32

@@ -14,11 +14,11 @@ fn main() {
             println!("\t medium: {:?}", codec.medium());
             println!("\t capabilities: {:?}", codec.capabilities());
 
-            if let Some(profiles) = codec.profiles() {
-                println!("\t profiles: {:?}", profiles.collect::<Vec<_>>());
-            } else {
-                println!("\t profiles: none");
-            }
+            // if let Some(profiles) = codec.profiles() {
+            //     println!("\t profiles: {:?}", profiles.collect::<Vec<_>>());
+            // } else {
+            //     println!("\t profiles: none");
+            // }
 
             if let Ok(video) = codec.video() {
                 if let Some(rates) = video.rates() {
@@ -66,9 +66,9 @@ fn main() {
             println!("\t medium: {:?}", codec.medium());
             println!("\t capabilities: {:?}", codec.capabilities());
 
-            if let Some(profiles) = codec.profiles() {
-                println!("\t profiles: {:?}", profiles.collect::<Vec<_>>());
-            }
+            // if let Some(profiles) = codec.profiles() {
+            //     println!("\t profiles: {:?}", profiles.collect::<Vec<_>>());
+            // }
 
             if let Ok(video) = codec.video() {
                 if let Some(rates) = video.rates() {

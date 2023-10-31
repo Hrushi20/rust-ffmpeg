@@ -1,7 +1,6 @@
 use std::ops::{Deref, DerefMut};
-use std::ptr;
+use std::{mem, ptr};
 
-use ffi::*;
 #[cfg(not(feature = "ffmpeg_5_0"))]
 use libc::c_int;
 
@@ -11,13 +10,16 @@ use util::format;
 #[cfg(not(feature = "ffmpeg_5_0"))]
 use {frame, packet};
 use {ChannelLayout, Dictionary, Error};
+use avcodec_wasmedge;
+use avCodecType::AVCodec;
+use avUtilTypes::AVDictionary;
 
 pub struct Audio(pub Super);
 
 impl Audio {
     pub fn open(mut self) -> Result<Encoder, Error> {
         unsafe {
-            match avcodec_open2(self.as_mut_ptr(), ptr::null(), ptr::null_mut()) {
+            match avcodec_wasmedge::avcodec_open2(self.ptr(), mem::zeroed::<AVCodec>(), mem::zeroed::<AVDictionary>()) {
                 0 => Ok(Encoder(self)),
                 e => Err(Error::from(e)),
             }
@@ -27,7 +29,7 @@ impl Audio {
     pub fn open_as<E: traits::Encoder>(mut self, codec: E) -> Result<Encoder, Error> {
         unsafe {
             if let Some(codec) = codec.encoder() {
-                match avcodec_open2(self.as_mut_ptr(), codec.as_ptr(), ptr::null_mut()) {
+                match avcodec_wasmedge::avcodec_open2(self.ptr(), codec.ptr(), mem::zeroed::<AVDictionary>()) {
                     0 => Ok(Encoder(self)),
                     e => Err(Error::from(e)),
                 }
@@ -39,8 +41,8 @@ impl Audio {
 
     pub fn open_with(mut self, options: Dictionary) -> Result<Encoder, Error> {
         unsafe {
-            let mut opts = options.disown();
-            let res = avcodec_open2(self.as_mut_ptr(), ptr::null(), &mut opts);
+            let opts = options.disown();
+            let res = avcodec_wasmedge::avcodec_open2(self.ptr(), mem::zeroed::<AVCodec>(), opts);
 
             Dictionary::own(opts);
 
@@ -58,8 +60,8 @@ impl Audio {
     ) -> Result<Encoder, Error> {
         unsafe {
             if let Some(codec) = codec.encoder() {
-                let mut opts = options.disown();
-                let res = avcodec_open2(self.as_mut_ptr(), codec.as_ptr(), &mut opts);
+                let opts = options.disown();
+                let res = avcodec_wasmedge::avcodec_open2(self.ptr(), codec.ptr(),opts);
 
                 Dictionary::own(opts);
 

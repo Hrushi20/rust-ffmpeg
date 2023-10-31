@@ -4,7 +4,7 @@ use std::{mem, ptr};
 use std::rc::Rc;
 
 use super::decoder::Decoder;
-// use super::encoder::Encoder;
+use super::encoder::Encoder;
 use super::{Parameters,Id};
 // use super::{threading, Compliance, Debug, Flags, Id, Parameters};
 use libc::{c_int, exit, memcpy};
@@ -62,9 +62,9 @@ impl Context {
         Decoder(self)
     }
 
-    // pub fn encoder(self) -> Encoder {
-    //     Encoder(self)
-    // }
+    pub fn encoder(self) -> Encoder {
+        Encoder(self)
+    }
 
     // pub fn codec(&self) -> Option<Codec> {
     //     unsafe {

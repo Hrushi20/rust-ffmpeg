@@ -19,7 +19,9 @@ impl Video {
     #[inline]
     pub fn open(mut self) -> Result<Encoder, Error> {
         unsafe {
-            match avcodec_wasmedge::avcodec_open2(self.ptr(), mem::<AVCodec>::zeroed(), mem::<AVDictionary>::zeroed()) {
+            let av_codec = mem::zeroed::<AVCodec>();
+            let av_dict = mem::zeroed::<AVDictionary>();
+            match avcodec_wasmedge::avcodec_open2(self.ptr(), av_codec, av_dict) {
                 0 => Ok(Encoder(self)),
                 e => Err(Error::from(e)),
             }
@@ -30,7 +32,8 @@ impl Video {
     pub fn open_as<E: traits::Encoder>(mut self, codec: E) -> Result<Encoder, Error> {
         unsafe {
             if let Some(codec) = codec.encoder() {
-                match avcodec_wasmedge::avcodec_open2(self.ptr(), codec.ptr(), mem::<AVDictionary>::zeroed()) {
+                let av_dict = mem::zeroed::<AVDictionary>();
+                match avcodec_wasmedge::avcodec_open2(self.ptr(), codec.ptr(), av_dict) {
                     0 => Ok(Encoder(self)),
                     e => Err(Error::from(e)),
                 }
@@ -44,7 +47,8 @@ impl Video {
     pub fn open_with(mut self, options: Dictionary) -> Result<Encoder, Error> {
         unsafe {
             let opts = options.disown();
-            let res = avcodec_wasmedge::avcodec_open2(self.ptr(), mem::<AVCodec>::zeroed(), opts);
+            let av_codec = mem::zeroed::<AVCodec>();
+            let res = avcodec_wasmedge::avcodec_open2(self.ptr(), av_codec, opts);
 
             Dictionary::own(opts);
 
@@ -81,7 +85,7 @@ impl Video {
     #[inline]
     pub fn set_width(&mut self, value: u32) {
         unsafe {
-            (*self.as_mut_ptr()).width = value as c_int;
+            avcodec_wasmedge::avcodeccontext_set_width(self.ptr(),value as i32);
         }
     }
 
@@ -95,7 +99,7 @@ impl Video {
     #[inline]
     pub fn set_height(&mut self, value: u32) {
         unsafe {
-            (*self.as_mut_ptr()).height = value as c_int;
+            avcodec_wasmedge::avcodeccontext_set_height(self.ptr(),value as i32);
         }
     }
 
@@ -109,17 +113,17 @@ impl Video {
     #[inline]
     pub fn set_gop(&mut self, value: u32) {
         unsafe {
-            (*self.as_mut_ptr()).gop_size = value as c_int;
+            avcodec_wasmedge::avcodeccontext_set_gop_size(self.ptr(),value as i32);
         }
     }
 
-    #[inline]
-    pub fn set_format(&mut self, value: format::Pixel) {
-        unsafe {
-            (*self.as_mut_ptr()).pix_fmt = value.into();
-        }
-    }
-
+    // #[inline]
+    // pub fn set_format(&mut self, value: format::Pixel) {
+    //     unsafe {
+    //         (*self.as_mut_ptr()).pix_fmt = value.into();
+    //     }
+    // }
+    //
     #[inline]
     pub fn format(&self) -> format::Pixel {
         unsafe {
@@ -139,163 +143,163 @@ impl Video {
     #[inline]
     pub fn set_max_b_frames(&mut self, value: usize) {
         unsafe {
-            (*self.as_mut_ptr()).max_b_frames = value as c_int;
+            avcodec_wasmedge::avcodeccontext_set_max_b_frames(self.ptr(),value as i32);
         }
     }
 
     #[inline]
     pub fn set_b_quant_factor(&mut self, value: f32) {
         unsafe {
-            (*self.as_mut_ptr()).b_quant_factor = value as c_float;
+            avcodec_wasmedge::avcodeccontext_set_b_quant_factor(self.ptr(),value);
         }
     }
 
     #[inline]
     pub fn set_b_quant_offset(&mut self, value: f32) {
         unsafe {
-            (*self.as_mut_ptr()).b_quant_offset = value as c_float;
+            avcodec_wasmedge::avcodeccontext_set_b_quant_offset(self.ptr(),value);
         }
     }
 
     #[inline]
     pub fn set_i_quant_factor(&mut self, value: f32) {
         unsafe {
-            (*self.as_mut_ptr()).i_quant_factor = value as c_float;
+            avcodec_wasmedge::avcodeccontext_set_i_quant_factor(self.ptr(),value);
         }
     }
 
     #[inline]
     pub fn set_i_quant_offset(&mut self, value: f32) {
         unsafe {
-            (*self.as_mut_ptr()).i_quant_offset = value as c_float;
+            avcodec_wasmedge::avcodeccontext_set_i_quant_offset(self.ptr(),value);
         }
     }
 
     #[inline]
     pub fn set_lumi_masking(&mut self, value: f32) {
         unsafe {
-            (*self.as_mut_ptr()).lumi_masking = value as c_float;
+            avcodec_wasmedge::avcodeccontext_set_lumi_masking(self.ptr(),value);
         }
     }
 
     #[inline]
     pub fn set_temporal_cplx_masking(&mut self, value: f32) {
         unsafe {
-            (*self.as_mut_ptr()).temporal_cplx_masking = value as c_float;
+            avcodec_wasmedge::avcodeccontext_set_temporal_cplx_masking(self.ptr(),value);
         }
     }
 
     #[inline]
     pub fn set_spatial_cplx_masking(&mut self, value: f32) {
         unsafe {
-            (*self.as_mut_ptr()).spatial_cplx_masking = value as c_float;
+            avcodec_wasmedge::avcodeccontext_set_spatial_cplx_masking(self.ptr(),value);
         }
     }
 
     #[inline]
     pub fn set_p_masking(&mut self, value: f32) {
         unsafe {
-            (*self.as_mut_ptr()).p_masking = value as c_float;
+            avcodec_wasmedge::avcodeccontext_set_p_masking(self.ptr(),value);
         }
     }
 
     #[inline]
     pub fn set_dark_masking(&mut self, value: f32) {
         unsafe {
-            (*self.as_mut_ptr()).dark_masking = value as c_float;
+            avcodec_wasmedge::avcodeccontext_set_dark_masking(self.ptr(),value);
         }
     }
 
-    #[inline]
-    #[cfg(not(feature = "ffmpeg_5_0"))]
-    pub fn set_prediction(&mut self, value: Prediction) {
-        unsafe {
-            (*self.as_mut_ptr()).prediction_method = value.into();
-        }
-    }
+    // #[inline]
+    // #[cfg(not(feature = "ffmpeg_5_0"))]
+    // pub fn set_prediction(&mut self, value: Prediction) {
+    //     unsafe {
+    //         (*self.as_mut_ptr()).prediction_method = value.into();
+    //     }
+    // }
 
-    #[inline]
-    pub fn set_aspect_ratio<R: Into<Rational>>(&mut self, value: R) {
-        unsafe {
-            (*self.as_mut_ptr()).sample_aspect_ratio = value.into().into();
-        }
-    }
+    // #[inline]
+    // pub fn set_aspect_ratio<R: Into<Rational>>(&mut self, value: R) {
+    //     unsafe {
+    //         (*self.as_mut_ptr()).sample_aspect_ratio = value.into().into();
+    //     }
+    // }
 
     #[inline]
     pub fn set_me_comparison(&mut self, value: Comparison) {
         unsafe {
-            (*self.as_mut_ptr()).me_cmp = value.into();
+            avcodec_wasmedge::avcodeccontext_set_me_cmp(self.ptr(),value.into());
         }
     }
 
     #[inline]
     pub fn set_me_sub_comparison(&mut self, value: Comparison) {
         unsafe {
-            (*self.as_mut_ptr()).me_sub_cmp = value.into();
+            avcodec_wasmedge::avcodeccontext_set_me_sub_cmp(self.ptr(),value.into());
         }
     }
 
     #[inline]
     pub fn set_mb_comparison(&mut self, value: Comparison) {
         unsafe {
-            (*self.as_mut_ptr()).mb_cmp = value.into();
+            avcodec_wasmedge::avcodeccontext_set_mb_cmp(self.ptr(),value.into());
         }
     }
 
     #[inline]
     pub fn set_ildct_comparison(&mut self, value: Comparison) {
         unsafe {
-            (*self.as_mut_ptr()).ildct_cmp = value.into();
+            avcodec_wasmedge::avcodeccontext_set_ildct_cmp(self.ptr(),value.into());
         }
     }
 
     #[inline]
     pub fn set_dia_size(&mut self, value: usize) {
         unsafe {
-            (*self.as_mut_ptr()).dia_size = value as c_int;
+            avcodec_wasmedge::avcodeccontext_set_dia_size(self.ptr(),value as i32);
         }
     }
 
     #[inline]
     pub fn set_last_predictors(&mut self, value: usize) {
         unsafe {
-            (*self.as_mut_ptr()).last_predictor_count = value as c_int;
+            avcodec_wasmedge::avcodeccontext_set_last_predictor_count(self.ptr(),value as i32);
         }
     }
 
-    #[inline]
-    #[cfg(not(feature = "ffmpeg_5_0"))]
-    pub fn set_pre_me(&mut self, value: MotionEstimation) {
-        unsafe {
-            (*self.as_mut_ptr()).pre_me = value.into();
-        }
-    }
+    // #[inline]
+    // #[cfg(not(feature = "ffmpeg_5_0"))]
+    // pub fn set_pre_me(&mut self, value: MotionEstimation) {
+    //     unsafe {
+    //         (*self.as_mut_ptr()).pre_me = value.into();
+    //     }
+    // }
 
     #[inline]
     pub fn set_me_pre_comparison(&mut self, value: Comparison) {
         unsafe {
-            (*self.as_mut_ptr()).me_pre_cmp = value.into();
+            avcodec_wasmedge::avcodeccontext_set_me_pre_cmp(self.ptr(),value.into());
         }
     }
 
     #[inline]
     pub fn set_pre_dia_size(&mut self, value: usize) {
         unsafe {
-            (*self.as_mut_ptr()).pre_dia_size = value as c_int;
+            avcodec_wasmedge::avcodeccontext_set_pre_dia_size(self.ptr(),value as i32);
         }
     }
 
     #[inline]
     pub fn set_me_subpel_quality(&mut self, value: usize) {
         unsafe {
-            (*self.as_mut_ptr()).me_subpel_quality = value as c_int;
+            avcodec_wasmedge::avcodeccontext_set_me_subpel_quality(self.ptr(),value as i32);
         }
     }
 
     #[inline]
     pub fn set_me_range(&mut self, value: usize) {
         unsafe {
-            (*self.as_mut_ptr()).me_range = value as c_int;
+            avcodec_wasmedge::avcodeccontext_set_me_range(self.ptr(),value as i32);
         }
     }
 
@@ -326,74 +330,78 @@ impl Video {
     #[inline]
     pub fn set_mb_decision(&mut self, value: Decision) {
         unsafe {
-            (*self.as_mut_ptr()).mb_decision = value.into();
+            avcodec_wasmedge::avcodeccontext_set_mb_decision(self.ptr(),value.into());
         }
     }
 
     #[inline]
     pub fn set_mb_lmin(&mut self, value: i32) {
         unsafe {
-            (*self.as_mut_ptr()).mb_lmin = value as c_int;
+            avcodec_wasmedge::avcodeccontext_set_mb_lmin(self.ptr(),value);
         }
     }
 
     #[inline]
     pub fn set_mb_lmax(&mut self, value: i32) {
         unsafe {
-            (*self.as_mut_ptr()).mb_lmax = value as c_int;
+            avcodec_wasmedge::avcodeccontext_set_mb_lmax(self.ptr(),value);
         }
     }
 
     #[inline]
     pub fn set_intra_dc_precision(&mut self, value: u8) {
         unsafe {
-            (*self.as_mut_ptr()).intra_dc_precision = i32::from(value);
+            avcodec_wasmedge::avcodeccontext_set_intra_dc_precision(self.ptr(),i32::from(value));
         }
     }
 
     #[inline]
     pub fn set_qmin(&mut self, value: i32) {
         unsafe {
-            (*self.as_mut_ptr()).qmin = value as c_int;
+            avcodec_wasmedge::avcodeccontext_set_qmin(self.ptr(),value);
         }
     }
 
     #[inline]
     pub fn set_qmax(&mut self, value: i32) {
         unsafe {
-            (*self.as_mut_ptr()).qmax = value as c_int;
+            avcodec_wasmedge::avcodeccontext_set_qmax(self.ptr(),value);
         }
     }
 
     #[inline]
     pub fn set_global_quality(&mut self, value: i32) {
         unsafe {
-            (*self.as_mut_ptr()).global_quality = value as c_int;
+            avcodec_wasmedge::avcodeccontext_set_global_quality(self.ptr(),value);
         }
     }
 
     #[inline]
     pub fn set_colorspace(&mut self, value: color::Space) {
         unsafe {
-            (*self.as_mut_ptr()).colorspace = value.into();
+            avcodec_wasmedge::avcodeccontext_set_colorspace(self.ptr(),value.into());
         }
     }
 
     #[inline]
     pub fn colorspace(&self) -> color::Space {
-        unsafe { (*self.as_ptr()).colorspace.into() }
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_colorspace(self.ptr()).into()
+        }
     }
 
     #[inline]
     pub fn set_color_range(&mut self, value: color::Range) {
         unsafe {
-            (*self.as_mut_ptr()).color_range = value.into();
+            avcodec_wasmedge::avcodeccontext_set_color_range(self.ptr(),value.into());
         }
     }
 
     #[inline]
     pub fn color_range(&self) -> color::Range {
-        unsafe { (*self.as_ptr()).color_range.into() }
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_color_range(self.ptr()).into()
+        }
     }
 }
 
@@ -487,7 +495,9 @@ impl Encoder {
 
     #[inline]
     pub fn frame_size(&self) -> u32 {
-        unsafe { (*self.as_ptr()).frame_size as u32 }
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_frame_size(self.ptr()) as u32
+        }
     }
 }
 

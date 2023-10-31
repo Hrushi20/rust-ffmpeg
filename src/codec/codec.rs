@@ -1,7 +1,7 @@
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 
-use super::{Id};
+use super::{Capabilities,Id,Video};
 // use super::{Audio, Capabilities, Id, Profile, Video};
 use {media, Error};
 use avCodecType::AVCodec;
@@ -23,10 +23,6 @@ impl Codec {
     pub unsafe fn ptr(&self) -> AVCodec {
         self.ptr
     }
-
-    // pub unsafe fn as_mut_ptr(&mut self) -> *mut AVCodec {
-    //     self.ptr
-    // }
 }
 
 impl Codec {
@@ -38,25 +34,33 @@ impl Codec {
         unsafe { avcodec_wasmedge::av_codec_is_decoder(self.ptr()) != 0 }
     }
 
-    // pub fn name(&self) -> &str {
-    //     unsafe { from_utf8_unchecked(CStr::from_ptr((*self.ptr()).name).to_bytes()) }
-    // }
-    //
-    // pub fn description(&self) -> &str {
-    //     unsafe {
-    //         let long_name = (*self.as_ptr()).long_name;
-    //         if long_name.is_null() {
-    //             ""
-    //         } else {
-    //             from_utf8_unchecked(CStr::from_ptr(long_name).to_bytes())
-    //         }
-    //     }
-    // }
+    pub fn name(&self) -> String {
+        unsafe {
+            let name_len = avcodec_wasmedge::avcodec_get_name_len(self.ptr()) as usize;
+            let name = vec![0u8;name_len];
+            avcodec_wasmedge::avcodec_get_name(self.ptr(),name.as_ptr(),name.len());
+
+            String::from_utf8_unchecked(name)
+        }
+    }
+
+    pub fn description(&self) -> String {
+        unsafe {
+            let long_name_len = avcodec_wasmedge::avcodec_get_long_name_len(self.ptr()) as usize;
+            if long_name_len == 0 {
+                String::from("")
+            } else {
+                let long_name = vec![0u8;long_name_len];
+                avcodec_wasmedge::avcodec_get_long_name(self.ptr(),long_name.as_ptr(),long_name.len());
+                String::from_utf8_unchecked(long_name)
+            }
+        }
+    }
 
     pub fn medium(&self) -> media::Type {
         unsafe {
-            let mediaType = avcodec_wasmedge::avcodec_type(self.ptr());
-            media::Type::from(mediaType)
+            let media_type = avcodec_wasmedge::avcodec_type(self.ptr());
+            media::Type::from(media_type)
         }
     }
 
@@ -71,15 +75,15 @@ impl Codec {
         self.medium() == media::Type::Video
     }
 
-    // pub fn video(self) -> Result<Video, Error> {
-    //     unsafe {
-    //         if self.medium() == media::Type::Video {
-    //             Ok(Video::new(self))
-    //         } else {
-    //             Err(Error::InvalidData)
-    //         }
-    //     }
-    // }
+    pub fn video(self) -> Result<Video, Error> {
+        unsafe {
+            if self.medium() == media::Type::Video {
+                Ok(Video::new(self))
+            } else {
+                Err(Error::InvalidData)
+            }
+        }
+    }
 
     pub fn is_audio(&self) -> bool {
         self.medium() == media::Type::Audio
@@ -95,13 +99,18 @@ impl Codec {
     //     }
     // }
 
-    // pub fn max_lowres(&self) -> i32 {
-    //     unsafe { (*self.ptr()).max_lowres.into() }
-    // }
+    pub fn max_lowres(&self) -> i32 {
+        unsafe {
+            avcodec_wasmedge::avcodec_max_lowres(self.ptr())
+        }
+    }
 
-    // pub fn capabilities(&self) -> Capabilities {
-    //     unsafe { Capabilities::from_bits_truncate((*self.as_ptr()).capabilities as u32) }
-    // }
+    pub fn capabilities(&self) -> Capabilities {
+        unsafe {
+            let capabilities = avcodec_wasmedge::avcodec_capabilities(self.ptr());
+            Capabilities::from_bits_truncate(capabilities as u32)
+        }
+    }
 
     // pub fn profiles(&self) -> Option<ProfileIter> {
     //     unsafe {

@@ -8,6 +8,7 @@ use libc::c_int;
 use {format, Error, Rational};
 use avCodecType::AVPacket;
 use ::{avcodec_wasmedge, avformat_wasmedge};
+use packet::traits::Mut;
 
 pub struct Packet(AVPacket);
 
@@ -246,6 +247,12 @@ impl Packet {
 
 impl Ref for Packet {
     fn ptr(&self) -> AVPacket {
+        self.0
+    }
+}
+
+impl Mut for Packet {
+    fn as_mut_ptr(&mut self) -> AVPacket {
         self.0
     }
 }
