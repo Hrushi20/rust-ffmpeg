@@ -26,10 +26,10 @@ pub use self::parameters::Parameters;
 
 pub mod video;
 pub use self::video::Video;
-//
-// pub mod audio;
-// pub use self::audio::Audio;
-//
+
+pub mod audio;
+pub use self::audio::Audio;
+
 pub mod audio_service;
 pub mod field_order;
 

@@ -51,7 +51,7 @@ pub fn find(id: Id) -> Option<Codec> {
 pub fn find_by_name(name: &str) -> Option<Codec> {
     unsafe {
         let av_codec = MaybeUninit::<AVCodec>::uninit();
-        avcodec_wasmedge::avcodec_find_decoder_by_name(av_codec.as_ptr() as u32,name.as_ptr(),name.len()) as *mut AVCodec;
+        avcodec_wasmedge::avcodec_find_decoder_by_name(av_codec.as_ptr() as u32,name.as_ptr(),name.len());
         let av_codec = ptr::read(av_codec.as_ptr());
 
         if av_codec == 0 {

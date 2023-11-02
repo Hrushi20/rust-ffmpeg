@@ -22,7 +22,7 @@ const RESOURCE_TEMPORARILY_UNAVAILABLE: ffmpeg_next::Error = ffmpeg_next::Error:
     errno: ffmpeg_next::util::error::EAGAIN + 29
 };
 
-fn main() {
+// fn main() {
 
     //
     // let a = ffmpeg_next::Rational::new(3,4);
@@ -126,114 +126,114 @@ fn main() {
     //         // ));
     //     }
     // }
-
-    let path = Path::new("/Users/pc/my/code/openSource/wasmedge/rust-ffmpeg/example/assets/bunny.mp4");
-    ffmpeg_next::init();
-    let mut input = ffmpeg_next::format::input::<&Path>(&path).unwrap();
-    println!("Probe score {:?}",input.probe_score());
-    println!("{:?}",*input);
-    println!("Metadata: {:?}",input.metadata());
-    let mut stream_mut = input.stream_mut(1).unwrap();
-    stream_mut.set_time_base(ffmpeg_next::Rational::new(3,4));
-    stream_mut.set_rate(ffmpeg_next::Rational::new(3,4));
-    stream_mut.set_avg_frame_rate(ffmpeg_next::Rational::new(3,4));
-    println!("Timebase Set: {:?}",stream_mut.time_base());
-    println!("Rate Set: {:?}",stream_mut.rate());
-    println!("AVGFrameRate Set: {:?}",stream_mut.avg_frame_rate());
-    let chapter = input.chapter(0).unwrap();
-    let mut chapter_mut = input.chapter_mut(0).unwrap();
-    chapter_mut.set_id(100);
-    chapter_mut.set_start(5000);
-    chapter_mut.set_end(10000);
-    chapter_mut.set_metadata("NickName","BooBox20");
-    chapter_mut.set_time_base(ffmpeg_next::Rational::new(3,4));
-    println!("ChapterID: {}",chapter_mut.id());
-    println!("TimeBase: {}",chapter_mut.time_base());
-    println!("Start: {}",chapter_mut.start());
-    println!("End: {}",chapter_mut.end());
-    println!("Metadata: {:?}",chapter_mut.metadata());
-    let input_stream = input
-        .streams()
-        .best(ffmpeg_next::media::Type::Video).unwrap();
-    let input_stream_index = input_stream.index();
-    println!("Stream ID: {:?}",input_stream.id());
-    println!("Stream Metadata: {:?}",input_stream.metadata());
-    println!("Stream Avg Frame Rate: {:?}",input_stream.avg_frame_rate());
-    println!("Stream Rate: {:?}",input_stream.rate());
-    println!("Stream Disposition: {:?}",input_stream.disposition());
-    println!("Stream Frames: {:?}",input_stream.frames());
-    println!("Stream Duration: {:?}",input_stream.duration());
-    println!("Stream Start Time: {:?}",input_stream.start_time());
-    println!("Stream Timebase: {:?}",input_stream.time_base());
-    let context = Context::from_parameters(input_stream.parameters()).unwrap();
-    let mut decoder = context.decoder().video().unwrap();
-    decoder.set_parameters(input_stream.parameters()).unwrap();
-
-    let mut frame = ffmpeg_next::frame::Video::empty();
-    println!("Width: {}",frame.width());
-    println!("Height: {}",frame.height());
-    let mut decoder_has_sent_eof = false;
-    while let Err(err) = decoder.receive_frame(&mut frame) {
-        if err == RESOURCE_TEMPORARILY_UNAVAILABLE {
-            if !decoder_has_sent_eof {
-                let mut is_eof = true;
-                while let Some((stream, package)) = input.packets().next() {
-                    if stream.index() != input_stream_index {
-                        continue;
-                    }
-                    decoder.send_packet(&package);
-                    is_eof = false;
-                    break;
-                }
-                if is_eof {
-                    decoder.send_eof();
-                    decoder_has_sent_eof = true;
-                }
-            }else{
-                println!("Decoder sent end of file");
-            }
-        }else {
-            if let ffmpeg_next::Error::Eof = err {
-                println!("False");
-                break;
-            } else {
-                println!("Error");
-                break;
-            };
-        }
-    }
-
-    let mut dict = ffmpeg_next::dictionary::Owned::new();
-    dict.set("Name","Hrushi");
-    dict.set("Gender","Male");
-    dict.set("College","Jntuceh");
-
-    let src_format = frame.format();
-    println!("Src_format: {:?}",src_format);
-    println!("Width: {:?}",frame.width());
-    println!("Format: {:?}",frame.format());
-    println!("IsKey: {:?}",frame.is_key());
-    println!("Stride: {:?}",frame.stride(0));
-    println!("IsCorrupt: {:?}",frame.is_corrupt());
-    println!("Pts: {:?}",frame.pts());
-    println!("Quality: {:?}",frame.quality());
-    println!("Flags: {:?}",frame.flags());
-    frame.set_metadata(dict);
-    println!("Metadata: {:?}",frame.metadata());
-    println!("Kind: {:?}",frame.kind());
-    println!("Interlaced: {:?}",frame.is_interlaced());
-    println!("IsTopFirst: {:?}",frame.is_top_first());
-    println!("HasPaletteChanged: {:?}",frame.has_palette_changed());
-    println!("ColorSpace: {:?}",frame.color_space());
-    println!("ColorRange: {:?}",frame.color_range());
-    println!("ColorTransferChar: {:?}",frame.color_transfer_characteristic());
-    println!("ChromaLocation: {:?}",frame.chroma_location());
-    println!("CodedNumber: {:?}",frame.coded_number());
-    println!("DisplayNumber: {:?}",frame.display_number());
-    println!("Repeat: {:?}",frame.repeat());
-    println!("PlaneWidth: {:?}",frame.plane_width(1));
-
-    let clone_frame = frame.clone();
+    //
+    // let path = Path::new("/Users/pc/my/code/openSource/wasmedge/rust-ffmpeg/example/assets/bunny.mp4");
+    // ffmpeg_next::init();
+    // let mut input = ffmpeg_next::format::input::<&Path>(&path).unwrap();
+    // println!("Probe score {:?}",input.probe_score());
+    // println!("{:?}",*input);
+    // println!("Metadata: {:?}",input.metadata());
+    // let mut stream_mut = input.stream_mut(1).unwrap();
+    // stream_mut.set_time_base(ffmpeg_next::Rational::new(3,4));
+    // stream_mut.set_rate(ffmpeg_next::Rational::new(3,4));
+    // stream_mut.set_avg_frame_rate(ffmpeg_next::Rational::new(3,4));
+    // println!("Timebase Set: {:?}",stream_mut.time_base());
+    // println!("Rate Set: {:?}",stream_mut.rate());
+    // println!("AVGFrameRate Set: {:?}",stream_mut.avg_frame_rate());
+    // let chapter = input.chapter(0).unwrap();
+    // let mut chapter_mut = input.chapter_mut(0).unwrap();
+    // chapter_mut.set_id(100);
+    // chapter_mut.set_start(5000);
+    // chapter_mut.set_end(10000);
+    // chapter_mut.set_metadata("NickName","BooBox20");
+    // chapter_mut.set_time_base(ffmpeg_next::Rational::new(3,4));
+    // println!("ChapterID: {}",chapter_mut.id());
+    // println!("TimeBase: {}",chapter_mut.time_base());
+    // println!("Start: {}",chapter_mut.start());
+    // println!("End: {}",chapter_mut.end());
+    // println!("Metadata: {:?}",chapter_mut.metadata());
+    // let input_stream = input
+    //     .streams()
+    //     .best(ffmpeg_next::media::Type::Video).unwrap();
+    // let input_stream_index = input_stream.index();
+    // println!("Stream ID: {:?}",input_stream.id());
+    // println!("Stream Metadata: {:?}",input_stream.metadata());
+    // println!("Stream Avg Frame Rate: {:?}",input_stream.avg_frame_rate());
+    // println!("Stream Rate: {:?}",input_stream.rate());
+    // println!("Stream Disposition: {:?}",input_stream.disposition());
+    // println!("Stream Frames: {:?}",input_stream.frames());
+    // println!("Stream Duration: {:?}",input_stream.duration());
+    // println!("Stream Start Time: {:?}",input_stream.start_time());
+    // println!("Stream Timebase: {:?}",input_stream.time_base());
+    // let context = Context::from_parameters(input_stream.parameters()).unwrap();
+    // let mut decoder = context.decoder().video().unwrap();
+    // decoder.set_parameters(input_stream.parameters()).unwrap();
+    //
+    // let mut frame = ffmpeg_next::frame::Video::empty();
+    // println!("Width: {}",frame.width());
+    // println!("Height: {}",frame.height());
+    // let mut decoder_has_sent_eof = false;
+    // while let Err(err) = decoder.receive_frame(&mut frame) {
+    //     if err == RESOURCE_TEMPORARILY_UNAVAILABLE {
+    //         if !decoder_has_sent_eof {
+    //             let mut is_eof = true;
+    //             while let Some((stream, package)) = input.packets().next() {
+    //                 if stream.index() != input_stream_index {
+    //                     continue;
+    //                 }
+    //                 decoder.send_packet(&package);
+    //                 is_eof = false;
+    //                 break;
+    //             }
+    //             if is_eof {
+    //                 decoder.send_eof();
+    //                 decoder_has_sent_eof = true;
+    //             }
+    //         }else{
+    //             println!("Decoder sent end of file");
+    //         }
+    //     }else {
+    //         if let ffmpeg_next::Error::Eof = err {
+    //             println!("False");
+    //             break;
+    //         } else {
+    //             println!("Error");
+    //             break;
+    //         };
+    //     }
+    // }
+    //
+    // let mut dict = ffmpeg_next::dictionary::Owned::new();
+    // dict.set("Name","Hrushi");
+    // dict.set("Gender","Male");
+    // dict.set("College","Jntuceh");
+    //
+    // let src_format = frame.format();
+    // println!("Src_format: {:?}",src_format);
+    // println!("Width: {:?}",frame.width());
+    // println!("Format: {:?}",frame.format());
+    // println!("IsKey: {:?}",frame.is_key());
+    // println!("Stride: {:?}",frame.stride(0));
+    // println!("IsCorrupt: {:?}",frame.is_corrupt());
+    // println!("Pts: {:?}",frame.pts());
+    // println!("Quality: {:?}",frame.quality());
+    // println!("Flags: {:?}",frame.flags());
+    // frame.set_metadata(dict);
+    // println!("Metadata: {:?}",frame.metadata());
+    // println!("Kind: {:?}",frame.kind());
+    // println!("Interlaced: {:?}",frame.is_interlaced());
+    // println!("IsTopFirst: {:?}",frame.is_top_first());
+    // println!("HasPaletteChanged: {:?}",frame.has_palette_changed());
+    // println!("ColorSpace: {:?}",frame.color_space());
+    // println!("ColorRange: {:?}",frame.color_range());
+    // println!("ColorTransferChar: {:?}",frame.color_transfer_characteristic());
+    // println!("ChromaLocation: {:?}",frame.chroma_location());
+    // println!("CodedNumber: {:?}",frame.coded_number());
+    // println!("DisplayNumber: {:?}",frame.display_number());
+    // println!("Repeat: {:?}",frame.repeat());
+    // println!("PlaneWidth: {:?}",frame.plane_width(1));
+    //
+    // let clone_frame = frame.clone();
     // let data = frame.data(0);
     // println!("Data: {:?}",data);
     // println!("Data Size: {}",data.len());
@@ -261,7 +261,7 @@ fn main() {
     // println!("Name: {:?}",input_format.description());
     // println!("Name: {:?}",input_format.extensions());
     // println!("Name: {:?}",input_format.mime_types());
-}
+// }
 
 // extern crate ffmpeg_next as ffmpeg;
 //
@@ -326,3 +326,113 @@ fn main() {
 //         }
 //     }
 // }
+
+use std::env;
+
+fn main() {
+    ffmpeg_next::init().unwrap();
+
+    let data = ["magicyuv"];
+    for arg in data {
+        if let Some(codec) = ffmpeg_next::decoder::find_by_name(&arg) {
+            println!("type: decoder");
+            println!("\t id: {:?}", codec.id());
+            println!("\t name: {}", codec.name());
+            println!("\t description: {}", codec.description());
+            println!("\t medium: {:?}", codec.medium());
+            println!("\t capabilities: {:?}", codec.capabilities());
+
+            // if let Some(profiles) = codec.profiles() {
+            //     println!("\t profiles: {:?}", profiles.collect::<Vec<_>>());
+            // } else {
+            //     println!("\t profiles: none");
+            // }
+
+            if let Ok(video) = codec.video() {
+                if let Some(rates) = video.rates() {
+                    println!("\t rates: {:?}", rates.collect::<Vec<_>>());
+                } else {
+                    println!("\t rates: any");
+                }
+
+                if let Some(formats) = video.formats() {
+                    println!("\t formats: {:?}", formats.collect::<Vec<_>>());
+                } else {
+                    println!("\t formats: any");
+                }
+            }
+
+            if let Ok(audio) = codec.audio() {
+                if let Some(rates) = audio.rates() {
+                    println!("\t rates: {:?}", rates.collect::<Vec<_>>());
+                } else {
+                    println!("\t rates: any");
+                }
+
+                if let Some(formats) = audio.formats() {
+                    println!("\t formats: {:?}", formats.collect::<Vec<_>>());
+                } else {
+                    println!("\t formats: any");
+                }
+
+                if let Some(layouts) = audio.channel_layouts() {
+                    println!("\t channel_layouts: {:?}", layouts.collect::<Vec<_>>());
+                } else {
+                    println!("\t channel_layouts: any");
+                }
+            }
+
+            println!("\t max_lowres: {:?}", codec.max_lowres());
+        }
+
+        if let Some(codec) = ffmpeg_next::encoder::find_by_name(&arg) {
+            println!();
+            println!("type: encoder");
+            println!("\t id: {:?}", codec.id());
+            println!("\t name: {}", codec.name());
+            println!("\t description: {}", codec.description());
+            println!("\t medium: {:?}", codec.medium());
+            println!("\t capabilities: {:?}", codec.capabilities());
+
+            // if let Some(profiles) = codec.profiles() {
+            //     println!("\t profiles: {:?}", profiles.collect::<Vec<_>>());
+            // }
+
+            if let Ok(video) = codec.video() {
+                if let Some(rates) = video.rates() {
+                    println!("\t rates: {:?}", rates.collect::<Vec<_>>());
+                } else {
+                    println!("\t rates: any");
+                }
+
+                if let Some(formats) = video.formats() {
+                    println!("\t formats: {:?}", formats.collect::<Vec<_>>());
+                } else {
+                    println!("\t formats: any");
+                }
+            }
+
+            if let Ok(audio) = codec.audio() {
+                if let Some(rates) = audio.rates() {
+                    println!("\t rates: {:?}", rates.collect::<Vec<_>>());
+                } else {
+                    println!("\t rates: any");
+                }
+
+                if let Some(formats) = audio.formats() {
+                    println!("\t formats: {:?}", formats.collect::<Vec<_>>());
+                } else {
+                    println!("\t formats: any");
+                }
+
+                if let Some(layouts) = audio.channel_layouts() {
+                    println!("\t channel_layouts: {:?}", layouts.collect::<Vec<_>>());
+                } else {
+                    println!("\t channel_layouts: any");
+                }
+            }
+
+            println!("\t max_lowres: {:?}", codec.max_lowres());
+        }
+    }
+}

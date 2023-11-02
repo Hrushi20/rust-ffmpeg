@@ -1,7 +1,7 @@
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 
-use super::{Capabilities,Id,Video};
+use super::{Audio,Capabilities,Id,Video};
 // use super::{Audio, Capabilities, Id, Profile, Video};
 use {media, Error};
 use avCodecType::AVCodec;
@@ -51,7 +51,7 @@ impl Codec {
                 String::from("")
             } else {
                 let long_name = vec![0u8;long_name_len];
-                avcodec_wasmedge::avcodec_get_long_name(self.ptr(),long_name.as_ptr(),long_name.len());
+                avcodec_wasmedge::avcodec_get_long_name(self.ptr(),long_name.as_ptr(),long_name_len);
                 String::from_utf8_unchecked(long_name)
             }
         }
@@ -89,15 +89,15 @@ impl Codec {
         self.medium() == media::Type::Audio
     }
 
-    // pub fn audio(self) -> Result<Audio, Error> {
-    //     unsafe {
-    //         if self.medium() == media::Type::Audio {
-    //             Ok(Audio::new(self))
-    //         } else {
-    //             Err(Error::InvalidData)
-    //         }
-    //     }
-    // }
+    pub fn audio(self) -> Result<Audio, Error> {
+        unsafe {
+            if self.medium() == media::Type::Audio {
+                Ok(Audio::new(self))
+            } else {
+                Err(Error::InvalidData)
+            }
+        }
+    }
 
     pub fn max_lowres(&self) -> i32 {
         unsafe {

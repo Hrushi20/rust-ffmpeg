@@ -1,8 +1,10 @@
 use std::ops::Deref;
 
 use super::codec::Codec;
-use ffi::*;
 use {format, ChannelLayout};
+use avcodec_wasmedge;
+use avCodecType::AVCodec;
+use format::Sample;
 
 #[derive(PartialEq, Eq, Copy, Clone)]
 pub struct Audio {
@@ -18,32 +20,33 @@ impl Audio {
 impl Audio {
     pub fn rates(&self) -> Option<RateIter> {
         unsafe {
-            if (*self.as_ptr()).supported_samplerates.is_null() {
+            let sample_rates = avcodec_wasmedge::avcodec_supported_samplerates_is_null(self.ptr());
+            if sample_rates == 0 {
                 None
             } else {
-                Some(RateIter::new((*self.codec.as_ptr()).supported_samplerates))
+                Some(RateIter::new(self.ptr()))
             }
         }
     }
 
     pub fn formats(&self) -> Option<FormatIter> {
         unsafe {
-            if (*self.codec.as_ptr()).sample_fmts.is_null() {
+            let sample_fmts = avcodec_wasmedge::avcodec_sample_fmts_is_null(self.ptr());
+            if sample_fmts == 0 {
                 None
             } else {
-                Some(FormatIter::new((*self.codec.as_ptr()).sample_fmts))
+                Some(FormatIter::new(self.ptr()))
             }
         }
     }
 
     pub fn channel_layouts(&self) -> Option<ChannelLayoutIter> {
         unsafe {
-            if (*self.codec.as_ptr()).channel_layouts.is_null() {
+            let ch_layout = avcodec_wasmedge::avcodec_channel_layouts_is_null(self.ptr());
+            if ch_layout == 0 {
                 None
             } else {
-                Some(ChannelLayoutIter::new(
-                    (*self.codec.as_ptr()).channel_layouts,
-                ))
+                Some(ChannelLayoutIter::new(self.ptr()))
             }
         }
     }
@@ -58,12 +61,13 @@ impl Deref for Audio {
 }
 
 pub struct RateIter {
-    ptr: *const i32,
+    ptr: AVCodec,
+    idx: u32
 }
 
 impl RateIter {
-    pub fn new(ptr: *const i32) -> Self {
-        RateIter { ptr }
+    pub fn new(ptr: AVCodec) -> Self {
+        RateIter { ptr,idx:0 }
     }
 }
 
@@ -72,12 +76,13 @@ impl Iterator for RateIter {
 
     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
         unsafe {
-            if *self.ptr == 0 {
+            let sample_rates = avcodec_wasmedge::avcodec_supported_samplerates_iter(self.ptr,self.idx);
+            if sample_rates == 0 {
                 return None;
             }
 
-            let rate = *self.ptr;
-            self.ptr = self.ptr.offset(1);
+            let rate = sample_rates;
+            self.idx+= 1;
 
             Some(rate)
         }
@@ -85,12 +90,13 @@ impl Iterator for RateIter {
 }
 
 pub struct FormatIter {
-    ptr: *const AVSampleFormat,
+    ptr: AVCodec,
+    idx: u32
 }
 
 impl FormatIter {
-    pub fn new(ptr: *const AVSampleFormat) -> Self {
-        FormatIter { ptr }
+    pub fn new(ptr: AVCodec) -> Self {
+        FormatIter { ptr, idx: 0 }
     }
 }
 
@@ -99,25 +105,28 @@ impl Iterator for FormatIter {
 
     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
         unsafe {
-            if *self.ptr == AVSampleFormat::AV_SAMPLE_FMT_NONE {
+
+            let sample_fmt = avcodec_wasmedge::avcodec_sample_fmts_iter(self.ptr,self.idx);
+
+            if sample_fmt == Sample::None.into() {
                 return None;
             }
 
-            let format = (*self.ptr).into();
-            self.ptr = self.ptr.offset(1);
-
+            let format = (sample_fmt).into();
+            self.idx += 1;
             Some(format)
         }
     }
 }
 
 pub struct ChannelLayoutIter {
-    ptr: *const u64,
+    ptr: AVCodec,
+    idx: u32
 }
 
 impl ChannelLayoutIter {
-    pub fn new(ptr: *const u64) -> Self {
-        ChannelLayoutIter { ptr }
+    pub fn new(ptr: AVCodec) -> Self {
+        ChannelLayoutIter { ptr,idx:0 }
     }
 
     pub fn best(self, max: i32) -> ChannelLayout {
@@ -136,12 +145,13 @@ impl Iterator for ChannelLayoutIter {
 
     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
         unsafe {
-            if *self.ptr == 0 {
+            let ch_layout = avcodec_wasmedge::avcodec_channel_layouts_iter(self.ptr,self.idx);
+            if ch_layout == 0 {
                 return None;
             }
 
-            let layout = ChannelLayout::from_bits_truncate(*self.ptr);
-            self.ptr = self.ptr.offset(1);
+            let layout = ChannelLayout::from_bits_truncate(ch_layout);
+            self.idx += 1;
 
             Some(layout)
         }

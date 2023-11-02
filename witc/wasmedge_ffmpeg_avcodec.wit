@@ -86,6 +86,13 @@ avcodec-pix-fmts-is-null: func(avCodecId:u32) -> s32
 avcodec-pix-fmts-iter: func(avCodecId:u32,idx:u32) -> u32
 avcodec-supported-framerate-is-null: func(avCodecId:u32) -> s32
 avcodec-supported-framerate-iter: func(avCodecId:u32,idx:u32,NumPtr:u32,DenPtr:u32) -> s32
+avcodec-supported-samplerates-is-null: func(avCodecId:u32) -> s32
+avcodec-supported-samplerates-iter: func(avCodecId:u32,idx:u32) -> s32
+avcodec-channel-layouts-is-null: func(avCodecId:u32) -> s32
+avcodec-channel-layouts-iter: func(avCodecId:u32,idx:u32) -> u64
+avcodec-sample-fmts-is-null: func(avCodecId:u32) -> s32
+avcodec-sample-fmts-iter: func(avCodecId:u32,idx:u32) -> u32
+
 
 // AVCodecParams struct fields.
 avcodecparam-codec-id : func(avCodecParams:u32) -> u32

@@ -14,7 +14,8 @@ readme        = "README.md"
 keywords      = ["ffmpeg", "multimedia", "video", "audio"]
 categories    = ["multimedia"]
 
-#[features]
+[features]
+
 #default = ["codec", "device", "filter", "format", "software-resampling", "software-scaling"]
 
 # ffmpeg<xy> are obsolete features kept for backward compatibility purposes and

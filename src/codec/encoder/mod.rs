@@ -33,9 +33,9 @@ use codec::Id;
 use Codec;
 use avcodec_wasmedge;
 
-// pub fn new() -> Encoder {
-//     Context::new().encoder()
-// }
+pub fn new() -> Encoder {
+    Context::new().encoder()
+}
 
 pub fn find(id: Id) -> Option<Codec> {
     unsafe {
