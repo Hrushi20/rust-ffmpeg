@@ -17,6 +17,10 @@ avcodec-send-frame: func(avCodecCtxId:u32,frameId:u32) -> s32
 avcodec-receive-packet: func(avCodecCtxId:u32,packetId:u32) -> s32
 avcodec-find-decoder-by-name: func(avCodecPtr:u32,name:string) -> s32
 avcodec-find-encoder-by-name: func(avCodecPtr:u32,name:string) -> s32
+av-packet-rescale-ts: func(avPacketId:u32,SrcNum:s32,SrcDen:s32,DestNum:s32,DestDen:s32) -> s32
+av-packet-ref: func(destPacketId:u32,srcPacketId:u32) -> s32
+av-packet-make-writable: func(avPacketId:u32) -> s32
+avcodec-parameters-copy: func(avFormatCtxId:u32,avCodecParamId:u32,streamIdx:u32) -> s32
 
 // AVCodecContext struct fields
 avcodeccontext-codec-id : func(avCodecCtxId:u32) -> u32
@@ -97,6 +101,7 @@ avcodec-sample-fmts-iter: func(avCodecId:u32,idx:u32) -> u32
 // AVCodecParams struct fields.
 avcodecparam-codec-id : func(avCodecParams:u32) -> u32
 avcodecparam-codec-type : func(avCodecParams:u32) -> s32
+avcodecparam-set-codec-tag: func(avCodecParams:u32,codecTag:u32) -> s32
 
 // AVPacket
 av-packet-alloc : func(avPacketPtr:u32) -> s32
@@ -105,3 +110,16 @@ av-packet-unref : func(avPacketId:u32) -> s32
 av-grow-packet : func(avPacketId:u32,size:s32) -> s32
 av-shrink-packet : func(avPacketId:u32,size:s32) -> s32
 av-packet-stream-index : func(avPacketId:u32) -> s32
+av-packet-set-stream-index: func(avPacketId:u32,streamIdx:s32) -> s32
+av-packet-size: func(avPacketId:u32) -> s32
+av-packet-flags: func(avPacketId:u32) -> s32
+av-packet-set-flags: func(avPacketId:u32,flags:s32) -> s32
+av-packet-pos: func(avPacketId:u32) -> s64
+av-packet-set-pos: func(avPacketId:u32,pos:s64) -> s32
+av-packet-duration: func(avPacketId:u32) -> s64
+av-packet-set-duration: func(avPacketId:u32,duration:s64) -> s32
+av-packet-dts: func(avPacketId:u32) -> s64
+av-packet-set-dts: func(avPacketId:u32,dts:s64) -> s32
+av-packet-pts: func(avPacketId:u32) -> s64
+av-packet-set-pts: func(avPacketId:u32,pts:s64) -> s32
+av-packet-is-data-null: func(avPacketId:u32) -> s32

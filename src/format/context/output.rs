@@ -9,6 +9,7 @@ use super::common::Context;
 use super::destructor;
 use codec::traits;
 use {format, ChapterMut, Dictionary, Error, Rational, StreamMut};
+use avCodecType::AVCodec;
 use avFormatTypes::AVFormatContext;
 use avformat_wasmedge;
 use format::{AVChapter, AVOutputFormat};
@@ -43,7 +44,7 @@ impl Output {
         }
     }
 
-    pub fn write_header(self) -> Result<(), Error> {
+    pub fn write_header(&mut self) -> Result<(), Error> {
         unsafe {
             match avformat_wasmedge::avformat_write_header(self.ptr(), mem::zeroed()) {
                 0 => Ok(()),
@@ -73,21 +74,21 @@ impl Output {
         }
     }
 
-    // pub fn add_stream<E: traits::Encoder>(&mut self, codec: E) -> Result<StreamMut, Error> {
-    //     unsafe {
-    //         let codec = codec.encoder();
-    //         let codec = codec.map_or(ptr::null(), |c| c.as_ptr());
-    //         let ptr = avformat_new_stream(self.as_mut_ptr(), codec);
-    //
-    //         if ptr.is_null() {
-    //             return Err(Error::Unknown);
-    //         }
-    //
-    //         let index = (*self.ctx.as_ptr()).nb_streams - 1;
-    //
-    //         Ok(StreamMut::wrap(&mut self.ctx, index as usize))
-    //     }
-    // }
+    pub fn add_stream<E: traits::Encoder>(&mut self, codec: E) -> Result<StreamMut, Error> {
+        unsafe {
+            let codec = codec.encoder();
+            let codec = codec.map_or(mem::zeroed::<AVCodec>(), |c| c.ptr());
+            let res = avformat_wasmedge::avformat_new_stream(self.ptr(), codec);
+
+            if res == 0 {
+                return Err(Error::Unknown);
+            }
+
+            let index = self.ctx.nb_streams() - 1;
+
+            Ok(StreamMut::wrap(&mut self.ctx, index as usize))
+        }
+    }
 
     pub fn add_chapter<R: Into<Rational>, S: AsRef<str>>(
         &mut self,

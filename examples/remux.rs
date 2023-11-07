@@ -34,9 +34,7 @@ fn main() {
         // We need to set codec_tag to 0 lest we run into incompatible codec tag
         // issues when muxing into a different container format. Unfortunately
         // there's no high level API to do this (yet).
-        unsafe {
-            (*ost.parameters().as_mut_ptr()).codec_tag = 0;
-        }
+        ost.parameters().set_codec_tag(0);
     }
 
     octx.set_metadata(ictx.metadata().to_owned());

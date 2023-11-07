@@ -6,6 +6,7 @@ use format::context::common::Context;
 use {codec, Dictionary, Rational};
 use avFormatTypes::AVFormatContext;
 use avformat_wasmedge;
+use avcodec_wasmedge;
 
 pub struct StreamMut<'a> {
     context: &'a mut Context,
@@ -51,14 +52,14 @@ impl<'a> StreamMut<'a> {
         }
     }
 
-    // pub fn set_parameters<P: Into<codec::Parameters>>(&mut self, parameters: P) {
-    //     let parameters = parameters.into();
-    //
-    //     unsafe {
-    //         avcodec_parameters_copy((*self.as_mut_ptr()).codecpar, parameters.as_ptr());
-    //     }
-    // }
-    //
+    pub fn set_parameters<P: Into<codec::Parameters>>(&mut self, parameters: P) {
+        let parameters = parameters.into();
+
+        unsafe {
+            avcodec_wasmedge::avcodec_parameters_copy(self.ptr(), parameters.ptr(),self.index as u32);
+        }
+    }
+
     pub fn set_metadata(&mut self, metadata: Dictionary) {
         unsafe {
             let metadata = metadata.disown();

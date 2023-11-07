@@ -20,6 +20,9 @@ avformat-version : func() -> u32
 avchapter-mallocz : func(avChapterPtr:u32) -> s32
 avchapter-dynarray-add : func(avFormatCtxId:u32,nbChapterPtr:u32,avChapterId:u32) -> s32
 avformat-avfreep : func(avChapterId:u32) -> s32
+av-interleaved-write-frame: func(avFormatCtxId:u32,avPacketId:u32) -> s32
+av-write-frame: func(avFormatCtxId:u32,avPacketId:u32) -> s32
+avformat-new-stream: func(avFormatCtxId:u32,avCodecId:u32) -> s32
 
 // Functions to fetch avFormatContext data fields
 avformatContext-iformat : func(avFormatCtxPtr:u32,avInputFormatPtr:u32) -> s32

@@ -29,11 +29,10 @@ impl Parameters {
 impl Parameters {
     pub fn new() -> Self {
         unsafe {
-            // let avCodecParameters = NonNull::<AVCodecParameters>::dangling();
-            let avCodecParameters = MaybeUninit::<AVCodecParameters>::uninit();
-            avcodec_wasmedge::avcodec_parameters_alloc(avCodecParameters.as_ptr() as u32);
+            let av_codec_parameters = MaybeUninit::<AVCodecParameters>::uninit();
+            avcodec_wasmedge::avcodec_parameters_alloc(av_codec_parameters.as_ptr() as u32);
             Parameters {
-                ptr: ptr::read(avCodecParameters.as_ptr()),
+                ptr: ptr::read(av_codec_parameters.as_ptr()),
                 owner: None,
             }
         }
@@ -41,8 +40,8 @@ impl Parameters {
 
     pub fn medium(&self) -> media::Type {
         unsafe {
-            let mediaType = avcodec_wasmedge::avcodecparam_codec_type(self.ptr());
-            media::Type::from(mediaType)
+            let media_type = avcodec_wasmedge::avcodecparam_codec_type(self.ptr());
+            media::Type::from(media_type)
         }
     }
 
@@ -51,6 +50,12 @@ impl Parameters {
             let ID = avcodec_wasmedge::avcodecparam_codec_id(self.ptr());
             Id::from(ID)
         }
+    }
+
+    pub fn set_codec_tag(&self,codec_tag:u32){
+       unsafe {
+           avcodec_wasmedge::avcodecparam_set_codec_tag(self.ptr,codec_tag);
+       }
     }
 }
 

@@ -36,7 +36,7 @@ impl Context {
     #[inline]
     pub fn nb_streams(&self) -> u32 {
         unsafe {
-            avformat_wasmedge::avformatContext_nb_streams(self.ptr())
+            avformat_wasmedge::avformatContext_nb_streams(self.ptr()) as u32
         }
     }
 

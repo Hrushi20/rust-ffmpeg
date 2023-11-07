@@ -2,12 +2,13 @@ use std::marker::PhantomData;
 use std::{ptr};
 use std::mem::MaybeUninit;
 
-use super::{Ref};
+use super::{Flags,Ref};
 // use super::{Borrow, Flags, Mut, Ref, SideData};
 use libc::c_int;
 use {format, Error, Rational};
 use avCodecType::AVPacket;
 use ::{avcodec_wasmedge, avformat_wasmedge};
+use constants::AV_NOPTS_VALUE;
 use packet::traits::Mut;
 
 pub struct Packet(AVPacket);
@@ -16,10 +17,10 @@ unsafe impl Send for Packet {}
 unsafe impl Sync for Packet {}
 
 impl Packet {
-    // #[inline(always)]
-    // pub unsafe fn is_empty(&self) -> bool {
-    //     self.0.size == 0
-    // }
+    #[inline(always)]
+    pub unsafe fn is_empty(&self) -> bool {
+        avcodec_wasmedge::av_packet_size(self.ptr()) == 0
+    }
 }
 
 impl Packet {
@@ -36,12 +37,12 @@ impl Packet {
     #[inline]
     pub fn new(size: usize) -> Self {
         unsafe {
-            let avPacket = MaybeUninit::<AVPacket>::uninit();
+            let av_packet = MaybeUninit::<AVPacket>::uninit();
 
-            avcodec_wasmedge::av_packet_alloc(avPacket.as_ptr() as u32);
-            avcodec_wasmedge::av_new_packet(ptr::read(avPacket.as_ptr()), size as i32);
+            avcodec_wasmedge::av_packet_alloc(av_packet.as_ptr() as u32);
+            avcodec_wasmedge::av_new_packet(ptr::read(av_packet.as_ptr()), size as i32);
 
-            Packet(ptr::read(avPacket.as_ptr()))
+            Packet(ptr::read(av_packet.as_ptr()))
         }
     }
 
@@ -74,40 +75,53 @@ impl Packet {
         }
     }
 
-    // #[inline]
-    // pub fn rescale_ts<S, D>(&mut self, source: S, destination: D)
-    // where
-    //     S: Into<Rational>,
-    //     D: Into<Rational>,
-    // {
-    //     unsafe {
-    //         av_packet_rescale_ts(
-    //             self.as_mut_ptr(),
-    //             source.into().into(),
-    //             destination.into().into(),
-    //         );
-    //     }
-    // }
-    //
-    // #[inline]
-    // pub fn flags(&self) -> Flags {
-    //     Flags::from_bits_truncate(self.0.flags)
-    // }
-    //
-    // #[inline]
-    // pub fn set_flags(&mut self, value: Flags) {
-    //     self.0.flags = value.bits();
-    // }
-    //
-    // #[inline]
-    // pub fn is_key(&self) -> bool {
-    //     self.flags().contains(Flags::KEY)
-    // }
-    //
-    // #[inline]
-    // pub fn is_corrupt(&self) -> bool {
-    //     self.flags().contains(Flags::CORRUPT)
-    // }
+    #[inline]
+    pub fn rescale_ts<S, D>(&mut self, source: S, destination: D)
+    where
+        S: Into<Rational>,
+        D: Into<Rational>,
+    {
+        unsafe {
+            let src = source.into();
+            let dest = destination.into();
+            avcodec_wasmedge::av_packet_rescale_ts(
+                self.ptr(),
+                src.numerator(),
+                src.denominator(),
+                dest.numerator(),
+                dest.denominator()
+            );
+        }
+    }
+
+    #[inline]
+    pub fn flags(&self) -> Flags {
+        unsafe {
+            let flags = avcodec_wasmedge::av_packet_flags(self.ptr());
+            Flags::from_bits_truncate(flags)
+        }
+    }
+
+    #[inline]
+    pub fn set_flags(&mut self, value: Flags) {
+        unsafe {
+            avcodec_wasmedge::av_packet_set_flags(self.ptr(), value.bits());
+        }
+    }
+
+    #[inline]
+    pub fn is_key(&self) -> bool {
+        unsafe {
+            self.flags().contains(Flags::KEY)
+        }
+    }
+
+    #[inline]
+    pub fn is_corrupt(&self) -> bool {
+        unsafe {
+            self.flags().contains(Flags::CORRUPT)
+        }
+    }
 
     #[inline]
     pub fn stream(&self) -> usize {
@@ -116,62 +130,87 @@ impl Packet {
         }
     }
 
-    // #[inline]
-    // pub fn set_stream(&mut self, index: usize) {
-    //     self.0.stream_index = index as c_int;
-    // }
+    #[inline]
+    pub fn set_stream(&mut self, index: usize) {
+        unsafe {
+            avcodec_wasmedge::av_packet_set_stream_index(self.ptr(), index as i32);
+        }
+    }
 
-    // #[inline]
-    // pub fn pts(&self) -> Option<i64> {
-    //     match self.0.pts {
-    //         AV_NOPTS_VALUE => None,
-    //         pts => Some(pts),
-    //     }
-    // }
-    //
-    // #[inline]
-    // pub fn set_pts(&mut self, value: Option<i64>) {
-    //     self.0.pts = value.unwrap_or(AV_NOPTS_VALUE);
-    // }
-    //
-    // #[inline]
-    // pub fn dts(&self) -> Option<i64> {
-    //     match self.0.dts {
-    //         AV_NOPTS_VALUE => None,
-    //         dts => Some(dts),
-    //     }
-    // }
-    //
-    // #[inline]
-    // pub fn set_dts(&mut self, value: Option<i64>) {
-    //     self.0.dts = value.unwrap_or(AV_NOPTS_VALUE);
-    // }
-    //
-    // #[inline]
-    // pub fn size(&self) -> usize {
-    //     self.0.size as usize
-    // }
-    //
-    // #[inline]
-    // pub fn duration(&self) -> i64 {
-    //     self.0.duration
-    // }
-    //
-    // #[inline]
-    // pub fn set_duration(&mut self, value: i64) {
-    //     self.0.duration = value;
-    // }
-    //
-    // #[inline]
-    // pub fn position(&self) -> isize {
-    //     self.0.pos as isize
-    // }
-    //
-    // #[inline]
-    // pub fn set_position(&mut self, value: isize) {
-    //     self.0.pos = value as i64
-    // }
-    //
+    #[inline]
+    pub fn pts(&self) -> Option<i64> {
+        unsafe {
+            let pts = avcodec_wasmedge::av_packet_pts(self.ptr());
+
+            if pts == AV_NOPTS_VALUE {
+                return None
+            }
+            return Some(pts)
+        }
+    }
+
+    #[inline]
+    pub fn set_pts(&mut self, value: Option<i64>) {
+        unsafe {
+            let pts = value.unwrap_or(AV_NOPTS_VALUE);
+            avcodec_wasmedge::av_packet_set_pts(self.ptr(), pts);
+        }
+    }
+
+    #[inline]
+    pub fn dts(&self) -> Option<i64> {
+        unsafe {
+            let dts = avcodec_wasmedge::av_packet_dts(self.ptr());
+            if dts == AV_NOPTS_VALUE {
+                return None;
+            }
+            return Some(dts);
+        }
+    }
+
+    #[inline]
+    pub fn set_dts(&mut self, value: Option<i64>) {
+        unsafe {
+            let dts = value.unwrap_or(AV_NOPTS_VALUE);
+            avcodec_wasmedge::av_packet_set_dts(self.ptr(), dts);
+        }
+    }
+
+    #[inline]
+    pub fn size(&self) -> usize {
+        unsafe {
+            avcodec_wasmedge::av_packet_size(self.ptr()) as usize
+        }
+    }
+
+    #[inline]
+    pub fn duration(&self) -> i64 {
+        unsafe {
+            avcodec_wasmedge::av_packet_duration(self.ptr())
+        }
+    }
+
+    #[inline]
+    pub fn set_duration(&mut self, value: i64) {
+        unsafe {
+            avcodec_wasmedge::av_packet_set_duration(self.ptr(), value);
+        }
+    }
+
+    #[inline]
+    pub fn position(&self) -> isize {
+        unsafe {
+            avcodec_wasmedge::av_packet_pos(self.ptr()) as isize
+        }
+    }
+
+    #[inline]
+    pub fn set_position(&mut self, value: isize) {
+        unsafe {
+            avcodec_wasmedge::av_packet_set_pos(self.ptr(), value as i64);
+        }
+    }
+
     // #[inline]
     // #[cfg(not(feature = "ffmpeg_5_0"))]
     // pub fn convergence(&self) -> isize {
@@ -215,34 +254,34 @@ impl Packet {
         }
     }
 
-    // #[inline]
-    // pub fn write(&self, format: &mut format::context::Output) -> Result<bool, Error> {
-    //     unsafe {
-    //         if self.is_empty() {
-    //             return Err(Error::InvalidData);
-    //         }
-    //
-    //         match av_write_frame(format.as_mut_ptr(), self.as_ptr() as *mut _) {
-    //             1 => Ok(true),
-    //             0 => Ok(false),
-    //             e => Err(Error::from(e)),
-    //         }
-    //     }
-    // }
+    #[inline]
+    pub fn write(&self, format: &mut format::context::Output) -> Result<bool, Error> {
+        unsafe {
+            if self.is_empty() {
+                return Err(Error::InvalidData);
+            }
 
-    // #[inline]
-    // pub fn write_interleaved(&self, format: &mut format::context::Output) -> Result<(), Error> {
-    //     unsafe {
-    //         if self.is_empty() {
-    //             return Err(Error::InvalidData);
-    //         }
-    //
-    //         match av_interleaved_write_frame(format.as_mut_ptr(), self.as_ptr() as *mut _) {
-    //             0 => Ok(()),
-    //             e => Err(Error::from(e)),
-    //         }
-    //     }
-    // }
+            match avformat_wasmedge::av_write_frame(format.ptr(), self.ptr() ) {
+                1 => Ok(true),
+                0 => Ok(false),
+                e => Err(Error::from(e)),
+            }
+        }
+    }
+
+    #[inline]
+    pub fn write_interleaved(&self, format: &mut format::context::Output) -> Result<(), Error> {
+        unsafe {
+            if self.is_empty() {
+                return Err(Error::InvalidData);
+            }
+
+            match avformat_wasmedge::av_interleaved_write_frame(format.ptr(), self.ptr()) {
+                0 => Ok(()),
+                e => Err(Error::from(e)),
+            }
+        }
+    }
 }
 
 impl Ref for Packet {
@@ -256,30 +295,30 @@ impl Mut for Packet {
         self.0
     }
 }
-//
-// impl Clone for Packet {
-//     #[inline]
-//     fn clone(&self) -> Self {
-//         let mut pkt = Packet::empty();
-//         pkt.clone_from(self);
-//
-//         pkt
-//     }
-//
-//     #[inline]
-//     fn clone_from(&mut self, source: &Self) {
-//         #[cfg(feature = "ffmpeg_4_0")]
-//         unsafe {
-//             av_packet_ref(&mut self.0, &source.0);
-//             av_packet_make_writable(&mut self.0);
-//         }
-//         #[cfg(not(feature = "ffmpeg_4_0"))]
-//         unsafe {
-//             av_copy_packet(&mut self.0, &source.0);
-//         }
-//     }
-// }
-//
+
+impl Clone for Packet {
+    #[inline]
+    fn clone(&self) -> Self {
+        let mut pkt = Packet::empty();
+        pkt.clone_from(self);
+
+        pkt
+    }
+
+    #[inline]
+    fn clone_from(&mut self, source: &Self) {
+        // #[cfg(feature = "ffmpeg_4_0")]
+        unsafe {
+            avcodec_wasmedge::av_packet_ref(self.ptr(), source.ptr());
+            avcodec_wasmedge::av_packet_make_writable(self.ptr());
+        }
+        // #[cfg(not(feature = "ffmpeg_4_0"))]
+        // unsafe {
+        //     av_copy_packet(&mut self.0, &source.0);
+        // }
+    }
+}
+
 impl Drop for Packet {
     fn drop(&mut self) {
         unsafe {
