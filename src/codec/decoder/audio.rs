@@ -49,9 +49,11 @@ impl Audio {
         }
     }
 
-    // pub fn channels(&self) -> u16 {
-    //     unsafe { (*self.as_ptr()).channels as u16 }
-    // }
+    pub fn channels(&self) -> u16 {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_channels(self.ptr()) as u16
+        }
+    }
 
     pub fn format(&self) -> format::Sample {
         unsafe {
@@ -75,7 +77,8 @@ impl Audio {
     // }
 
     pub fn channel_layout(&self) -> ChannelLayout {
-        unsafe { ChannelLayout::from_bits_truncate(
+        unsafe {
+            ChannelLayout::from_bits_truncate(
             avcodec_wasmedge::avcodeccontext_channel_layout(self.ptr()))
         }
     }
@@ -99,11 +102,13 @@ impl Audio {
     // pub fn max_bit_rate(&self) -> usize {
     //     unsafe { (*self.as_ptr()).rc_max_rate as usize }
     // }
-    //
-    // pub fn frame_size(&self) -> u32 {
-    //     unsafe { (*self.as_ptr()).frame_size as u32 }
-    // }
-    //
+
+    pub fn frame_size(&self) -> u32 {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_frame_size(self.ptr()) as u32
+        }
+    }
+
     // #[cfg(not(feature = "ffmpeg_5_0"))]
     // pub fn frame_start(&self) -> Option<usize> {
     //     unsafe {

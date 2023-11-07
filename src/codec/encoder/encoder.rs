@@ -1,8 +1,7 @@
 use std::ops::{Deref, DerefMut};
-use std::{mem, ptr};
+use std::{mem};
 
-// use super::{audio, subtitle, video};
-use super::{subtitle, video};
+use super::{audio, subtitle, video};
 use codec::Context;
 use {media, packet, Error, Frame, Rational};
 use avcodec_wasmedge;
@@ -27,21 +26,21 @@ impl Encoder {
         }
     }
 
-    // pub fn audio(mut self) -> Result<audio::Audio, Error> {
-    //     match self.medium() {
-    //         media::Type::Unknown => {
-    //             unsafe {
-    //                 avcodec_wasmedge::avcodeccontext_set_codec_type(self.ptr(),media::Type::Audio.into());
-    //             }
-    //
-    //             Ok(audio::Audio(self))
-    //         }
-    //
-    //         media::Type::Audio => Ok(audio::Audio(self)),
-    //
-    //         _ => Err(Error::InvalidData),
-    //     }
-    // }
+    pub fn audio(mut self) -> Result<audio::Audio, Error> {
+        match self.medium() {
+            media::Type::Unknown => {
+                unsafe {
+                    avcodec_wasmedge::avcodeccontext_set_codec_type(self.ptr(),media::Type::Audio.into());
+                }
+
+                Ok(audio::Audio(self))
+            }
+
+            media::Type::Audio => Ok(audio::Audio(self)),
+
+            _ => Err(Error::InvalidData),
+        }
+    }
 
     pub fn subtitle(mut self) -> Result<subtitle::Subtitle, Error> {
         match self.medium() {

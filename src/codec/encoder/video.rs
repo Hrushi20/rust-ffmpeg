@@ -117,13 +117,13 @@ impl Video {
         }
     }
 
-    // #[inline]
-    // pub fn set_format(&mut self, value: format::Pixel) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).pix_fmt = value.into();
-    //     }
-    // }
-    //
+    #[inline]
+    pub fn set_format(&mut self, value: format::Pixel) {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_set_pix_fmt(self.ptr(),value.into());
+        }
+    }
+
     #[inline]
     pub fn format(&self) -> format::Pixel {
         unsafe {
@@ -218,12 +218,13 @@ impl Video {
     //     }
     // }
 
-    // #[inline]
-    // pub fn set_aspect_ratio<R: Into<Rational>>(&mut self, value: R) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).sample_aspect_ratio = value.into().into();
-    //     }
-    // }
+    #[inline]
+    pub fn set_aspect_ratio<R: Into<Rational>>(&mut self, value: R) {
+        unsafe {
+            let rational = value.into();
+            avcodec_wasmedge::avcodeccontext_set_sample_aspect_ratio(self.ptr(),rational.numerator(),rational.denominator());
+        }
+    }
 
     #[inline]
     pub fn set_me_comparison(&mut self, value: Comparison) {

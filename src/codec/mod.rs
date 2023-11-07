@@ -49,13 +49,13 @@ pub mod encoder;
 pub mod types;
 pub mod traits;
 
-use std::ffi::CStr;
-use std::str::from_utf8_unchecked;
+use avcodec_wasmedge;
 
-
-// pub fn version() -> u32 {
-//     unsafe { avcodec_version() }
-// }
+pub fn version() -> u32 {
+    unsafe {
+        avcodec_wasmedge::avcodec_version()
+    }
+}
 //
 // pub fn configuration() -> &'static str {
 //     unsafe { from_utf8_unchecked(CStr::from_ptr(avcodec_configuration()).to_bytes()) }

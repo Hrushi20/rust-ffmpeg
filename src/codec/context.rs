@@ -5,12 +5,10 @@ use std::rc::Rc;
 
 use super::decoder::Decoder;
 use super::encoder::Encoder;
-use super::{Parameters,Id};
+use super::{Compliance,Debug,Flags,Id,Parameters};
 // use super::{threading, Compliance, Debug, Flags, Id, Parameters};
-use libc::{c_int, exit, memcpy};
 use media;
-use {Error};
-// use {Codec, Error};
+use {Codec,Error};
 use avCodecType::{AVCodec, AVCodecContext};
 use avcodec_wasmedge;
 
@@ -35,11 +33,11 @@ impl Context {
 impl Context {
     pub fn new() -> Self {
         unsafe {
-            let avCodec = mem::zeroed::<AVCodec>();
-            let avCodecContext = MaybeUninit::<AVCodecContext>::uninit();
-            avcodec_wasmedge::avcodec_alloc_context3(avCodec ,avCodecContext.as_ptr() as u32);
+            let av_codec = mem::zeroed::<AVCodec>();
+            let av_codec_context = MaybeUninit::<AVCodecContext>::uninit();
+            avcodec_wasmedge::avcodec_alloc_context3(av_codec, av_codec_context.as_ptr() as u32);
             Context {
-                ptr: ptr::read(avCodecContext.as_ptr()),
+                ptr: ptr::read(av_codec_context.as_ptr()),
                 owner: None,
             }
         }
@@ -50,7 +48,6 @@ impl Context {
         let mut context = Self::new();
 
         unsafe {
-            // To Context
             match avcodec_wasmedge::avcodec_parameters_to_context(context.ptr(), parameters.ptr()) {
                 e if e < 0 => Err(Error::from(e)),
                 _ => Ok(context),
@@ -66,27 +63,29 @@ impl Context {
         Encoder(self)
     }
 
-    // pub fn codec(&self) -> Option<Codec> {
-    //     unsafe {
-    //         if (*self.as_ptr()).codec.is_null() {
-    //             None
-    //         } else {
-    //             Some(Codec::wrap((*self.as_ptr()).codec as *mut _))
-    //         }
-    //     }
-    // }
+    pub fn codec(&self) -> Option<Codec> {
+        unsafe {
+            let codec = MaybeUninit::<AVCodec>::uninit();
+            let res = avcodec_wasmedge::avcodeccontext_codec(self.ptr(),codec.as_ptr() as u32);
+            if res == -1 {
+                None
+            } else {
+                Some(Codec::wrap(ptr::read(codec.as_ptr())))
+            }
+        }
+    }
 
     pub fn medium(&self) -> media::Type {
         unsafe {
             media::Type::from(avcodec_wasmedge::avcodeccontext_codec_type(self.ptr()))
         }
     }
-    //
-    // pub fn set_flags(&mut self, value: Flags) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).flags = value.bits() as c_int;
-    //     }
-    // }
+
+    pub fn set_flags(&mut self, value: Flags) {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_set_flags(self.ptr(),value.bits() as i32);
+        }
+    }
 
     pub fn id(&self) -> Id {
         unsafe {
@@ -94,19 +93,19 @@ impl Context {
             Id::from(ID)
         }
     }
-    //
-    // pub fn compliance(&mut self, value: Compliance) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).strict_std_compliance = value.into();
-    //     }
-    // }
-    //
-    // pub fn debug(&mut self, value: Debug) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).debug = value.bits();
-    //     }
-    // }
-    //
+
+    pub fn compliance(&mut self, value: Compliance) {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_set_strict_std_compliance(self.ptr(),value.into());
+        }
+    }
+
+    pub fn debug(&mut self, value: Debug) {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_set_debug(self.ptr(),value.bits());
+        }
+    }
+
     // pub fn set_threading(&mut self, config: threading::Config) {
     //     unsafe {
     //         (*self.as_mut_ptr()).thread_type = config.kind.into();

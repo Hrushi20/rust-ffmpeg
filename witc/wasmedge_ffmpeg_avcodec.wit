@@ -21,6 +21,7 @@ av-packet-rescale-ts: func(avPacketId:u32,SrcNum:s32,SrcDen:s32,DestNum:s32,Dest
 av-packet-ref: func(destPacketId:u32,srcPacketId:u32) -> s32
 av-packet-make-writable: func(avPacketId:u32) -> s32
 avcodec-parameters-copy: func(avFormatCtxId:u32,avCodecParamId:u32,streamIdx:u32) -> s32
+avcodec-version: func() -> u32
 
 // AVCodecContext struct fields
 avcodeccontext-codec-id : func(avCodecCtxId:u32) -> u32
@@ -32,10 +33,15 @@ avcodeccontext-set-width: func(avCodecCtxId:u32,width:s32) -> s32
 avcodeccontext-height : func(avCodecCtxId:u32) -> s32
 avcodeccontext-set-height: func(avCodecCtxId:u32,height:s32) -> s32
 avcodeccontext-sample-aspect-ratio : func(avCodecCtxId:u32,NumPtr:u32,DenPtr:u32) -> s32
+avcodeccontext-set-sample-aspect-ratio: func(avCodecCtxId:u32,Num:s32,Den:s32) -> s32
 avcodeccontext-channel-layout : func(AvCodecCtxId:u32) -> u64
+avcodeccontext-set-channel-layout : func(AvCodecCtxId:u32,channelLayoutId:u64) -> u64
 avcodeccontext-pix-fmt : func(AvCodecCtxId:u32) -> u32
+avcodeccontext-set-pix-fmt : func(AvCodecCtxId:u32,PixFmt:u32) -> u32
 avcodeccontext-sample-format : func(AvCodecCtxId:u32) -> u32
+avcodeccontext-set-sample-format: func(AvCodecCtxId:u32,sampleFmtId:u32) -> s32
 avcodeccontext-sample-rate : func(AvCodecCtxId:u32) -> s32
+avcodeccontext-set-sample-rate: func(avCodecCtxId:u32,sampleRate:s32) -> s32
 avcodeccontext-set-gop-size : func(avCodecCtxId:u32,GopSize:s32) -> s32
 avcodeccontext-set-max-b-frames : func(avCodecCtxId:u32,MaxBFrames:s32) -> s32
 avcodeccontext-set-b-quant-factor : func(avCodecCtxId:u32,BQuantFactor:f32) -> s32
@@ -75,6 +81,12 @@ avcodeccontext-set-bit-rate-tolerance: func(avCodecCtxId:u32,BitRateTolerance:s3
 avcodeccontext-set-compression-level: func(avCodecCtxId:u32,CompressionLevel:s32) -> s32
 avcodeccontext-set-time-base: func(avCodecCtxId:u32,Num:s32,Den:s32) -> s32
 avcodeccontext-set-framerate: func(avCodecCtxId:u32,Num:s32,Den:s32) -> s32
+avcodeccontext-set-flags: func(avCodecCtxId:u32,Flags:s32) -> s32
+avcodeccontext-set-strict-std-compliance: func(avCodecCtxId:u32,complianceId:s32) -> s32
+avcodeccontext-set-debug: func(avCodecCtxId:u32,debug:s32) -> s32
+avcodeccontext-codec: func(avCodecCtxId:u32,codecPtr:u32) -> s32
+avcodeccontext-channels: func(avCodecCtxId:u32) -> s32
+avcodeccontext-set-channels: func(avCodecCtxId:u32,channels:s32) -> s32
 
 // AVCodec struct fields
 avcodec-id : func(avCodecId:u32) -> u32

@@ -1,8 +1,5 @@
 use std::ops::{Deref, DerefMut};
-use std::{mem, ptr};
-
-#[cfg(not(feature = "ffmpeg_5_0"))]
-use libc::c_int;
+use std::{mem};
 
 use super::Encoder as Super;
 use codec::{traits, Context};
@@ -77,42 +74,53 @@ impl Audio {
 
     pub fn set_rate(&mut self, rate: i32) {
         unsafe {
-            (*self.as_mut_ptr()).sample_rate = rate;
+            avcodec_wasmedge::avcodeccontext_set_sample_rate(self.ptr(),rate);
         }
     }
 
     pub fn rate(&self) -> u32 {
-        unsafe { (*self.as_ptr()).sample_rate as u32 }
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_sample_rate(self.ptr()) as u32
+        }
     }
 
     pub fn set_format(&mut self, value: format::Sample) {
         unsafe {
-            (*self.as_mut_ptr()).sample_fmt = value.into();
+            avcodec_wasmedge::avcodeccontext_set_sample_format(self.ptr(),value.into());
         }
     }
 
     pub fn format(&self) -> format::Sample {
-        unsafe { format::Sample::from((*self.as_ptr()).sample_fmt) }
+        unsafe {
+            let format_id = avcodec_wasmedge::avcodeccontext_sample_format(self.ptr());
+            format::Sample::from(format_id)
+        }
     }
 
     pub fn set_channel_layout(&mut self, value: ChannelLayout) {
         unsafe {
-            (*self.as_mut_ptr()).channel_layout = value.bits();
+            avcodec_wasmedge::avcodeccontext_set_channel_layout(self.ptr(),value.bits());
         }
     }
 
     pub fn channel_layout(&self) -> ChannelLayout {
-        unsafe { ChannelLayout::from_bits_truncate((*self.as_ptr()).channel_layout) }
+        unsafe {
+
+            ChannelLayout::from_bits_truncate(
+                avcodec_wasmedge::avcodeccontext_channel_layout(self.ptr()))
+        }
     }
 
     pub fn set_channels(&mut self, value: i32) {
         unsafe {
-            (*self.as_mut_ptr()).channels = value;
+            avcodec_wasmedge::avcodeccontext_set_channels(self.ptr(),value);
         }
     }
 
     pub fn channels(&self) -> u16 {
-        unsafe { (*self.as_ptr()).channels as u16 }
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_channels(self.ptr()) as u16
+        }
     }
 }
 
@@ -145,60 +153,62 @@ impl AsMut<Context> for Audio {
 pub struct Encoder(pub Audio);
 
 impl Encoder {
-    #[deprecated(
-        since = "4.4.0",
-        note = "Underlying API avcodec_encode_audio2 has been deprecated since FFmpeg 3.1; \
-        consider switching to send_frame() and receive_packet()"
-    )]
-    #[cfg(not(feature = "ffmpeg_5_0"))]
-    pub fn encode<P: packet::Mut>(
-        &mut self,
-        frame: &frame::Audio,
-        out: &mut P,
-    ) -> Result<bool, Error> {
-        unsafe {
-            if self.format() != frame.format() {
-                return Err(Error::InvalidData);
-            }
+    // #[deprecated(
+    //     since = "4.4.0",
+    //     note = "Underlying API avcodec_encode_audio2 has been deprecated since FFmpeg 3.1; \
+    //     consider switching to send_frame() and receive_packet()"
+    // )]
+    // #[cfg(not(feature = "ffmpeg_5_0"))]
+    // pub fn encode<P: packet::Mut>(
+    //     &mut self,
+    //     frame: &frame::Audio,
+    //     out: &mut P,
+    // ) -> Result<bool, Error> {
+    //     unsafe {
+    //         if self.format() != frame.format() {
+    //             return Err(Error::InvalidData);
+    //         }
+    //
+    //         let mut got: c_int = 0;
+    //
+    //         match avcodec_encode_audio2(
+    //             self.0.as_mut_ptr(),
+    //             out.as_mut_ptr(),
+    //             frame.as_ptr(),
+    //             &mut got,
+    //         ) {
+    //             e if e < 0 => Err(Error::from(e)),
+    //             _ => Ok(got != 0),
+    //         }
+    //     }
+    // }
 
-            let mut got: c_int = 0;
-
-            match avcodec_encode_audio2(
-                self.0.as_mut_ptr(),
-                out.as_mut_ptr(),
-                frame.as_ptr(),
-                &mut got,
-            ) {
-                e if e < 0 => Err(Error::from(e)),
-                _ => Ok(got != 0),
-            }
-        }
-    }
-
-    #[deprecated(
-        since = "4.4.0",
-        note = "Underlying API avcodec_encode_audio2 has been deprecated since FFmpeg 3.1; \
-        consider switching to send_eof() and receive_packet()"
-    )]
-    #[cfg(not(feature = "ffmpeg_5_0"))]
-    pub fn flush<P: packet::Mut>(&mut self, out: &mut P) -> Result<bool, Error> {
-        unsafe {
-            let mut got: c_int = 0;
-
-            match avcodec_encode_audio2(
-                self.0.as_mut_ptr(),
-                out.as_mut_ptr(),
-                ptr::null(),
-                &mut got,
-            ) {
-                e if e < 0 => Err(Error::from(e)),
-                _ => Ok(got != 0),
-            }
-        }
-    }
-
+    // #[deprecated(
+    //     since = "4.4.0",
+    //     note = "Underlying API avcodec_encode_audio2 has been deprecated since FFmpeg 3.1; \
+    //     consider switching to send_eof() and receive_packet()"
+    // )]
+    // #[cfg(not(feature = "ffmpeg_5_0"))]
+    // pub fn flush<P: packet::Mut>(&mut self, out: &mut P) -> Result<bool, Error> {
+    //     unsafe {
+    //         let mut got: c_int = 0;
+    //
+    //         match avcodec_encode_audio2(
+    //             self.0.as_mut_ptr(),
+    //             out.as_mut_ptr(),
+    //             ptr::null(),
+    //             &mut got,
+    //         ) {
+    //             e if e < 0 => Err(Error::from(e)),
+    //             _ => Ok(got != 0),
+    //         }
+    //     }
+    // }
+    //
     pub fn frame_size(&self) -> u32 {
-        unsafe { (*self.as_ptr()).frame_size as u32 }
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_frame_size(self.ptr()) as u32
+        }
     }
 }
 

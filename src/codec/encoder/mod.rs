@@ -4,8 +4,8 @@ pub use self::encoder::Encoder;
 pub mod video;
 pub use self::video::Encoder as Video;
 
-// pub mod audio;
-// pub use self::audio::Encoder as Audio;
+pub mod audio;
+pub use self::audio::Encoder as Audio;
 
 pub mod subtitle;
 pub use self::subtitle::Encoder as Subtitle;
