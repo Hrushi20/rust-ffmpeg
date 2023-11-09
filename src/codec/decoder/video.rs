@@ -2,24 +2,17 @@ use std::mem::MaybeUninit;
 use std::ops::{Deref, DerefMut};
 use std::ptr;
 
-// #[cfg(not(feature = "ffmpeg_5_0"))]
-// use ffi::*;
-use libc::c_int;
-
-use super::{Opened};
-// use super::{slice, Opened};
+use super::{slice, Opened};
 use codec::Context;
-// use color;
+use color;
 #[cfg(not(feature = "ffmpeg_5_0"))]
-// use frame;
-// use util::chroma;
+use frame;
+use util::chroma;
 use util::format;
 #[cfg(not(feature = "ffmpeg_5_0"))]
-use {Error};
-// use {packet, Error};
-use {Rational};
+use {packet, Error};
+use {FieldOrder, Rational};
 use avcodec_wasmedge;
-// use {FieldOrder, Rational};
 
 pub struct Video(pub Opened);
 
@@ -69,9 +62,11 @@ impl Video {
         }
     }
 
-    // pub fn has_b_frames(&self) -> bool {
-    //     unsafe { (*self.as_ptr()).has_b_frames != 0 }
-    // }
+    pub fn has_b_frames(&self) -> bool {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_has_b_frames(self.ptr()) != 0
+        }
+    }
 
     pub fn aspect_ratio(&self) -> Rational {
         unsafe {
@@ -83,70 +78,88 @@ impl Video {
         }
     }
 
-    // pub fn color_space(&self) -> color::Space {
-    //     unsafe { color::Space::from((*self.as_ptr()).colorspace) }
-    // }
-    //
-    // pub fn color_range(&self) -> color::Range {
-    //     unsafe { color::Range::from((*self.as_ptr()).color_range) }
-    // }
-    //
+    pub fn color_space(&self) -> color::Space {
+        unsafe {
+            let colorspace_id = avcodec_wasmedge::avcodeccontext_colorspace(self.ptr());
+            color::Space::from(colorspace_id)
+        }
+    }
+
+    pub fn color_range(&self) -> color::Range {
+        unsafe {
+            let color_range_id = avcodec_wasmedge::avcodeccontext_color_range(self.ptr());
+            color::Range::from(color_range_id)
+        }
+    }
+
     // pub fn color_primaries(&self) -> color::Primaries {
     //     unsafe { color::Primaries::from((*self.as_ptr()).color_primaries) }
     // }
-    //
-    // pub fn color_transfer_characteristic(&self) -> color::TransferCharacteristic {
-    //     unsafe { color::TransferCharacteristic::from((*self.as_ptr()).color_trc) }
-    // }
-    //
-    // pub fn chroma_location(&self) -> chroma::Location {
-    //     unsafe { chroma::Location::from((*self.as_ptr()).chroma_sample_location) }
-    // }
-    //
-    // pub fn set_slice_count(&mut self, value: usize) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).slice_count = value as c_int;
-    //     }
-    // }
-    //
-    // pub fn set_slice_flags(&mut self, value: slice::Flags) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).slice_flags = value.bits();
-    //     }
-    // }
-    //
-    // pub fn skip_top(&mut self, value: usize) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).skip_top = value as c_int;
-    //     }
-    // }
-    //
-    // pub fn skip_bottom(&mut self, value: usize) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).skip_bottom = value as c_int;
-    //     }
-    // }
-    //
-    // pub fn references(&self) -> usize {
-    //     unsafe { (*self.as_ptr()).refs as usize }
-    // }
-    //
-    // pub fn set_field_order(&mut self, value: FieldOrder) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).field_order = value.into();
-    //     }
-    // }
+
+    pub fn color_transfer_characteristic(&self) -> color::TransferCharacteristic {
+        unsafe {
+            let color_trc = avcodec_wasmedge::avcodeccontext_color_trc(self.ptr());
+            color::TransferCharacteristic::from(color_trc)
+        }
+    }
+
+    pub fn chroma_location(&self) -> chroma::Location {
+        unsafe {
+            let chroma_sample_location = avcodec_wasmedge::avcodeccontext_chroma_sample_location(self.ptr());
+            chroma::Location::from(chroma_sample_location)
+        }
+    }
+
+    pub fn set_slice_count(&mut self, value: usize) {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_set_slice_count(self.ptr(),value as i32);
+        }
+    }
+
+    pub fn set_slice_flags(&mut self, value: slice::Flags) {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_set_slice_flags(self.ptr(),value.bits());
+        }
+    }
+
+    pub fn skip_top(&mut self, value: usize) {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_set_skip_top(self.ptr(),value as i32);
+        }
+    }
+
+    pub fn skip_bottom(&mut self, value: usize) {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_set_skip_bottom(self.ptr(),value as i32);
+        }
+    }
+
+    pub fn references(&self) -> usize {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_refs(self.ptr()) as usize
+        }
+    }
+
+    pub fn set_field_order(&mut self, value: FieldOrder) {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_set_field_order(self.ptr(),value.into());
+        }
+    }
 
     // intra_matrix
     // inter_matrix
 
-    // pub fn intra_dc_precision(&self) -> u8 {
-    //     unsafe { (*self.as_ptr()).intra_dc_precision as u8 }
-    // }
-    //
-    // pub fn max_bit_rate(&self) -> usize {
-    //     unsafe { (*self.as_ptr()).rc_max_rate as usize }
-    // }
+    pub fn intra_dc_precision(&self) -> u8 {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_intra_dc_precision(self.ptr()) as u8
+        }
+    }
+
+    pub fn max_bit_rate(&self) -> usize {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_rc_max_rate(self.ptr()) as usize
+        }
+    }
 }
 
 impl Deref for Video {

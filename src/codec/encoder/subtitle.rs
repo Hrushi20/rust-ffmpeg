@@ -1,8 +1,6 @@
 use std::ops::{Deref, DerefMut};
 use std::{mem, ptr};
 
-use libc::c_int;
-
 use super::Encoder as Super;
 use codec::{traits, Context};
 use {Dictionary, Error};

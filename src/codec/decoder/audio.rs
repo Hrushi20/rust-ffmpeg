@@ -1,8 +1,5 @@
 use std::ops::{Deref, DerefMut};
 
-#[cfg(not(feature = "ffmpeg_5_0"))]
-use libc::c_int;
-
 use super::Opened;
 use codec::Context;
 #[cfg(not(feature = "ffmpeg_5_0"))]
@@ -10,9 +7,8 @@ use frame;
 use util::format;
 #[cfg(not(feature = "ffmpeg_5_0"))]
 use {packet, Error};
-use { ChannelLayout };
 use avcodec_wasmedge;
-// use {AudioService, ChannelLayout};
+use {AudioService, ChannelLayout};
 
 pub struct Audio(pub Opened);
 
@@ -62,19 +58,23 @@ impl Audio {
         }
     }
 
-    // pub fn request_format(&mut self, value: format::Sample) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).request_sample_fmt = value.into();
-    //     }
-    // }
-    //
-    // pub fn frames(&self) -> usize {
-    //     unsafe { (*self.as_ptr()).frame_number as usize }
-    // }
-    //
-    // pub fn align(&self) -> usize {
-    //     unsafe { (*self.as_ptr()).block_align as usize }
-    // }
+    pub fn request_format(&mut self, value: format::Sample) {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_set_request_sample_fmt(self.ptr(),value.into());
+        }
+    }
+
+    pub fn frames(&self) -> usize {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_frame_number(self.ptr()) as usize
+        }
+    }
+
+    pub fn align(&self) -> usize {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_block_align(self.ptr()) as usize
+        }
+    }
 
     pub fn channel_layout(&self) -> ChannelLayout {
         unsafe {
@@ -83,25 +83,30 @@ impl Audio {
         }
     }
 
-    // pub fn set_channel_layout(&mut self, value: ChannelLayout) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).channel_layout = value.bits();
-    //     }
-    // }
-    //
-    // pub fn request_channel_layout(&mut self, value: ChannelLayout) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).request_channel_layout = value.bits();
-    //     }
-    // }
-    //
-    // pub fn audio_service(&mut self) -> AudioService {
-    //     unsafe { AudioService::from((*self.as_mut_ptr()).audio_service_type) }
-    // }
-    //
-    // pub fn max_bit_rate(&self) -> usize {
-    //     unsafe { (*self.as_ptr()).rc_max_rate as usize }
-    // }
+    pub fn set_channel_layout(&mut self, value: ChannelLayout) {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_set_channel_layout(self.ptr(),value.bits());
+        }
+    }
+
+    pub fn request_channel_layout(&mut self, value: ChannelLayout) {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_set_request_channel_layout(self.ptr(),value.bits());
+        }
+    }
+
+    pub fn audio_service(&mut self) -> AudioService {
+        unsafe {
+            let audio_service_type = avcodec_wasmedge::avcodeccontext_audio_service_type(self.ptr());
+            AudioService::from(audio_service_type)
+        }
+    }
+
+    pub fn max_bit_rate(&self) -> usize {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_rc_max_rate(self.ptr()) as usize
+        }
+    }
 
     pub fn frame_size(&self) -> u32 {
         unsafe {

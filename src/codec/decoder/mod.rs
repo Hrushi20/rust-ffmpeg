@@ -7,8 +7,8 @@ pub use self::video::Video;
 pub mod audio;
 pub use self::audio::Audio;
 
-// pub mod subtitle;
-// pub use self::subtitle::Subtitle;
+pub mod subtitle;
+pub use self::subtitle::Subtitle;
 
 pub mod slice;
 

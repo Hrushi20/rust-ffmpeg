@@ -22,6 +22,7 @@ av-packet-ref: func(destPacketId:u32,srcPacketId:u32) -> s32
 av-packet-make-writable: func(avPacketId:u32) -> s32
 avcodec-parameters-copy: func(avFormatCtxId:u32,avCodecParamId:u32,streamIdx:u32) -> s32
 avcodec-version: func() -> u32
+avcodec-flush-buffers: func(avCodecCtxId:u32) -> s32
 
 // AVCodecContext struct fields
 avcodeccontext-codec-id : func(avCodecCtxId:u32) -> u32
@@ -66,6 +67,7 @@ avcodeccontext-set-me-range: func(avCodecCtxId:u32,MeRange:s32) -> s32
 avcodeccontext-set-mb-decision: func(avCodecCtxId:u32,MbDecision:s32) -> s32
 avcodeccontext-set-mb-lmin: func(avCodecCtxId:u32,MbLMin:s32) -> s32
 avcodeccontext-set-mb-lmax: func(avCodecCtxId:u32,MbLMax:s32) -> s32
+avcodeccontext-intra-dc-precision: func(avCodecCtxId:u32) -> s32
 avcodeccontext-set-intra-dc-precision: func(avCodecCtxId:u32,IntraDcPrecision:s32) -> s32
 avcodeccontext-set-qmin: func(avCodecCtxId:u32,QMin:s32) -> s32
 avcodeccontext-set-qmax: func(avCodecCtxId:u32,QMax:s32) -> s32
@@ -75,11 +77,14 @@ avcodeccontext-colorspace: func(avCodecCtxId:u32) -> s32
 avcodeccontext-set-color-range: func(avCodecCtxId:u32,ColorRange:s32) -> s32
 avcodeccontext-color-range: func(avCodecCtxId:u32) -> s32
 avcodeccontext-frame-size: func(avCodecCtxId:u32) -> s32
+avcodeccontext-bit-rate: func(avCodecCtxId:u32) -> s64
 avcodeccontext-set-bit-rate: func(avCodecCtxId:u32,BitRate:s64) -> s32
+avcodeccontext-rc-max-rate: func(avCodecCtxId:u32) -> s64
 avcodeccontext-set-rc-max-rate: func(avCodecCtxId:u32,RcMaxRate:s64) -> s32
 avcodeccontext-set-bit-rate-tolerance: func(avCodecCtxId:u32,BitRateTolerance:s32) -> s32
 avcodeccontext-set-compression-level: func(avCodecCtxId:u32,CompressionLevel:s32) -> s32
 avcodeccontext-set-time-base: func(avCodecCtxId:u32,Num:s32,Den:s32) -> s32
+avcodeccontext-framerate: func(avCodecCtxId:u32,NumPtr:u32,DenPtr:u32) -> s32
 avcodeccontext-set-framerate: func(avCodecCtxId:u32,Num:s32,Den:s32) -> s32
 avcodeccontext-set-flags: func(avCodecCtxId:u32,Flags:s32) -> s32
 avcodeccontext-set-strict-std-compliance: func(avCodecCtxId:u32,complianceId:s32) -> s32
@@ -87,6 +92,26 @@ avcodeccontext-set-debug: func(avCodecCtxId:u32,debug:s32) -> s32
 avcodeccontext-codec: func(avCodecCtxId:u32,codecPtr:u32) -> s32
 avcodeccontext-channels: func(avCodecCtxId:u32) -> s32
 avcodeccontext-set-channels: func(avCodecCtxId:u32,channels:s32) -> s32
+avcodeccontext-set-skip-loop-filter: func(avCodecCtxId:u32,avDiscard:s32) -> s32
+avcodeccontext-set-skip-frame: func(avCodecCtxId:u32,avDiscard:s32) -> s32
+avcodeccontext-set-skip-idct: func(avCodecCtxId:u32,avDiscard:s32) -> s32
+avcodeccontext-set-error-concealment: func(avCodecCtxId:u32,errorConcealMent:s32) -> s32
+avcodeccontext-set-err-recognition: func(avCodecCtxId:u32,errorRecognition:s32) -> s32
+avcodeccontext-delay: func(avCodecCtxId:u32) -> s32
+avcodeccontext-set-skip-top: func(avCodecCtxId:u32,value:s32) -> s32
+avcodeccontext-set-skip-bottom: func(avCodecCtxId:u32,value:s32) -> s32
+avcodeccontext-refs: func(avCodecCtxId:u32) -> s32
+avcodeccontext-set-slice-flags: func(avCodecCtxId:u32,flags:s32) -> s32
+avcodeccontext-set-slice-count: func(avCodecCtxId:u32,value:s32) -> s32
+avcodeccontext-set-field-order: func(avCodecCtxId:u32,value:s32) -> s32
+avcodeccontext-color-trc: func(avCodecCtxId:u32) -> s32
+avcodeccontext-chroma-sample-location: func(avCodecCtxId:u32) -> s32
+avcodeccontext-frame-number: func(avCodecCtxId:u32) -> s32
+avcodeccontext-block-align: func(avCodecCtxId:u32) -> s32
+avcodeccontext-set-request-sample-fmt: func(avCodecCtxId:u32,sampleFmtId:u32) -> s32
+avcodeccontext-audio-service-type: func(avCodecCtxId:u32) -> s32
+avcodeccontext-has-b-frames: func(avCodecCtxId:u32) -> s32
+avcodeccontext-set-request-channel-layout: func(avCodecCtxId:u32,ChannelLayoutId:u64) -> s32
 
 // AVCodec struct fields
 avcodec-id : func(avCodecId:u32) -> u32

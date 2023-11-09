@@ -81,7 +81,7 @@ pub use codec::codec::Codec;
 // #[cfg(feature = "codec")]
 pub use codec::discard::Discard;
 // #[cfg(feature = "codec")]
-// pub use codec::field_order::FieldOrder;
+pub use codec::field_order::FieldOrder;
 // #[cfg(feature = "codec")]
 pub use codec::packet::{self, Packet};
 // #[cfg(all(feature = "codec", not(feature = "ffmpeg_5_0")))]

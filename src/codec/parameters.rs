@@ -74,7 +74,7 @@ impl Drop for Parameters {
         }
     }
 }
-//
+
 // impl Clone for Parameters {
 //     fn clone(&self) -> Self {
 //         let mut ctx = Parameters::new();
@@ -85,11 +85,12 @@ impl Drop for Parameters {
 //
 //     fn clone_from(&mut self, source: &Self) {
 //         unsafe {
-//             avcodec_parameters_copy(self.as_mut_ptr(), source.as_ptr());
+//             This is also used in AVStream with different Parameters.
+//             avcodec_wasmedge::avcodec_parameters_copy(self.as_mut_ptr(), source.as_ptr());
 //         }
 //     }
 // }
-
+//
 impl<C: AsRef<Context>> From<C> for Parameters {
     fn from(context: C) -> Parameters {
         let mut parameters = Parameters::new();

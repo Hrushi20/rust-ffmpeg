@@ -2,12 +2,9 @@ use std::ops::{Deref, DerefMut};
 use std::{mem};
 use std::mem::MaybeUninit;
 
-use super::{Audio,Opened,Video};
-// use super::{Audio, Check, Conceal, Opened, Subtitle, Video};
-use codec::{Context,traits};
-// use codec::{traits, Context};
-use {Error, Rational};
-// use {Dictionary, Discard, Error, Rational};
+use super::{Audio, Check, Conceal, Opened, Subtitle, Video};
+use codec::{traits, Context};
+use {Dictionary, Discard, Error, Rational};
 use avCodecType::AVCodec;
 use avUtilTypes::AVDictionary;
 use avcodec_wasmedge;
@@ -17,9 +14,9 @@ pub struct Decoder(pub Context);
 impl Decoder {
     pub fn open(mut self) -> Result<Opened, Error> {
         unsafe {
-            let avCodec = mem::zeroed::<AVCodec>();
-            let avDictionary = mem::zeroed::<AVDictionary>();
-            match avcodec_wasmedge::avcodec_open2(self.ptr(), avCodec, avDictionary) {
+            let av_codec = mem::zeroed::<AVCodec>();
+            let av_dictionary = mem::zeroed::<AVDictionary>();
+            match avcodec_wasmedge::avcodec_open2(self.ptr(), av_codec, av_dictionary) {
                 0 => Ok(Opened(self)),
                 e => Err(Error::from(e)),
             }
@@ -29,9 +26,9 @@ impl Decoder {
     pub fn open_as<D: traits::Decoder>(mut self, codec: D) -> Result<Opened, Error> {
         unsafe {
 
-            let avDictionary = mem::zeroed::<AVDictionary>();
+            let av_dictionary = mem::zeroed::<AVDictionary>();
             if let Some(codec) = codec.decoder() {
-                match avcodec_wasmedge::avcodec_open2(self.ptr(), codec.ptr(), avDictionary) {
+                match avcodec_wasmedge::avcodec_open2(self.ptr(), codec.ptr(), av_dictionary) {
                     0 => Ok(Opened(self)),
                     e => Err(Error::from(e)),
                 }
@@ -41,27 +38,27 @@ impl Decoder {
         }
     }
 
-    // pub fn open_as_with<D: traits::Decoder>(
-    //     mut self,
-    //     codec: D,
-    //     options: Dictionary,
-    // ) -> Result<Opened, Error> {
-    //     unsafe {
-    //         if let Some(codec) = codec.decoder() {
-    //             let mut opts = options.disown();
-    //             let res = avcodec_open2(self.as_mut_ptr(), codec.as_ptr(), &mut opts);
-    //
-    //             Dictionary::own(opts);
-    //
-    //             match res {
-    //                 0 => Ok(Opened(self)),
-    //                 e => Err(Error::from(e)),
-    //             }
-    //         } else {
-    //             Err(Error::DecoderNotFound)
-    //         }
-    //     }
-    // }
+    pub fn open_as_with<D: traits::Decoder>(
+        mut self,
+        codec: D,
+        options: Dictionary,
+    ) -> Result<Opened, Error> {
+        unsafe {
+            if let Some(codec) = codec.decoder() {
+                let opts = options.disown();
+                let res = avcodec_wasmedge::avcodec_open2(self.ptr(), codec.ptr(), opts);
+
+                Dictionary::own(opts);
+
+                match res {
+                    0 => Ok(Opened(self)),
+                    e => Err(Error::from(e)),
+                }
+            } else {
+                Err(Error::DecoderNotFound)
+            }
+        }
+    }
 
     pub fn video(self) -> Result<Video, Error> {
         if let Some(codec) = super::find(self.id()) {
@@ -79,43 +76,43 @@ impl Decoder {
         }
     }
 
-    // pub fn subtitle(self) -> Result<Subtitle, Error> {
-    //     if let Some(codec) = super::find(self.id()) {
-    //         self.open_as(codec).and_then(|o| o.subtitle())
-    //     } else {
-    //         Err(Error::DecoderNotFound)
-    //     }
-    // }
-    //
-    // pub fn conceal(&mut self, value: Conceal) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).error_concealment = value.bits();
-    //     }
-    // }
-    //
-    // pub fn check(&mut self, value: Check) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).err_recognition = value.bits();
-    //     }
-    // }
-    //
-    // pub fn skip_loop_filter(&mut self, value: Discard) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).skip_loop_filter = value.into();
-    //     }
-    // }
-    //
-    // pub fn skip_idct(&mut self, value: Discard) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).skip_idct = value.into();
-    //     }
-    // }
-    //
-    // pub fn skip_frame(&mut self, value: Discard) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).skip_frame = value.into();
-    //     }
-    // }
+    pub fn subtitle(self) -> Result<Subtitle, Error> {
+        if let Some(codec) = super::find(self.id()) {
+            self.open_as(codec).and_then(|o| o.subtitle())
+        } else {
+            Err(Error::DecoderNotFound)
+        }
+    }
+
+    pub fn conceal(&mut self, value: Conceal) {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_set_error_concealment(self.ptr(),value.bits());
+        }
+    }
+
+    pub fn check(&mut self, value: Check) {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_set_err_recognition(self.ptr(),value.bits());
+        }
+    }
+
+    pub fn skip_loop_filter(&mut self, value: Discard) {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_set_skip_loop_filter(self.ptr(),value.into());
+        }
+    }
+
+    pub fn skip_idct(&mut self, value: Discard) {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_set_skip_idct(self.ptr(),value.into());
+        }
+    }
+
+    pub fn skip_frame(&mut self, value: Discard) {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_set_skip_frame(self.ptr(),value.into());
+        }
+    }
 
     pub fn time_base(&self) -> Rational {
         unsafe {

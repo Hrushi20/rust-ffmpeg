@@ -1,13 +1,13 @@
 use std::ops::{Deref, DerefMut};
 use std::{mem, ptr};
+use std::mem::MaybeUninit;
 use libc::memcpy;
 
-use super::{Audio,Decoder,Video};
-// use super::{Audio, Decoder, Subtitle, Video};
+use super::{Audio, Decoder, Subtitle, Video};
 use codec::{Context};
 // use codec::{Context, Profile};
 use {media, packet ,Error, Frame, Rational};
-use avCodecType::AVPacket;
+use avCodecType::{AVPacket, AVRational};
 use avcodec_wasmedge;
 
 pub struct Opened(pub Decoder);
@@ -29,13 +29,13 @@ impl Opened {
         }
     }
 
-    // pub fn subtitle(self) -> Result<Subtitle, Error> {
-    //     if self.medium() == media::Type::Subtitle {
-    //         Ok(Subtitle(self))
-    //     } else {
-    //         Err(Error::InvalidData)
-    //     }
-    // }
+    pub fn subtitle(self) -> Result<Subtitle, Error> {
+        if self.medium() == media::Type::Subtitle {
+            Ok(Subtitle(self))
+        } else {
+            Err(Error::InvalidData)
+        }
+    }
 
     pub fn send_packet<P: packet::Ref>(&mut self, packet: &P) -> Result<(), Error> {
         unsafe {
@@ -67,35 +67,42 @@ impl Opened {
         }
     }
 
-    // pub fn bit_rate(&self) -> usize {
-    //     unsafe { (*self.as_ptr()).bit_rate as usize }
-    // }
-    //
-    // pub fn delay(&self) -> usize {
-    //     unsafe { (*self.as_ptr()).delay as usize }
-    // }
-    //
+    pub fn bit_rate(&self) -> usize {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_bit_rate(self.ptr()) as usize
+        }
+    }
+
+    pub fn delay(&self) -> usize {
+        unsafe {
+            avcodec_wasmedge::avcodeccontext_delay(self.ptr()) as usize
+        }
+    }
+
     // pub fn profile(&self) -> Profile {
     //     unsafe { Profile::from((self.id(), (*self.as_ptr()).profile)) }
     // }
-    //
-    // pub fn frame_rate(&self) -> Option<Rational> {
-    //     unsafe {
-    //         let value = (*self.as_ptr()).framerate;
-    //
-    //         if value == (AVRational { num: 0, den: 1 }) {
-    //             None
-    //         } else {
-    //             Some(Rational::from(value))
-    //         }
-    //     }
-    // }
-    //
-    // pub fn flush(&mut self) {
-    //     unsafe {
-    //         avcodec_flush_buffers(self.as_mut_ptr());
-    //     }
-    // }
+
+    pub fn frame_rate(&self) -> Option<Rational> {
+        unsafe {
+            let num = MaybeUninit::<i32>::uninit();
+            let den = MaybeUninit::<i32>::uninit();
+            avcodec_wasmedge::avcodeccontext_framerate(self.ptr(),num.as_ptr() as u32,den.as_ptr() as u32);
+
+            let value = Rational::new(ptr::read(num.as_ptr()),ptr::read(den.as_ptr()));
+            if value == (Rational::new(0,1)) {
+                None
+            } else {
+                Some(Rational::from(value))
+            }
+        }
+    }
+
+    pub fn flush(&mut self) {
+        unsafe {
+            avcodec_wasmedge::avcodec_flush_buffers(self.ptr());
+        }
+    }
 }
 
 impl Drop for Opened {
