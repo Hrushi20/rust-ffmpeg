@@ -5,4 +5,8 @@ swr-alloc-set-opts : func(SWRContextPtr:u32,ExistSwrCtxId:u32,OutChLayout:s64,Ou
 av-opt-set-dict : func(SWRContextId:u32,AVDictionaryId:u32) -> s32
 swr-convert-frame : func(SWRContextId:u32,FrameOutputId:u32,FrameInputId:u32) -> s32
 swr-free : func(SWRContextId:u32) -> s32
+swresample-configuration-length: func() -> s32
+swresample-configuration: func(configPtr:string) -> s32
+swresample-license-length: func() -> s32
+swresample-license: func(licensePtr:string) -> s32
 

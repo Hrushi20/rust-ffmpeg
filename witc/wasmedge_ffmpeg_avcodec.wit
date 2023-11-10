@@ -23,6 +23,10 @@ av-packet-make-writable: func(avPacketId:u32) -> s32
 avcodec-parameters-copy: func(avFormatCtxId:u32,avCodecParamId:u32,streamIdx:u32) -> s32
 avcodec-version: func() -> u32
 avcodec-flush-buffers: func(avCodecCtxId:u32) -> s32
+avcodec-configuration-length: func() -> s32
+avcodec-configuration: func(configPtr:string) -> s32
+avcodec-license-length: func() -> s32
+avcodec-license: func(licensePtr:string) -> s32
 
 // AVCodecContext struct fields
 avcodeccontext-codec-id : func(avCodecCtxId:u32) -> u32
@@ -112,6 +116,10 @@ avcodeccontext-set-request-sample-fmt: func(avCodecCtxId:u32,sampleFmtId:u32) ->
 avcodeccontext-audio-service-type: func(avCodecCtxId:u32) -> s32
 avcodeccontext-has-b-frames: func(avCodecCtxId:u32) -> s32
 avcodeccontext-set-request-channel-layout: func(avCodecCtxId:u32,ChannelLayoutId:u64) -> s32
+avcodeccontext-active-thread-type: func(avCodecCtxId:u32) -> s32
+avcodeccontext-set-thread-type: func(avCodecCtxId:u32,threadType:s32) -> s32
+avcodeccontext-thread-count: func(avCodecCtxId:u32) -> s32
+avcodeccontext-set-thread-count: func(avCodecCtxId:u32,threadCount:s32) -> s32
 
 // AVCodec struct fields
 avcodec-id : func(avCodecId:u32) -> u32

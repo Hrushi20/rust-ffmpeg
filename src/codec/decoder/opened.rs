@@ -1,13 +1,12 @@
 use std::ops::{Deref, DerefMut};
 use std::{mem, ptr};
 use std::mem::MaybeUninit;
-use libc::memcpy;
 
 use super::{Audio, Decoder, Subtitle, Video};
 use codec::{Context};
 // use codec::{Context, Profile};
 use {media, packet ,Error, Frame, Rational};
-use avCodecType::{AVPacket, AVRational};
+use avCodecType::{AVPacket};
 use avcodec_wasmedge;
 
 pub struct Opened(pub Decoder);

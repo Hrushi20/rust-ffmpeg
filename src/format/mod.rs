@@ -53,15 +53,25 @@ pub use format::types::*;
 pub fn version() -> u32 {
     unsafe { avformat_wasmedge::avformat_version() }
 }
-//
-// pub fn configuration() -> &'static str {
-//     unsafe { from_utf8_unchecked(CStr::from_ptr(avformat_configuration()).to_bytes()) }
-// }
-//
-// pub fn license() -> &'static str {
-//     unsafe { from_utf8_unchecked(CStr::from_ptr(avformat_license()).to_bytes()) }
-// }
-//
+
+pub fn configuration() -> String {
+    unsafe {
+        let config_len = avformat_wasmedge::avformat_configuration_length() as usize;
+        let config = vec![0u8;config_len];
+        avformat_wasmedge::avformat_configuration(config.as_ptr(),config_len);
+        String::from_utf8_unchecked(config)
+    }
+}
+
+pub fn license() -> String {
+    unsafe {
+        let license_len = avformat_wasmedge::avformat_license_length() as usize;
+        let license = vec![0u8;license_len];
+        avformat_wasmedge::avformat_license(license.as_ptr(),license_len);
+        String::from_utf8_unchecked(license)
+    }
+}
+
 // // XXX: use to_cstring when stable
 fn from_path<P: AsRef<Path>>(path: &P) -> &str {
     path.as_ref().as_os_str().to_str().unwrap()

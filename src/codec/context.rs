@@ -5,8 +5,7 @@ use std::rc::Rc;
 
 use super::decoder::Decoder;
 use super::encoder::Encoder;
-use super::{Compliance,Debug,Flags,Id,Parameters};
-// use super::{threading, Compliance, Debug, Flags, Id, Parameters};
+use super::{threading, Compliance, Debug, Flags, Id, Parameters};
 use media;
 use {Codec,Error};
 use avCodecType::{AVCodec, AVCodecContext};
@@ -106,27 +105,31 @@ impl Context {
         }
     }
 
-    // pub fn set_threading(&mut self, config: threading::Config) {
-    //     unsafe {
-    //         (*self.as_mut_ptr()).thread_type = config.kind.into();
-    //         (*self.as_mut_ptr()).thread_count = config.count as c_int;
-    //         #[cfg(not(feature = "ffmpeg_6_0"))]
-    //         {
-    //             (*self.as_mut_ptr()).thread_safe_callbacks = if config.safe { 1 } else { 0 };
-    //         }
-    //     }
-    // }
-    //
-    // pub fn threading(&self) -> threading::Config {
-    //     unsafe {
-    //         threading::Config {
-    //             kind: threading::Type::from((*self.as_ptr()).active_thread_type),
-    //             count: (*self.as_ptr()).thread_count as usize,
-    //             #[cfg(not(feature = "ffmpeg_6_0"))]
-    //             safe: (*self.as_ptr()).thread_safe_callbacks != 0,
-    //         }
-    //     }
-    // }
+    pub fn set_threading(&mut self, config: threading::Config) {
+        unsafe {
+            let thread_type:i32 = config.kind.into();
+            avcodec_wasmedge::avcodeccontext_set_thread_count(self.ptr(),config.count as i32);
+            avcodec_wasmedge::avcodeccontext_set_thread_type(self.ptr(),thread_type);
+            // #[cfg(not(feature = "ffmpeg_6_0"))]
+            // {
+            //     (*self.as_mut_ptr()).thread_safe_callbacks = if config.safe { 1 } else { 0 };
+            // }
+        }
+    }
+
+    pub fn threading(&self) -> threading::Config {
+        unsafe {
+            let active_thread_type = avcodec_wasmedge::avcodeccontext_active_thread_type(self.ptr());
+            let thread_count = avcodec_wasmedge::avcodeccontext_thread_count(self.ptr());
+
+            threading::Config {
+                kind: threading::Type::from(active_thread_type),
+                count: thread_count as usize,
+                // #[cfg(not(feature = "ffmpeg_6_0"))]
+                // safe: (*self.as_ptr()).thread_safe_callbacks != 0,
+            }
+        }
+    }
 
     pub fn set_parameters<P: Into<Parameters>>(&mut self, parameters: P) -> Result<(), Error> {
         let parameters = parameters.into();

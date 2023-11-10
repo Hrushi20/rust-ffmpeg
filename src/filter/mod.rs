@@ -47,13 +47,23 @@ pub fn version() -> u32 {
     }
 }
 
-// pub fn configuration() -> &'static str {
-//     unsafe { from_utf8_unchecked(CStr::from_ptr(avfilter_configuration()).to_bytes()) }
-// }
-//
-// pub fn license() -> &'static str {
-//     unsafe { from_utf8_unchecked(CStr::from_ptr(avfilter_license()).to_bytes()) }
-// }
+pub fn configuration() -> String {
+    unsafe {
+        let config_len = avfilter_wasmedge::avfilter_configuration_length() as usize;
+        let config = vec![0u8;config_len];
+        avfilter_wasmedge::avfilter_configuration(config.as_ptr(),config_len);
+        String::from_utf8_unchecked(config)
+    }
+}
+
+pub fn license() -> String {
+    unsafe {
+        let license_len = avfilter_wasmedge::avfilter_license_length() as usize;
+        let license = vec![0u8;license_len];
+        avfilter_wasmedge::avfilter_license(license.as_ptr(),license_len);
+        String::from_utf8_unchecked(license)
+    }
+}
 
 // pub fn find(name: &str) -> Option<Filter> {
 //     unsafe {

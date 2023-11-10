@@ -1,7 +1,6 @@
-use std::ffi::CStr;
-use std::str::from_utf8_unchecked;
 use avUtilTypes::AVColorPrimaries;
 use util::color::Primaries::Reserved0;
+use avutil_wasmedge;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Primaries {
@@ -26,21 +25,23 @@ pub enum Primaries {
     EBU3213 = 14,
 }
 
-// impl Primaries {
-//     #[cfg(feature = "ffmpeg_4_3")]
-//     pub const JEDEC_P22: Primaries = Primaries::EBU3213;
-//
-//     pub fn name(&self) -> Option<&'static str> {
-//         if *self == Primaries::Unspecified {
-//             return None;
-//         }
-//         unsafe {
-//             let ptr = av_color_primaries_name((*self).into());
-//             ptr.as_ref()
-//                 .map(|ptr| from_utf8_unchecked(CStr::from_ptr(ptr).to_bytes()))
-//         }
-//     }
-// }
+impl Primaries {
+    #[cfg(feature = "ffmpeg_4_3")]
+    pub const JEDEC_P22: Primaries = Primaries::EBU3213;
+
+    pub fn name(&self) -> Option<String> {
+        if *self == Primaries::Unspecified {
+            return None;
+        }
+        unsafe {
+            let len = avutil_wasmedge::av_color_primaries_name_length((*self.into())) as usize;
+            let name = vec![0u8;len];
+            avutil_wasmedge::av_color_primaries_name((*self.into()),name.as_ptr(),len);
+            Some(String::from_utf8_unchecked(name))
+            //     .map(|ptr| from_utf8_unchecked(CStr::from_ptr(ptr).to_bytes()))
+        }
+    }
+}
 
 impl From<AVColorPrimaries> for Primaries {
     fn from(value: AVColorPrimaries) -> Primaries {

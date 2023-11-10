@@ -1,6 +1,3 @@
-use ffi::*;
-use libc::c_int;
-
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum ColorSpace {
     Default,
@@ -13,8 +10,8 @@ pub enum ColorSpace {
     SMPTE240M,
 }
 
-impl From<c_int> for ColorSpace {
-    fn from(value: c_int) -> ColorSpace {
+impl From<i32> for ColorSpace {
+    fn from(value: i32) -> ColorSpace {
         match value {
             SWS_CS_ITU709 => ColorSpace::ITU709,
             SWS_CS_FCC => ColorSpace::FCC,
@@ -26,8 +23,8 @@ impl From<c_int> for ColorSpace {
     }
 }
 
-impl From<ColorSpace> for c_int {
-    fn from(value: ColorSpace) -> c_int {
+impl From<ColorSpace> for i32 {
+    fn from(value: ColorSpace) -> i32 {
         match value {
             ColorSpace::Default => SWS_CS_DEFAULT,
             ColorSpace::ITU709 => SWS_CS_ITU709,

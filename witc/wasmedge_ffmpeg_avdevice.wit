@@ -4,3 +4,7 @@ avdevice-list-devices: func(AVFormatCtxId:u32,AVDeviceInfoListPtr:u32) -> s32
 avdevice-free-list-devices: func(AVDeviceInfoListId:u32) -> s32
 avdevice-nb-devices: func(AVDeviceInfoListId:u32) -> s32
 avdevice-default-device: func(AVDeviceInfoListId:u32) -> s32
+avdevice-configuration-length: func() -> s32
+avdevice-configuration: func(configPtr:string) -> s32
+avdevice-license-length: func() -> s32
+avdevice-license: func(licensePtr:string) -> s32

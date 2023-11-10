@@ -4,8 +4,7 @@ use super::Disposition;
 use codec::{self, packet};
 use format::context::common::Context;
 use avCodecType::AVCodecParameters;
-use {DictionaryRef, Rational};
-// use {DictionaryRef, Discard, Rational};
+use {DictionaryRef, Discard, Rational};
 use format::types::{AVFormatContext};
 use avformat_wasmedge;
 use avUtilTypes::AVDictionary;
@@ -90,9 +89,12 @@ impl<'a> Stream<'a> {
         }
     }
 
-    // pub fn discard(&self) -> Discard {
-    //     unsafe { Discard::from((*self.as_ptr()).discard) }
-    // }
+    pub fn discard(&self) -> Discard {
+        unsafe {
+            let discard = avformat_wasmedge::avStream_discard(self.ptr(),self.index() as u32);
+            Discard::from(discard)
+        }
+    }
 
     // pub fn side_data(&self) -> SideDataIter {
     //     SideDataIter::new(self)

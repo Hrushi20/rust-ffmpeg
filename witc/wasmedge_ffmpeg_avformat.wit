@@ -23,6 +23,11 @@ avformat-avfreep : func(avChapterId:u32) -> s32
 av-interleaved-write-frame: func(avFormatCtxId:u32,avPacketId:u32) -> s32
 av-write-frame: func(avFormatCtxId:u32,avPacketId:u32) -> s32
 avformat-new-stream: func(avFormatCtxId:u32,avCodecId:u32) -> s32
+avformat-configuration-length: func() -> s32
+avformat-configuration: func(configPtr:string) -> s32
+avformat-license-length: func() -> s32
+avformat-license: func(licensePtr:string) -> s32
+av-guess-codec: func(avIOFormatId:u32,shortName:string,fileName:string,mimeType:string,mediaTypeId:s32) -> u32
 
 // Functions to fetch avFormatContext data fields
 avformatContext-iformat : func(avFormatCtxPtr:u32,avInputFormatPtr:u32) -> s32
@@ -38,16 +43,16 @@ avformatContext-metadata: func(avFormatCtxPtr:u32,avDictionaryPtr:u32) -> s32
 avformatContext-set-metadata: func(avFormatCtxPtr:u32,avDictionaryId:u32) -> s32
 
 // Functions to fetch avInputFormat data fields.
-avIOFormat-name-length : func(avInputFormatId:u32,avFormatType:u32) -> s32
+avIOFormat-name-length : func(avIOFormatId:u32,avFormatType:u32) -> s32
 avInputFormat-name : func(avInputFormatId:u32,namePtr:string) -> s32
 avOutputFormat-name : func(avOutputFormatId:u32,namePtr:string) -> s32
-avIOFormat-long-name-length : func(avInputFormatId:u32,avFormatType:u32) -> s32
+avIOFormat-long-name-length : func(avIOId:u32,avFormatType:u32) -> s32
 avInputFormat-long-name : func(avInputFormatId:u32,longNamePtr:string) -> s32
 avOutputFormat-long-name : func(avOutputFormatId:u32,longNamePtr:string) -> s32
-avIOFormat-extensions-length : func(avInputFormatId:u32,avFormatType:u32) -> s32
+avIOFormat-extensions-length : func(avIOId:u32,avFormatType:u32) -> s32
 avInputFormat-extensions : func(avInputFormatId:u32,extensionsPtr:string) -> s32
 avOutputFormat-extensions : func(avOutputFormatId:u32,extensionsPtr:string) -> s32
-avIOFormat-mime-type-length : func(avInputFormatId:u32,avFormatType:u32) -> s32
+avIOFormat-mime-type-length : func(avIOId:u32,avFormatType:u32) -> s32
 avInputFormat-mime-type : func(avInputFormatId:u32,mimeTypePtr:string) -> s32
 avOutputFormat-mime-type : func(avOutputFormatId:u32,mimeTypePtr:string) -> s32
 avOutputFormat-flags : func(avOutputFormatId:u32) -> s32
@@ -72,6 +77,7 @@ avStream-avg-frame-rate : func(NumPtr:u32,DenPtr:u32,avFormatCtxId:u32,streamIdx
 avStream-set-avg-frame-rate : func(Num:s32,Den:s32,avFormatCtxId:u32,streamIdx:u32) -> s32
 avStream-metadata : func(avFormatCtxId:u32,streamIdx:u32,avDictionaryPtr:u32) -> s32
 avStream-set-metadata : func(avFormatCtxId:u32,streamIdx:u32,avDictionaryId:u32) -> s32
+avStream-discard: func(avFormatCtxId:u32,streamIdx:u32) -> s32
 
 // Functions to fetch avChapter data fields.
 avChapter-id : func(avFormatCtxId:u32,chapterIdx:u32) -> s64

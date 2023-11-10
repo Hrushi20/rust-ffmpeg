@@ -1,5 +1,6 @@
 use std::ops::{Deref, DerefMut};
-use std::{mem, slice};
+use std::{mem, ptr, slice};
+use std::mem::MaybeUninit;
 use std::slice::from_raw_parts;
 
 use super::Frame;
@@ -197,10 +198,17 @@ impl Video {
         }
     }
 
-    // #[inline]
-    // pub fn aspect_ratio(&self) -> Rational {
-    //     unsafe { Rational::from((*self.as_ptr()).sample_aspect_ratio) }
-    // }
+    #[inline]
+    pub fn aspect_ratio(&self) -> Rational {
+        unsafe {
+            let num = MaybeUninit::<i32>::uninit();
+            let den = MaybeUninit::<i32>::uninit();
+            avutil_wasmedge::av_frame_sample_aspect_ratio(self.ptr(),num.as_ptr() as u32,den.as_ptr() as u32);
+            let num = ptr::read(num.as_ptr());
+            let den = ptr::read(den.as_ptr());
+            Rational::new(num,den)
+        }
+    }
 
     #[inline]
     pub fn coded_number(&self) -> usize {

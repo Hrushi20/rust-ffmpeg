@@ -1,8 +1,6 @@
-use std::ffi::{CStr, CString};
 use std::{mem, ptr, slice};
+use std::fmt::format;
 use std::mem::MaybeUninit;
-use std::ops::Index;
-use std::ptr::slice_from_raw_parts;
 use avutil_wasmedge;
 
 use util::format::sample::AVSampleFormat::*;
@@ -26,12 +24,16 @@ pub enum Type {
 }
 
 impl Sample {
-    // #[inline]
-    // pub fn name(&self) -> &'static str {
-    //     unsafe {
-    //         from_utf8_unchecked(CStr::from_ptr(av_get_sample_fmt_name((*self).into())).to_bytes())
-    //     }
-    // }
+    #[inline]
+    pub fn name(&self) -> String {
+        unsafe {
+            let format_id = (*self).into();
+            let len = avutil_wasmedge::av_get_sample_fmt_name_length(format_id) as usize;
+            let name = vec![0u8;len];
+            avutil_wasmedge::av_get_sample_fmt_name(format_id,name.as_ptr(),len);
+            String::from_utf8_unchecked(name)
+        }
+    }
 
     #[inline]
     pub fn packed(&self) -> Self {
@@ -66,10 +68,10 @@ impl Sample {
         }
     }
 
-    // #[inline]
-    // pub fn buffer(&self, channels: u16, samples: usize, align: bool) -> Buffer {
-    //     Buffer::new(*self, channels, samples, align)
-    // }
+    #[inline]
+    pub fn buffer(&self, channels: u16, samples: usize, align: bool) -> Buffer {
+        Buffer::new(*self, channels, samples, align)
+    }
 }
 
 impl From<u32> for Sample {

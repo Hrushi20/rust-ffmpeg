@@ -1,3 +1,9 @@
+swscale-version: func() -> u32
+swscale-configuration-length: func() -> s32
+swscale-configuration: func(configPtr:string) -> s32
+swscale-license-length: func() -> s32
+swscale-license: func(licensePtr:string) -> s32
+
 // SwsContext
 sws-getContext : func(SwsCtxPtr:u32, SrcW:u32, SrcH:u32, SrcAvPixFormatId:u32, DesW:u32, DesH:u32, DesAvPixFormatId:u32, Flags:s32, SrcFilterId:u32, DesFilterId:u32) -> s32
 sws-freeContext : func(swsCtxId:u32) -> s32

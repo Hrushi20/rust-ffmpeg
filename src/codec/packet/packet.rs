@@ -4,7 +4,6 @@ use std::mem::MaybeUninit;
 
 use super::{Flags,Ref};
 // use super::{Borrow, Flags, Mut, Ref, SideData};
-use libc::c_int;
 use {format, Error, Rational};
 use avCodecType::AVPacket;
 use ::{avcodec_wasmedge, avformat_wasmedge};

@@ -436,9 +436,14 @@ impl Descriptor {
         self.ptr
     }
 
-    // pub fn name(self) -> &'static str {
-    //     unsafe { from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).name).to_bytes()) }
-    // }
+    pub fn name(self) -> String {
+        unsafe {
+            let len = avutil_wasmedge::av_pix_format_name_length(self.ptr()) as usize;
+            let name = vec![0u8;len];
+            avutil_wasmedge::av_pix_format_name(self.ptr(),name.as_ptr(),len);
+            String::from_utf8_unchecked(name)
+        }
+    }
 
     pub fn nb_components(self) -> u8 {
         unsafe {

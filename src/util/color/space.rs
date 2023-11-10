@@ -1,6 +1,5 @@
-use std::ffi::CStr;
-use std::str::from_utf8_unchecked;
 use avUtilTypes::AVColorSpace;
+use avutil_wasmedge;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Space {
@@ -22,20 +21,22 @@ pub enum Space {
     ICTCP = 14
 }
 
-// impl Space {
-//     pub const YCOCG: Space = Space::YCGCO;
-//
-//     pub fn name(&self) -> Option<&'static str> {
-//         if *self == Space::Unspecified {
-//             return None;
-//         }
-//         unsafe {
-//             let ptr = av_color_space_name((*self).into());
-//             ptr.as_ref()
-//                 .map(|ptr| from_utf8_unchecked(CStr::from_ptr(ptr).to_bytes()))
-//         }
-//     }
-// }
+impl Space {
+    pub const YCOCG: Space = Space::YCGCO;
+
+    pub fn name(&self) -> Option<String> {
+        if *self == Space::Unspecified {
+            return None;
+        }
+        unsafe {
+            let space_id = (*self).into();
+            let len = avutil_wasmedge::av_color_space_name_length(space_id) as usize;
+            let name = vec![0u8;len];
+            avutil_wasmedge::av_color_space_name(space_id,name.as_ptr(),len);
+            Some(String::from_utf8_unchecked(name))
+        }
+    }
+}
 
 impl From<AVColorSpace> for Space {
     fn from(value: AVColorSpace) -> Self {

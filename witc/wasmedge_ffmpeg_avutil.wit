@@ -64,11 +64,22 @@ av-frame-pts : func(frameId:u32) -> s64
 av-frame-set-pts : func(frameId:u32,pts:s64) -> s32
 av-frame-copy : func(destFrameId:u32,srcFrameId:u32) -> s32
 av-frame-copy-props : func(destFrameId:u32,srcFrameId:u32) -> s32
+av-frame-sample-aspect-ratio: func(frameId:u32,NumPtr:u32,DenPtr:u32) -> s32
 
 // pixfmt.h
 avpixfmtdescriptor-nb-components : func(AvPixFormatId:u32) -> s32
 avpixfmtdescriptor-log2-chromah : func(AvPixFormatId:u32) -> s32
 avpixfmtdescriptor-log2-chromaw : func(AvPixFormatId:u32) -> s32
+av-color-range-name-length: func(ColorRangeId:s32) -> s32
+av-color-range-name: func(ColorRangeId:s32,NamePtr:string) -> s32
+av-color-transfer-name-length: func(TransferId:s32) -> s32
+av-color-transfer-name: func(TransferId:s32,NamePtr:string) -> s32
+av-color-space-name-length: func(ColorSpaceId:s32) -> s32
+av-color-space-name: func(ColorSpaceId:s32,NamePtr:string) -> s32
+av-color-primaries-name-length: func(PrimariesId:s32) -> s32
+av-color-primaries-name: func(PrimariesId:s32,NamePtr:string) -> s32
+av-pix-format-name-length: func(AvPixFormatId:u32) -> s32
+av-pix-format-name: func(AvPixFormatId:u32,NamePtr:string) -> s32
 
 // samplefmt.h
 av-get-packed-sample-fmt : func(SampleFormatID:u32) -> u32
@@ -80,6 +91,8 @@ av-samples-get-buffer-size : func(NbChannels:s32,NbSamples:s32,SampleFormatID:u3
 av-samples-alloc-array-and-samples : func(BufferPtr:u32,Linesize:s32,NbChannels:s32,NbSamples:s32,SampleFmtId:u32,Align:s32) -> s32
 // av-samples-copy : func(DestBufPtr:u32,SrcBufId:u32,DestOffset:s32,SrcOffset:s32,NbSamples:s32,NbChannels:s32,SampleFmtId:u32) -> s32
 av-samples-get-buffer : func(BufID:u32,Buf:list<u8>) -> s32
+av-get-sample-fmt-name-length: func(SampleFmtId:u32) -> s32
+av-get-sample-fmt-name: func(SampleFmtId:u32,NamePtr:string) -> s32
 av-freep : func(BufId:u32) -> s32
 
 // channel_layout.h
@@ -101,6 +114,10 @@ av-log-get-flags: func() -> s32
 av-rescale-q: func(a:s64,bNum:s32,bDen:s32,cNum:s32,cDen:s32) -> s64
 av-rescale-q-rnd: func(a:s64,bNum:s32,bDen:s32,cNum:s32,cDen:s32,roundingId:s32) -> s64
 avutil-version: func() -> u32
+avutil-configuration-length: func() -> s32
+avutil-configuration: func(configPtr:string) -> s32
+avutil-license-length: func() -> s32
+avutil-license: func(licensePtr:string) -> s32
 
 // time.h
 av-gettime: func() -> s64

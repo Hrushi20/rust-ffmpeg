@@ -1,4 +1,7 @@
 pub mod flag;
+
+use std::ptr;
+use std::str::from_utf8_unchecked;
 pub use self::flag::Flags;
 
 pub mod id;
@@ -41,9 +44,9 @@ pub use self::debug::Debug;
 
 // pub mod profile;
 // pub use self::profile::Profile;
-//
-// pub mod threading;
-//
+
+pub mod threading;
+
 pub mod decoder;
 pub mod encoder;
 pub mod types;
@@ -56,11 +59,21 @@ pub fn version() -> u32 {
         avcodec_wasmedge::avcodec_version()
     }
 }
-//
-// pub fn configuration() -> &'static str {
-//     unsafe { from_utf8_unchecked(CStr::from_ptr(avcodec_configuration()).to_bytes()) }
-// }
-//
-// pub fn license() -> &'static str {
-//     unsafe { from_utf8_unchecked(CStr::from_ptr(avcodec_license()).to_bytes()) }
-// }
+
+pub fn configuration() -> String {
+    unsafe {
+        let config_len = avcodec_wasmedge::avcodec_configuration_length() as usize;
+        let config = vec![0u8;config_len];
+        avcodec_wasmedge::avcodec_configuration(config.as_ptr(),config_len);
+        String::from_utf8_unchecked(config)
+    }
+}
+
+pub fn license() -> String {
+    unsafe {
+        let license_len = avcodec_wasmedge::avcodec_license_length() as usize;
+        let license = vec![0u8;license_len];
+        avcodec_wasmedge::avcodec_license(license.as_ptr(),license_len);
+        String::from_utf8_unchecked(license)
+    }
+}

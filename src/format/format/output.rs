@@ -1,3 +1,4 @@
+use std::path::Path;
 use super::Flags;
 use {codec, media};
 use format::AVOutputFormat;
@@ -76,20 +77,16 @@ impl Output {
         }
     }
 
-    // pub fn codec<P: AsRef<Path>>(&self, path: &P, kind: media::Type) -> codec::Id {
-    //     let path = path.as_ref().as_os_str().to_str().unwrap();
-    //
-    //     unsafe {
-    //         codec::Id::from(av_guess_codec(
-    //             self.as_ptr() as *mut _,
-    //             ptr::null(),
-    //             path.as_ptr(),
-    //             path.len(),
-    //             ptr::null(),
-    //             kind.into(),
-    //         ))
-    //     }
-    // }
+    pub fn codec<P: AsRef<Path>>(&self, path: &P, kind: media::Type) -> codec::Id {
+        let path = path.as_ref().as_os_str().to_str().unwrap();
+
+        unsafe {
+            let short_name = "";
+            let mime = "";
+            let id = avformat_wasmedge::av_guess_codec(self.ptr(),short_name.as_ptr(),short_name.len(),path.as_ptr(),path.len(),mime.as_ptr(),mime.len(),kind.into());
+            codec::Id::from(id)
+        }
+    }
 
     pub fn flags(&self) -> Flags {
         unsafe {

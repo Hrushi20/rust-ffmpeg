@@ -6,6 +6,10 @@ avfilter-graph-parse-ptr : func(AVFilterGraphId:u32,FiltersStr:string,InputsPtr:
 avfilter-inout-free : func(InoutId:u32) -> s32
 avfilter-version : func() -> s32
 avfilter-get-by-name : func(AVFilterPtr:u32,name:string) -> s32
+avfilter-configuration-length: func() -> s32
+avfilter-configuration: func(configPtr:string) -> s32
+avfilter-license-length: func() -> s32
+avfilter-license: func(licensePtr:string) -> s32
 
 // Buffersink.h && Buffersource.h
 av-buffersink-get-frame : func(AVFilterContextId:u32,AVFrameId:u32) -> s32

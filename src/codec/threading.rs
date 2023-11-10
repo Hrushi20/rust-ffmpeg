@@ -1,12 +1,9 @@
-use ffi::*;
-use libc::c_int;
-
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub struct Config {
     pub kind: Type,
     pub count: usize,
-    #[cfg(not(feature = "ffmpeg_6_0"))]
-    pub safe: bool,
+    // #[cfg(not(feature = "ffmpeg_6_0"))]
+    // pub safe: bool,
 }
 
 impl Config {
@@ -24,13 +21,13 @@ impl Config {
         }
     }
 
-    #[cfg(not(feature = "ffmpeg_6_0"))]
-    pub fn safe(value: bool) -> Self {
-        Config {
-            safe: value,
-            ..Default::default()
-        }
-    }
+    // #[cfg(not(feature = "ffmpeg_6_0"))]
+    // pub fn safe(value: bool) -> Self {
+    //     Config {
+    //         safe: value,
+    //         ..Default::default()
+    //     }
+    // }
 }
 
 impl Default for Config {
@@ -38,36 +35,32 @@ impl Default for Config {
         Config {
             kind: Type::None,
             count: 0,
-            #[cfg(not(feature = "ffmpeg_6_0"))]
-            safe: false,
+            // #[cfg(not(feature = "ffmpeg_6_0"))]
+            // safe: false,
         }
     }
 }
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Type {
-    None,
-    Frame,
-    Slice,
+    None = 0,
+    Frame = 1,
+    Slice = 2,
 }
 
-impl From<c_int> for Type {
-    fn from(value: c_int) -> Type {
+impl From<i32> for Type {
+    fn from(value: i32) -> Type {
         match value {
-            FF_THREAD_FRAME => Type::Frame,
-            FF_THREAD_SLICE => Type::Slice,
+            value if value == 1  => Type::Frame,
+            value if value == 2 => Type::Slice,
 
             _ => Type::None,
         }
     }
 }
 
-impl From<Type> for c_int {
-    fn from(value: Type) -> c_int {
-        match value {
-            Type::None => 0,
-            Type::Frame => FF_THREAD_FRAME,
-            Type::Slice => FF_THREAD_SLICE,
-        }
+impl From<Type> for i32 {
+    fn from(value: Type) -> i32 {
+        value as i32
     }
 }
