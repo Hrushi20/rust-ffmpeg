@@ -1,9 +1,8 @@
 use std::mem;
 use std::ptr;
+use avCodecType::AVPacket;
 
 use super::Ref;
-use ffi::*;
-use libc::c_int;
 
 pub struct Borrow<'a> {
     packet: AVPacket,

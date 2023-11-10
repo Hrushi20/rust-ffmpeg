@@ -220,18 +220,23 @@ impl Packet {
     // pub fn side_data(&self) -> SideDataIter {
     //     SideDataIter::new(&self.0)
     // }
-    //
-    // #[inline]
-    // pub fn data(&self) -> Option<&[u8]> {
-    //     unsafe {
-    //         if self.0.data.is_null() {
-    //             None
-    //         } else {
-    //             Some(slice::from_raw_parts(self.0.data, self.0.size as usize))
-    //         }
-    //     }
-    // }
-    //
+
+    #[inline]
+    pub fn data(&self) -> Option<Vec<u8>> {
+        unsafe {
+            let res = avcodec_wasmedge::av_packet_is_data_null(self.ptr());
+            if res == 0 {
+                None
+            } else {
+
+                let size = self.size();
+                let data = vec![0u8;size];
+                avcodec_wasmedge::av_packet_data(self.ptr(),data.as_ptr(),size);
+                Some(data)
+            }
+        }
+    }
+
     // #[inline]
     // pub fn data_mut(&mut self) -> Option<&mut [u8]> {
     //     unsafe {

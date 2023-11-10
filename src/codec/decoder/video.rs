@@ -92,9 +92,12 @@ impl Video {
         }
     }
 
-    // pub fn color_primaries(&self) -> color::Primaries {
-    //     unsafe { color::Primaries::from((*self.as_ptr()).color_primaries) }
-    // }
+    pub fn color_primaries(&self) -> color::Primaries {
+        unsafe {
+            let color_primaries = avcodec_wasmedge::avcodeccontext_color_primaries(self.ptr());
+            color::Primaries::from(color_primaries)
+        }
+    }
 
     pub fn color_transfer_characteristic(&self) -> color::TransferCharacteristic {
         unsafe {

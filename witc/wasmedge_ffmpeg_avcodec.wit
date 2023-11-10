@@ -120,6 +120,7 @@ avcodeccontext-active-thread-type: func(avCodecCtxId:u32) -> s32
 avcodeccontext-set-thread-type: func(avCodecCtxId:u32,threadType:s32) -> s32
 avcodeccontext-thread-count: func(avCodecCtxId:u32) -> s32
 avcodeccontext-set-thread-count: func(avCodecCtxId:u32,threadCount:s32) -> s32
+avcodeccontext-color-primaries: func(avCodecCtxId:u32) -> s32
 
 // AVCodec struct fields
 avcodec-id : func(avCodecId:u32) -> u32
@@ -168,3 +169,4 @@ av-packet-set-dts: func(avPacketId:u32,dts:s64) -> s32
 av-packet-pts: func(avPacketId:u32) -> s64
 av-packet-set-pts: func(avPacketId:u32,pts:s64) -> s32
 av-packet-is-data-null: func(avPacketId:u32) -> s32
+av-packet-data: func(avPacketId:u32,data:list<u8>) -> s32

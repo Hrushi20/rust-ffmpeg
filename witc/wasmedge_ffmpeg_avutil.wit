@@ -65,6 +65,8 @@ av-frame-set-pts : func(frameId:u32,pts:s64) -> s32
 av-frame-copy : func(destFrameId:u32,srcFrameId:u32) -> s32
 av-frame-copy-props : func(destFrameId:u32,srcFrameId:u32) -> s32
 av-frame-sample-aspect-ratio: func(frameId:u32,NumPtr:u32,DenPtr:u32) -> s32
+av-frame-set-color-primaries: func(frameId:u32,colorPrimariesId:s32) -> s32
+av-frame-color-primaries: func(frameId:u32) -> s32
 
 // pixfmt.h
 avpixfmtdescriptor-nb-components : func(AvPixFormatId:u32) -> s32
