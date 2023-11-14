@@ -327,58 +327,167 @@ const RESOURCE_TEMPORARILY_UNAVAILABLE: ffmpeg_next::Error = ffmpeg_next::Error:
 //     }
 // }
 
-use std::env;
+// use std::env;
+//
+// fn main() {
+//     // let input_file = env::args().nth(1).expect("missing input file");
+//     // let output_file = env::args().nth(2).expect("missing output file");
+//     let input_file = "/Users/pc/Downloads/remux2.mkv";
+//     let output_file = "assets/test2.mp4";
+//
+//     ffmpeg_next::init().unwrap();
+//     ffmpeg_next::log::set_level(ffmpeg_next::log::Level::Warning);
+//
+//     let mut ictx = ffmpeg_next::format::input(&input_file).unwrap();
+//     let mut octx = ffmpeg_next::format::output(&output_file).unwrap();
+//
+//     let mut stream_mapping = vec![0; ictx.nb_streams() as _];
+//     let mut ist_time_bases = vec![ffmpeg_next::Rational(0, 1); ictx.nb_streams() as _];
+//     let mut ost_index = 0;
+//     for (ist_index, ist) in ictx.streams().enumerate() {
+//         let ist_medium = ist.parameters().medium();
+//         if ist_medium != ffmpeg_next::media::Type::Audio
+//             && ist_medium != ffmpeg_next::media::Type::Video
+//             && ist_medium != ffmpeg_next::media::Type::Subtitle
+//         {
+//             stream_mapping[ist_index] = -1;
+//             continue;
+//         }
+//         stream_mapping[ist_index] = ost_index;
+//         ist_time_bases[ist_index] = ist.time_base();
+//         ost_index += 1;
+//         let mut ost = octx.add_stream(ffmpeg_next::encoder::find(ffmpeg_next::codec::Id::None)).unwrap();
+//         ost.set_parameters(ist.parameters());
+//         // We need to set codec_tag to 0 lest we run into incompatible codec tag
+//         // issues when muxing into a different container format. Unfortunately
+//         // there's no high level API to do this (yet).
+//         ost.parameters().set_codec_tag(0);
+//     }
+//
+//     octx.set_metadata(ictx.metadata().to_owned());
+//     octx.write_header().unwrap();
+//
+//     for (stream, mut packet) in ictx.packets() {
+//         let ist_index = stream.index();
+//         let ost_index = stream_mapping[ist_index];
+//         if ost_index < 0 {
+//             continue;
+//         }
+//         let ost = octx.stream(ost_index as _).unwrap();
+//         packet.rescale_ts(ist_time_bases[ist_index], ost.time_base());
+//         packet.set_position(-1);
+//         packet.set_stream(ost_index as _);
+//         packet.write_interleaved(&mut octx).unwrap();
+//     }
+//
+//     octx.write_trailer().unwrap();
+// }
 
 fn main() {
-    // let input_file = env::args().nth(1).expect("missing input file");
-    // let output_file = env::args().nth(2).expect("missing output file");
-    let input_file = "/Users/pc/Downloads/remux2.mkv";
-    let output_file = "assets/test2.mp4";
-
     ffmpeg_next::init().unwrap();
-    ffmpeg_next::log::set_level(ffmpeg_next::log::Level::Warning);
 
-    let mut ictx = ffmpeg_next::format::input(&input_file).unwrap();
-    let mut octx = ffmpeg_next::format::output(&output_file).unwrap();
+    println!("Hi brother");
+    // for arg in env::args().skip(1) {
+    let file = "gif";
+    if let Some(codec) = ffmpeg_next::decoder::find_by_name(file) {
+        println!("type: decoder");
+        println!("\t id: {:?}", codec.id());
+        println!("\t name: {}", codec.name());
+        println!("\t description: {}", codec.description());
+        println!("\t medium: {:?}", codec.medium());
+        println!("\t capabilities: {:?}", codec.capabilities());
 
-    let mut stream_mapping = vec![0; ictx.nb_streams() as _];
-    let mut ist_time_bases = vec![ffmpeg_next::Rational(0, 1); ictx.nb_streams() as _];
-    let mut ost_index = 0;
-    for (ist_index, ist) in ictx.streams().enumerate() {
-        let ist_medium = ist.parameters().medium();
-        if ist_medium != ffmpeg_next::media::Type::Audio
-            && ist_medium != ffmpeg_next::media::Type::Video
-            && ist_medium != ffmpeg_next::media::Type::Subtitle
-        {
-            stream_mapping[ist_index] = -1;
-            continue;
+        // if let Some(profiles) = codec.profiles() {
+        //     println!("\t profiles: {:?}", profiles.collect::<Vec<_>>());
+        // } else {
+        //     println!("\t profiles: none");
+        // }
+
+        if let Ok(video) = codec.video() {
+            if let Some(rates) = video.rates() {
+                println!("\t rates: {:?}", rates.collect::<Vec<_>>());
+            } else {
+                println!("\t rates: any");
+            }
+
+            if let Some(formats) = video.formats() {
+                println!("\t formats: {:?}", formats.collect::<Vec<_>>());
+            } else {
+                println!("\t formats: any");
+            }
         }
-        stream_mapping[ist_index] = ost_index;
-        ist_time_bases[ist_index] = ist.time_base();
-        ost_index += 1;
-        let mut ost = octx.add_stream(ffmpeg_next::encoder::find(ffmpeg_next::codec::Id::None)).unwrap();
-        ost.set_parameters(ist.parameters());
-        // We need to set codec_tag to 0 lest we run into incompatible codec tag
-        // issues when muxing into a different container format. Unfortunately
-        // there's no high level API to do this (yet).
-        ost.parameters().set_codec_tag(0);
+
+        if let Ok(audio) = codec.audio() {
+            if let Some(rates) = audio.rates() {
+                println!("\t rates: {:?}", rates.collect::<Vec<_>>());
+            } else {
+                println!("\t rates: any");
+            }
+
+            if let Some(formats) = audio.formats() {
+                println!("\t formats: {:?}", formats.collect::<Vec<_>>());
+            } else {
+                println!("\t formats: any");
+            }
+
+            if let Some(layouts) = audio.channel_layouts() {
+                println!("\t channel_layouts: {:?}", layouts.collect::<Vec<_>>());
+            } else {
+                println!("\t channel_layouts: any");
+            }
+        }
+
+        println!("\t max_lowres: {:?}", codec.max_lowres());
     }
 
-    octx.set_metadata(ictx.metadata().to_owned());
-    octx.write_header().unwrap();
+    if let Some(codec) = ffmpeg_next::encoder::find_by_name(file) {
+        println!();
+        println!("type: encoder");
+        println!("\t id: {:?}", codec.id());
+        println!("\t name: {}", codec.name());
+        println!("\t description: {}", codec.description());
+        println!("\t medium: {:?}", codec.medium());
+        println!("\t capabilities: {:?}", codec.capabilities());
 
-    for (stream, mut packet) in ictx.packets() {
-        let ist_index = stream.index();
-        let ost_index = stream_mapping[ist_index];
-        if ost_index < 0 {
-            continue;
+        // if let Some(profiles) = codec.profiles() {
+        //     println!("\t profiles: {:?}", profiles.collect::<Vec<_>>());
+        // }
+
+        if let Ok(video) = codec.video() {
+            if let Some(rates) = video.rates() {
+                println!("\t rates: {:?}", rates.collect::<Vec<_>>());
+            } else {
+                println!("\t rates: any");
+            }
+
+            if let Some(formats) = video.formats() {
+                println!("\t formats: {:?}", formats.collect::<Vec<_>>());
+            } else {
+                println!("\t formats: any");
+            }
         }
-        let ost = octx.stream(ost_index as _).unwrap();
-        packet.rescale_ts(ist_time_bases[ist_index], ost.time_base());
-        packet.set_position(-1);
-        packet.set_stream(ost_index as _);
-        packet.write_interleaved(&mut octx).unwrap();
-    }
 
-    octx.write_trailer().unwrap();
+        if let Ok(audio) = codec.audio() {
+            if let Some(rates) = audio.rates() {
+                println!("\t rates: {:?}", rates.collect::<Vec<_>>());
+            } else {
+                println!("\t rates: any");
+            }
+
+            if let Some(formats) = audio.formats() {
+                println!("\t formats: {:?}", formats.collect::<Vec<_>>());
+            } else {
+                println!("\t formats: any");
+            }
+
+            if let Some(layouts) = audio.channel_layouts() {
+                println!("\t channel_layouts: {:?}", layouts.collect::<Vec<_>>());
+            } else {
+                println!("\t channel_layouts: any");
+            }
+        }
+
+        println!("\t max_lowres: {:?}", codec.max_lowres());
+    }
+    // }
 }

@@ -20,8 +20,8 @@ impl Audio {
 impl Audio {
     pub fn rates(&self) -> Option<RateIter> {
         unsafe {
-            let sample_rates = avcodec_wasmedge::avcodec_supported_samplerates_is_null(self.ptr());
-            if sample_rates == 0 {
+            let res = avcodec_wasmedge::avcodec_supported_samplerates_is_null(self.ptr());
+            if res == 1 {
                 None
             } else {
                 Some(RateIter::new(self.ptr()))
@@ -31,8 +31,8 @@ impl Audio {
 
     pub fn formats(&self) -> Option<FormatIter> {
         unsafe {
-            let sample_fmts = avcodec_wasmedge::avcodec_sample_fmts_is_null(self.ptr());
-            if sample_fmts == 0 {
+            let res = avcodec_wasmedge::avcodec_sample_fmts_is_null(self.ptr());
+            if res == 1 {
                 None
             } else {
                 Some(FormatIter::new(self.ptr()))
@@ -42,8 +42,8 @@ impl Audio {
 
     pub fn channel_layouts(&self) -> Option<ChannelLayoutIter> {
         unsafe {
-            let ch_layout = avcodec_wasmedge::avcodec_channel_layouts_is_null(self.ptr());
-            if ch_layout == 0 {
+            let res = avcodec_wasmedge::avcodec_channel_layouts_is_null(self.ptr());
+            if res == 1 {
                 None
             } else {
                 Some(ChannelLayoutIter::new(self.ptr()))

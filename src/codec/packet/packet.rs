@@ -225,7 +225,7 @@ impl Packet {
     pub fn data(&self) -> Option<Vec<u8>> {
         unsafe {
             let res = avcodec_wasmedge::av_packet_is_data_null(self.ptr());
-            if res == 0 {
+            if res == 1 {
                 None
             } else {
 

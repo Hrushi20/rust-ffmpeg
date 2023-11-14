@@ -21,8 +21,8 @@ impl Video {
 impl Video {
     pub fn rates(&self) -> Option<RateIter> {
         unsafe {
-            let supported_framerates = avcodec_wasmedge::avcodec_supported_framerate_is_null(self.ptr());
-            if supported_framerates == 0 {
+            let res = avcodec_wasmedge::avcodec_supported_framerate_is_null(self.ptr());
+            if res == 1 {
                 None
             } else {
                 Some(RateIter::new(self.ptr()))
@@ -32,8 +32,8 @@ impl Video {
 
     pub fn formats(&self) -> Option<FormatIter> {
         unsafe {
-            let pix_fmts = avcodec_wasmedge::avcodec_pix_fmts_is_null(self.ptr());
-            if pix_fmts == 0 {
+            let res = avcodec_wasmedge::avcodec_pix_fmts_is_null(self.ptr());
+            if res == 1 {
                 None
             } else {
                 Some(FormatIter::new(self.ptr()))
