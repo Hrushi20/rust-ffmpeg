@@ -1,5 +1,5 @@
 use std::ops::{Deref, DerefMut};
-use std::{mem, ptr};
+use std::{mem};
 
 use super::Encoder as Super;
 use codec::{traits, Context};

@@ -1,8 +1,6 @@
-use std::ffi::CStr;
 use std::marker::PhantomData;
 use std::mem::MaybeUninit;
 use std::ptr;
-use std::str::from_utf8_unchecked;
 use avUtilTypes::AVDictionary;
 use avutil_wasmedge;
 

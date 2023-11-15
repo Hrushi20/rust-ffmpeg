@@ -1,9 +1,6 @@
-use std::ffi::CString;
-use std::mem::{MaybeUninit, size_of};
+use std::mem::{MaybeUninit};
 use std::ops::{Deref, DerefMut};
 use std::{mem, ptr};
-
-use libc;
 
 use super::common::Context;
 use super::destructor;

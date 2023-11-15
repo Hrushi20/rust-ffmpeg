@@ -1,7 +1,7 @@
 use std::mem::MaybeUninit;
 use std::ptr;
 use super::Disposition;
-use codec::{self, packet};
+use codec::{self};
 use format::context::common::Context;
 use avCodecType::AVCodecParameters;
 use {DictionaryRef, Discard, Rational};
@@ -131,7 +131,7 @@ impl<'a> Stream<'a> {
 
 impl<'a> PartialEq for Stream<'a> {
     fn eq(&self, other: &Self) -> bool {
-        unsafe { self.id() == other.id() }
+        self.id() == other.id()
     }
 }
 

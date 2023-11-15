@@ -19,8 +19,6 @@ pub use self::context::Context;
 mod extensions;
 mod types;
 
-use std::ffi::CStr;
-use std::str::from_utf8_unchecked;
 use swresample_wasmedge;
 
 

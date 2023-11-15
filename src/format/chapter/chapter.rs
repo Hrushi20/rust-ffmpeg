@@ -71,6 +71,6 @@ impl<'a> Chapter<'a> {
 impl<'a> PartialEq for Chapter<'a> {
     fn eq(&self, other: &Self) -> bool {
         // Or can compare index.
-        unsafe { self.id() == other.id() }
+        self.id() == other.id()
     }
 }

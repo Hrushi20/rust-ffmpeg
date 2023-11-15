@@ -19,7 +19,7 @@ mod extensions;
 mod types;
 
 
-use ::{avutil_wasmedge, swscale_wasmedge};
+use swscale_wasmedge;
 
 pub fn version() -> u32 {
     unsafe {

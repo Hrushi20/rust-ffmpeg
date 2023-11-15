@@ -47,8 +47,8 @@ impl Parameters {
 
     pub fn id(&self) -> Id {
         unsafe {
-            let ID = avcodec_wasmedge::avcodecparam_codec_id(self.ptr());
-            Id::from(ID)
+            let id = avcodec_wasmedge::avcodecparam_codec_id(self.ptr());
+            Id::from(id)
         }
     }
 

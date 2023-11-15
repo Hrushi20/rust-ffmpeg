@@ -2,11 +2,11 @@ use std::ops::{Deref, DerefMut};
 
 use super::Opened;
 use codec::Context;
-#[cfg(not(feature = "ffmpeg_5_0"))]
-use frame;
+// #[cfg(not(feature = "ffmpeg_5_0"))]
+// use frame;
 use util::format;
-#[cfg(not(feature = "ffmpeg_5_0"))]
-use {packet, Error};
+// #[cfg(not(feature = "ffmpeg_5_0"))]
+// use {packet, Error};
 use avcodec_wasmedge;
 use {AudioService, ChannelLayout};
 

@@ -1,7 +1,6 @@
 use std::ops::{Deref, DerefMut};
-use std::{mem, ptr, slice};
+use std::{ptr, slice};
 use std::mem::MaybeUninit;
-use std::slice::from_raw_parts;
 
 use super::Frame;
 use color;

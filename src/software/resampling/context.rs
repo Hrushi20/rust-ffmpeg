@@ -140,9 +140,7 @@ impl Context {
         input: &frame::Audio,
         output: &mut frame::Audio,
     ) -> Result<Option<Delay>, Error> {
-        unsafe {
-            output.set_rate(self.output.rate);
-        }
+        output.set_rate(self.output.rate);
 
         unsafe {
             if output.is_empty() {
@@ -165,9 +163,7 @@ impl Context {
     ///
     /// When there are no more internal frames `Ok(None)` will be returned.
     pub fn flush(&mut self, output: &mut frame::Audio) -> Result<Option<Delay>, Error> {
-        unsafe {
-            output.set_rate(self.output.rate);
-        }
+        output.set_rate(self.output.rate);
 
         unsafe {
             match swresample_wasmedge::swr_convert_frame(self.ptr(), output.ptr(), mem::zeroed()) {

@@ -88,8 +88,8 @@ impl Context {
 
     pub fn id(&self) -> Id {
         unsafe {
-            let ID = avcodec_wasmedge::avcodeccontext_codec_id(self.ptr());
-            Id::from(ID)
+            let id = avcodec_wasmedge::avcodeccontext_codec_id(self.ptr());
+            Id::from(id)
         }
     }
 

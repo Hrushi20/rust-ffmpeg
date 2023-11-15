@@ -4,8 +4,8 @@ use std::{mem};
 use super::Encoder as Super;
 use codec::{traits, Context};
 use util::format;
-#[cfg(not(feature = "ffmpeg_5_0"))]
-use {frame, packet};
+// #[cfg(not(feature = "ffmpeg_5_0"))]
+// use {frame, packet};
 use {ChannelLayout, Dictionary, Error};
 use avcodec_wasmedge;
 use avCodecType::AVCodec;

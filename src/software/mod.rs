@@ -1,4 +1,4 @@
-// #[cfg(feature = "software-scaling")]
+#[cfg(feature = "software-scaling")]
 pub mod scaling;
 
 #[cfg(feature = "software-scaling")]
@@ -32,7 +32,7 @@ pub fn converter(
     )
 }
 
-// #[cfg(feature = "software-resampling")]
+#[cfg(feature = "software-resampling")]
 pub mod resampling;
 
 #[cfg(feature = "software-resampling")]

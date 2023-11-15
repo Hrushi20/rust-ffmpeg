@@ -1,12 +1,6 @@
-use std::ffi::{CStr, CString};
-use std::{fmt, mem, ptr, slice};
-use std::io::Read;
+use std::{fmt,ptr};
 use std::marker::PhantomData;
 use std::mem::MaybeUninit;
-use std::ops::Deref;
-use std::slice::from_raw_parts;
-use std::str::from_utf8_unchecked;
-use libc::c_char;
 use avUtilTypes::AVDictionary;
 use avutil_wasmedge;
 

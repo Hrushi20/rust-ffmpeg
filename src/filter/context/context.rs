@@ -1,8 +1,7 @@
 use std::marker::PhantomData;
 
 use super::{Sink, Source};
-use libc::c_void;
-use {format};
+// use {format};
 // use {format, option, ChannelLayout};
 use filter::types::AVFilterContext;
 

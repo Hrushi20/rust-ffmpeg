@@ -13,16 +13,11 @@ pub use self::context::{Context, Sink, Source};
 pub mod graph;
 pub use self::graph::Graph;
 
-use std::ffi::{CStr, CString};
-use std::mem::MaybeUninit;
-use std::ptr;
-use std::str::from_utf8_unchecked;
 use avfilter_wasmedge;
 
 pub mod types;
-#[cfg(not(feature = "ffmpeg_5_0"))]
-use Error;
-use filter::types::AVFilter;
+// #[cfg(not(feature = "ffmpeg_5_0"))]
+// use Error;
 
 // #[cfg(not(feature = "ffmpeg_5_0"))]
 // pub fn register_all() {

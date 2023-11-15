@@ -1,5 +1,4 @@
 use super::Context;
-use libc::c_int;
 use {Error, Frame};
 use avfilter_wasmedge;
 

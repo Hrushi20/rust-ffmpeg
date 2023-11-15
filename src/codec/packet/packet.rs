@@ -1,4 +1,4 @@
-use std::marker::PhantomData;
+// use std::marker::PhantomData;
 use std::{ptr};
 use std::mem::MaybeUninit;
 
@@ -110,9 +110,7 @@ impl Packet {
 
     #[inline]
     pub fn is_key(&self) -> bool {
-        unsafe {
-            self.flags().contains(Flags::KEY)
-        }
+        self.flags().contains(Flags::KEY)
     }
 
     #[inline]

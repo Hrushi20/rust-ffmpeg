@@ -1,7 +1,5 @@
 pub mod flag;
 
-use std::ptr;
-use std::str::from_utf8_unchecked;
 pub use self::flag::Flags;
 
 pub mod id;

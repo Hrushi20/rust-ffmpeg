@@ -1,14 +1,14 @@
 use std::ops::{Deref, DerefMut};
-use std::{mem, ptr};
+use std::{mem};
 
 use super::Encoder as Super;
 use super::{Comparison, Decision};
-#[cfg(not(feature = "ffmpeg_5_0"))]
-use super::{MotionEstimation, Prediction};
+// #[cfg(not(feature = "ffmpeg_5_0"))]
+// use super::{MotionEstimation, Prediction};
 use codec::{traits, Context};
 use {color, format, Dictionary, Error, Rational};
-#[cfg(not(feature = "ffmpeg_5_0"))]
-use {frame, packet};
+// #[cfg(not(feature = "ffmpeg_5_0"))]
+// use {frame, packet};
 use avcodec_wasmedge;
 use avCodecType::AVCodec;
 use avUtilTypes::AVDictionary;

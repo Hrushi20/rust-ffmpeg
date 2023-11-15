@@ -15,8 +15,15 @@ keywords      = ["ffmpeg", "multimedia", "video", "audio"]
 categories    = ["multimedia"]
 
 [features]
-
-#default = ["codec", "device", "filter", "format", "software-resampling", "software-scaling"]
+default = ["codec", "device", "filter", "format", "software-resampling", "software-scaling"]
+codec               = []
+device              = ["format"]
+filter              = []
+format              = ["codec"]
+resampling          = []
+postprocessing      = []
+software-resampling = []
+software-scaling    = ["codec"]
 
 # ffmpeg<xy> are obsolete features kept for backward compatibility purposes and
 # don't do anything anymore (equivalents are automatically specified through

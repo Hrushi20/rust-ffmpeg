@@ -1,5 +1,3 @@
-use std::io::Read;
-use std::str::from_utf8_unchecked;
 use format::types::AVInputFormat;
 use avformat_wasmedge;
 

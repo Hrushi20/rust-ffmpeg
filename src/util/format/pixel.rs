@@ -1,4 +1,4 @@
-use std::{error, mem};
+use std::{mem};
 use avUtilTypes::{AVPixelFormat};
 use avutil_wasmedge;
 

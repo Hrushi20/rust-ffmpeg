@@ -1,12 +1,10 @@
 use std::error;
 use std::ffi::CStr;
 use std::fmt;
-use std::fmt::Write;
 use std::io;
 use std::str::{from_utf8_unchecked};
 
 use avutil_wasmedge;
-use libc::{c_int};
 
 // Export POSIX error codes so that users can do something like
 //

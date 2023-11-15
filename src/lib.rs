@@ -63,40 +63,40 @@ pub use util::picture;
 pub use util::rational::{self, Rational};
 pub use util::time;
 
-// #[cfg(feature = "format")]
+#[cfg(feature = "format")]
 pub mod format;
-// #[cfg(feature = "format")]
+#[cfg(feature = "format")]
 pub use format::chapter::{Chapter, ChapterMut};
-// #[cfg(feature = "format")]
+#[cfg(feature = "format")]
 pub use format::format::Format;
-// #[cfg(feature = "format")
+#[cfg(feature = "format")]
 pub use format::stream::{Stream, StreamMut};
 
-// #[cfg(feature = "codec")]
+#[cfg(feature = "codec")]
 pub mod codec;
-// #[cfg(feature = "codec")]
+#[cfg(feature = "codec")]
 pub use codec::audio_service::AudioService;
-// #[cfg(feature = "codec")]
+#[cfg(feature = "codec")]
 pub use codec::codec::Codec;
-// #[cfg(feature = "codec")]
+#[cfg(feature = "codec")]
 pub use codec::discard::Discard;
-// #[cfg(feature = "codec")]
+#[cfg(feature = "codec")]
 pub use codec::field_order::FieldOrder;
-// #[cfg(feature = "codec")]
+#[cfg(feature = "codec")]
 pub use codec::packet::{self, Packet};
 // #[cfg(all(feature = "codec", not(feature = "ffmpeg_5_0")))]
 // pub use codec::picture::Picture;
 // #[cfg(feature = "codec")]
 // pub use codec::subtitle::{self, Subtitle};
-// #[cfg(feature = "codec")]
-// pub use codec::threading;
-// #[cfg(feature = "codec")]
+#[cfg(feature = "codec")]
+pub use codec::threading;
+#[cfg(feature = "codec")]
 pub use codec::{decoder,encoder};
 
-// #[cfg(feature = "device")]
+#[cfg(feature = "device")]
 pub mod device;
 //
-// #[cfg(feature = "filter")]
+#[cfg(feature = "filter")]
 pub mod filter;
 // #[cfg(feature = "filter")]
 // pub use filter::Filter;
@@ -116,23 +116,23 @@ fn init_error() {
 
 #[cfg(all(feature = "format", not(feature = "ffmpeg_5_0")))]
 fn init_format() {
-    format::register_all();
+    // format::register_all();
 }
 
 #[cfg(not(feature = "format"))]
 fn init_format() {}
 
-// #[cfg(feature = "device")]
-// fn init_device() {
-//     device::register_all();
-// }
+#[cfg(feature = "device")]
+fn init_device() {
+    device::register_all();
+}
 
 #[cfg(not(feature = "device"))]
 fn init_device() {}
 
 #[cfg(all(feature = "filter", not(feature = "ffmpeg_5_0")))]
 fn init_filter() {
-    filter::register_all();
+    // filter::register_all();
 }
 
 #[cfg(not(feature = "filter"))]

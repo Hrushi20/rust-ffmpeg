@@ -1,5 +1,4 @@
-use std::{mem, ptr, slice};
-use std::fmt::format;
+use std::{ptr};
 use std::mem::MaybeUninit;
 use avutil_wasmedge;
 

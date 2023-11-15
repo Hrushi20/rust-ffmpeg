@@ -5,12 +5,12 @@ use std::ptr;
 use super::{slice, Opened};
 use codec::Context;
 use color;
-#[cfg(not(feature = "ffmpeg_5_0"))]
-use frame;
+// #[cfg(not(feature = "ffmpeg_5_0"))]
+// use frame;
 use util::chroma;
 use util::format;
-#[cfg(not(feature = "ffmpeg_5_0"))]
-use {packet, Error};
+// #[cfg(not(feature = "ffmpeg_5_0"))]
+// use {packet, Error};
 use {FieldOrder, Rational};
 use avcodec_wasmedge;
 
