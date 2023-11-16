@@ -35,8 +35,8 @@ impl Primaries {
         unsafe {
             let primaries_id = (*self).into();
             let len = avutil_wasmedge::av_color_primaries_name_length(primaries_id) as usize;
-            let name = vec![0u8;len];
-            avutil_wasmedge::av_color_primaries_name(primaries_id,name.as_ptr(),len);
+            let name = vec![0u8; len];
+            avutil_wasmedge::av_color_primaries_name(primaries_id, name.as_ptr(), len);
             Some(String::from_utf8_unchecked(name))
         }
     }
@@ -64,7 +64,7 @@ impl From<AVColorPrimaries> for Primaries {
             value if value == 13 => Primaries::JEDEC_P22,
             #[cfg(feature = "ffmpeg_4_3")]
             value if value == 14 => Primaries::EBU3213,
-            _ => Primaries::Reserved0
+            _ => Primaries::Reserved0,
         }
     }
 }

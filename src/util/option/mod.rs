@@ -30,7 +30,7 @@ pub enum Type {
 impl From<AVOptionType> for Type {
     fn from(value: AVOptionType) -> Self {
         match value {
-            value if value == 0  => Type::Flags,
+            value if value == 0 => Type::Flags,
             value if value == 1 => Type::Int,
             value if value == 2 => Type::Int64,
             value if value == 3 => Type::Double,
@@ -52,7 +52,7 @@ impl From<AVOptionType> for Type {
             value if value == 16 => Type::ChannelLayout,
             #[cfg(feature = "ffmpeg_5_1")]
             value if value == 19 => Type::ChannelLayout,
-            _ => Type::Flags
+            _ => Type::Flags,
         }
     }
 }

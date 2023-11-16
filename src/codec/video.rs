@@ -2,10 +2,11 @@ use std::mem::MaybeUninit;
 use std::ops::Deref;
 use std::ptr;
 
-use super::codec::Codec;
-use avcodec_wasmedge;
 use avCodecType::AVCodec;
+use avcodec_wasmedge;
 use {format, Rational};
+
+use super::codec::Codec;
 
 #[derive(PartialEq, Eq, Copy, Clone)]
 pub struct Video {
@@ -52,12 +53,12 @@ impl Deref for Video {
 
 pub struct RateIter {
     ptr: AVCodec,
-    idx: u32
+    idx: u32,
 }
 
 impl RateIter {
     pub fn new(ptr: AVCodec) -> Self {
-        RateIter { ptr, idx:0 }
+        RateIter { ptr, idx: 0 }
     }
 }
 
@@ -69,7 +70,12 @@ impl Iterator for RateIter {
             let num = MaybeUninit::<i32>::uninit();
             let den = MaybeUninit::<i32>::uninit();
 
-            avcodec_wasmedge::avcodec_supported_framerate_iter(self.ptr,self.idx,num.as_ptr() as u32,den.as_ptr() as u32);
+            avcodec_wasmedge::avcodec_supported_framerate_iter(
+                self.ptr,
+                self.idx,
+                num.as_ptr() as u32,
+                den.as_ptr() as u32,
+            );
 
             let num = ptr::read(num.as_ptr());
             let den = ptr::read(den.as_ptr());
@@ -78,7 +84,7 @@ impl Iterator for RateIter {
                 return None;
             }
 
-            let rate = Rational::new(num,den);
+            let rate = Rational::new(num, den);
             self.idx += 1;
 
             Some(rate)
@@ -88,12 +94,12 @@ impl Iterator for RateIter {
 
 pub struct FormatIter {
     ptr: AVCodec,
-    idx: u32
+    idx: u32,
 }
 
 impl FormatIter {
     pub fn new(ptr: AVCodec) -> Self {
-        FormatIter { ptr,idx:0 }
+        FormatIter { ptr, idx: 0 }
     }
 }
 
@@ -102,7 +108,7 @@ impl Iterator for FormatIter {
 
     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
         unsafe {
-            let format = avcodec_wasmedge::avcodec_pix_fmts_iter(self.ptr,self.idx);
+            let format = avcodec_wasmedge::avcodec_pix_fmts_iter(self.ptr, self.idx);
 
             // AVPixelFormat::AV_PIX_FMT_NONE
             if format == format::Pixel::None.into() {

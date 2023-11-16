@@ -1,6 +1,7 @@
-use std::{fmt,ptr};
 use std::marker::PhantomData;
 use std::mem::MaybeUninit;
+use std::{fmt, ptr};
+
 use avUtilTypes::AVDictionary;
 use avutil_wasmedge;
 
@@ -31,16 +32,34 @@ impl<'a> Ref<'a> {
         unsafe {
             let value_len = MaybeUninit::<u32>::uninit().as_ptr() as u32;
             let key_len = MaybeUninit::<u32>::uninit().as_ptr() as u32;
-            let entry = avutil_wasmedge::av_dict_get(self.ptr(),key.as_ptr(),key.len(),0,0,key_len,value_len);
+            let entry = avutil_wasmedge::av_dict_get(
+                self.ptr(),
+                key.as_ptr(),
+                key.len(),
+                0,
+                0,
+                key_len,
+                value_len,
+            );
             let value_len = ptr::read(value_len as *const u32) as usize;
             let key_len = ptr::read(key_len as *const u32) as usize;
 
             if entry < 0 {
                 None
             } else {
-                let value_str= vec![0u8; value_len];
+                let value_str = vec![0u8; value_len];
                 let key_str = vec![0u8; key_len];
-                avutil_wasmedge::av_dict_get_key_value(self.ptr(),key.as_ptr(),key.len(),value_str.as_ptr(),value_str.len(),key_str.as_ptr(),key_str.len(),0,0);
+                avutil_wasmedge::av_dict_get_key_value(
+                    self.ptr(),
+                    key.as_ptr(),
+                    key.len(),
+                    value_str.as_ptr(),
+                    value_str.len(),
+                    key_str.as_ptr(),
+                    key_str.len(),
+                    0,
+                    0,
+                );
 
                 Some(String::from_utf8_unchecked(value_str))
             }
@@ -57,7 +76,7 @@ impl<'a> Ref<'a> {
 }
 
 impl<'a> IntoIterator for &'a Ref<'a> {
-    type Item = (String,String);
+    type Item = (String, String);
     type IntoIter = Iter<'a>;
 
     fn into_iter(self) -> Self::IntoIter {

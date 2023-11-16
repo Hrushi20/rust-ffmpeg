@@ -9,12 +9,57 @@ extern crate bitflags;
 extern crate image;
 extern crate libc;
 
+#[cfg(feature = "codec")]
+pub use codec::audio_service::AudioService;
+#[cfg(feature = "codec")]
+pub use codec::codec::Codec;
+#[cfg(feature = "codec")]
+pub use codec::discard::Discard;
+#[cfg(feature = "codec")]
+pub use codec::field_order::FieldOrder;
+#[cfg(feature = "codec")]
+pub use codec::packet::{self, Packet};
+#[cfg(feature = "codec")]
+pub use codec::{decoder, encoder};
+// #[cfg(all(feature = "codec", not(feature = "ffmpeg_5_0")))]
+// pub use codec::picture::Picture;
+// #[cfg(feature = "codec")]
+// pub use codec::subtitle::{self, Subtitle};
+#[cfg(feature = "codec")]
+pub use codec::threading;
+pub use codec::types as avCodecType;
+#[cfg(feature = "format")]
+pub use format::chapter::{Chapter, ChapterMut};
+#[cfg(feature = "format")]
+pub use format::format::Format;
+#[cfg(feature = "format")]
+pub use format::stream::{Stream, StreamMut};
+// Types
+pub use format::types as avFormatTypes;
+pub use util::channel_layout::{self, ChannelLayout};
+pub use util::chroma;
+pub use util::color;
+pub use util::dictionary;
+pub use util::dictionary::Mut as DictionaryMut;
+pub use util::dictionary::Owned as Dictionary;
+pub use util::dictionary::Ref as DictionaryRef;
+pub use util::error::{self, Error};
+pub use util::frame::{self, Frame};
+pub use util::log;
+pub use util::mathematics::{self, rescale, Rescale, Rounding};
+pub use util::media;
+pub use util::option;
+pub use util::picture;
+pub use util::rational::{self, Rational};
+pub use util::time;
+pub use util::types as avUtilTypes;
+
 mod avcodec_wasmedge {
     #![allow(non_camel_case_types)]
     include!(concat!(env!("OUT_DIR"), "/avcodec.rs"));
 }
 
-mod avdevice_wasmedge{
+mod avdevice_wasmedge {
     #![allow(non_camel_case_types)]
     include!(concat!(env!("OUT_DIR"), "/avdevice.rs"));
 }
@@ -46,52 +91,12 @@ mod swresample_wasmedge {
 
 #[macro_use]
 pub mod util;
-pub use util::channel_layout::{self, ChannelLayout};
-pub use util::chroma;
-pub use util::color;
-pub use util::dictionary;
-pub use util::dictionary::Mut as DictionaryMut;
-pub use util::dictionary::Owned as Dictionary;
-pub use util::dictionary::Ref as DictionaryRef;
-pub use util::error::{self, Error};
-pub use util::frame::{self, Frame};
-pub use util::log;
-pub use util::mathematics::{self, rescale, Rescale, Rounding};
-pub use util::media;
-pub use util::option;
-pub use util::picture;
-pub use util::rational::{self, Rational};
-pub use util::time;
 
 #[cfg(feature = "format")]
 pub mod format;
-#[cfg(feature = "format")]
-pub use format::chapter::{Chapter, ChapterMut};
-#[cfg(feature = "format")]
-pub use format::format::Format;
-#[cfg(feature = "format")]
-pub use format::stream::{Stream, StreamMut};
 
 #[cfg(feature = "codec")]
 pub mod codec;
-#[cfg(feature = "codec")]
-pub use codec::audio_service::AudioService;
-#[cfg(feature = "codec")]
-pub use codec::codec::Codec;
-#[cfg(feature = "codec")]
-pub use codec::discard::Discard;
-#[cfg(feature = "codec")]
-pub use codec::field_order::FieldOrder;
-#[cfg(feature = "codec")]
-pub use codec::packet::{self, Packet};
-// #[cfg(all(feature = "codec", not(feature = "ffmpeg_5_0")))]
-// pub use codec::picture::Picture;
-// #[cfg(feature = "codec")]
-// pub use codec::subtitle::{self, Subtitle};
-#[cfg(feature = "codec")]
-pub use codec::threading;
-#[cfg(feature = "codec")]
-pub use codec::{decoder,encoder};
 
 #[cfg(feature = "device")]
 pub mod device;
@@ -101,14 +106,8 @@ pub mod filter;
 // #[cfg(feature = "filter")]
 // pub use filter::Filter;
 
-pub mod software;
 pub mod constants;
-
-
-// Types
-pub use format::types as avFormatTypes;
-pub use util::types as avUtilTypes;
-pub use codec::types as avCodecType;
+pub mod software;
 
 fn init_error() {
     util::error::register_all();

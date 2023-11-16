@@ -2,12 +2,12 @@ use std::marker::PhantomData;
 use std::mem::MaybeUninit;
 use std::ptr;
 
-use device;
-use format::context::common::Context;
-use device::types::AVDeviceInfoList;
-use Error;
 use avdevice_wasmedge;
+use device;
+use device::types::AVDeviceInfoList;
+use format::context::common::Context;
 use format::AVFormatContext;
+use Error;
 
 impl Context {
     pub fn devices(&self) -> Result<DeviceIter, Error> {
@@ -66,7 +66,7 @@ impl<'a> Iterator for DeviceIter<'a> {
                 self.cur += 1;
                 Some(device::Info::wrap(
                     self.ptr,
-                    (self.cur - 1) as isize
+                    (self.cur - 1) as isize,
                     // *(*self.ptr).devices.offset((self.cur - 1) as isize),
                 ))
             }

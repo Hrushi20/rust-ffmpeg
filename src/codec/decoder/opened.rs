@@ -1,13 +1,14 @@
+use std::mem::MaybeUninit;
 use std::ops::{Deref, DerefMut};
 use std::{mem, ptr};
-use std::mem::MaybeUninit;
+
+use avcodec_wasmedge;
+use {media, packet, Error, Frame, Rational};
+// use codec::{Context, Profile};
+use avCodecType::AVPacket;
+use codec::Context;
 
 use super::{Audio, Decoder, Subtitle, Video};
-use codec::{Context};
-// use codec::{Context, Profile};
-use {media, packet ,Error, Frame, Rational};
-use avCodecType::{AVPacket};
-use avcodec_wasmedge;
 
 pub struct Opened(pub Decoder);
 
@@ -67,15 +68,11 @@ impl Opened {
     }
 
     pub fn bit_rate(&self) -> usize {
-        unsafe {
-            avcodec_wasmedge::avcodeccontext_bit_rate(self.ptr()) as usize
-        }
+        unsafe { avcodec_wasmedge::avcodeccontext_bit_rate(self.ptr()) as usize }
     }
 
     pub fn delay(&self) -> usize {
-        unsafe {
-            avcodec_wasmedge::avcodeccontext_delay(self.ptr()) as usize
-        }
+        unsafe { avcodec_wasmedge::avcodeccontext_delay(self.ptr()) as usize }
     }
 
     // pub fn profile(&self) -> Profile {
@@ -86,10 +83,14 @@ impl Opened {
         unsafe {
             let num = MaybeUninit::<i32>::uninit();
             let den = MaybeUninit::<i32>::uninit();
-            avcodec_wasmedge::avcodeccontext_framerate(self.ptr(),num.as_ptr() as u32,den.as_ptr() as u32);
+            avcodec_wasmedge::avcodeccontext_framerate(
+                self.ptr(),
+                num.as_ptr() as u32,
+                den.as_ptr() as u32,
+            );
 
-            let value = Rational::new(ptr::read(num.as_ptr()),ptr::read(den.as_ptr()));
-            if value == (Rational::new(0,1)) {
+            let value = Rational::new(ptr::read(num.as_ptr()), ptr::read(den.as_ptr()));
+            if value == (Rational::new(0, 1)) {
                 None
             } else {
                 Some(Rational::from(value))

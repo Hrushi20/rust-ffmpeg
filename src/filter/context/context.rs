@@ -1,9 +1,10 @@
 use std::marker::PhantomData;
 
-use super::{Sink, Source};
 // use {format};
 // use {format, option, ChannelLayout};
 use filter::types::AVFilterContext;
+
+use super::{Sink, Source};
 
 pub struct Context<'a> {
     ptr: AVFilterContext,
@@ -22,7 +23,6 @@ impl<'a> Context<'a> {
     pub unsafe fn ptr(&self) -> AVFilterContext {
         self.ptr
     }
-
 }
 
 impl<'a> Context<'a> {

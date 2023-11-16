@@ -51,7 +51,7 @@ pub enum Type {
 impl From<i32> for Type {
     fn from(value: i32) -> Type {
         match value {
-            value if value == 1  => Type::Frame,
+            value if value == 1 => Type::Frame,
             value if value == 2 => Type::Slice,
 
             _ => Type::None,

@@ -1,13 +1,11 @@
-use codec::id::AVCodecID::*;
-
-use util::media;
 use avcodec_wasmedge;
-
+use codec::id::AVCodecID::*;
+use util::media;
 
 #[allow(non_camel_case_types)]
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Id {
-    None ,
+    None,
 
     // video codecs
     MPEG1VIDEO,
@@ -663,10 +661,10 @@ impl From<u32> for Id {
         match value {
             i if i == AV_CODEC_ID_NONE as u32 => Id::None,
 
-                        /* video codecs */
+            /* video codecs */
             i if i == AV_CODEC_ID_MPEG1VIDEO as u32 => Id::MPEG1VIDEO,
             i if i == AV_CODEC_ID_MPEG2VIDEO as u32 => Id::MPEG2VIDEO,
-                   #[cfg(all(feature = "ff_api_xvmc", not(feature = "ffmpeg_5_0")))]
+            #[cfg(all(feature = "ff_api_xvmc", not(feature = "ffmpeg_5_0")))]
             i if i == AV_CODEC_ID_MPEG2VIDEO_XVMC as u32 => Id::MPEG2VIDEO_XVMC,
 
             i if i == AV_CODEC_ID_H261 as u32 => Id::H261,
@@ -882,8 +880,7 @@ impl From<u32> for Id {
             i if i == AV_CODEC_ID_SHEERVIDEO as u32 => Id::SHEERVIDEO,
             i if i == AV_CODEC_ID_YLC as u32 => Id::YLC,
 
-                       /* various PCM "codecs" */
-
+            /* various PCM "codecs" */
             i if i == AV_CODEC_ID_PCM_S16LE as u32 => Id::PCM_S16LE,
             i if i == AV_CODEC_ID_PCM_S16BE as u32 => Id::PCM_S16BE,
             i if i == AV_CODEC_ID_PCM_U16LE as u32 => Id::PCM_U16LE,
@@ -920,7 +917,6 @@ impl From<u32> for Id {
             i if i == AV_CODEC_ID_PCM_S64BE as u32 => Id::PCM_S64BE,
 
             //            /* various ADPCM codecs */
-
             i if i == AV_CODEC_ID_ADPCM_IMA_QT as u32 => Id::ADPCM_IMA_QT,
             i if i == AV_CODEC_ID_ADPCM_IMA_WAV as u32 => Id::ADPCM_IMA_WAV,
             i if i == AV_CODEC_ID_ADPCM_IMA_DK3 as u32 => Id::ADPCM_IMA_DK3,
@@ -964,26 +960,22 @@ impl From<u32> for Id {
             i if i == AV_CODEC_ID_ADPCM_IMA_DAT4 as u32 => Id::ADPCM_IMA_DAT4,
             i if i == AV_CODEC_ID_ADPCM_MTAF as u32 => Id::ADPCM_MTAF,
 
-                        /* AMR */
-
+            /* AMR */
             i if i == AV_CODEC_ID_AMR_NB as u32 => Id::AMR_NB,
             i if i == AV_CODEC_ID_AMR_WB as u32 => Id::AMR_WB,
 
-                        /* RealAudio codecs*/
-
+            /* RealAudio codecs*/
             i if i == AV_CODEC_ID_RA_144 as u32 => Id::RA_144,
             i if i == AV_CODEC_ID_RA_288 as u32 => Id::RA_288,
 
-                        /* various DPCM codecs */
-
+            /* various DPCM codecs */
             i if i == AV_CODEC_ID_ROQ_DPCM as u32 => Id::ROQ_DPCM,
             i if i == AV_CODEC_ID_INTERPLAY_DPCM as u32 => Id::INTERPLAY_DPCM,
             i if i == AV_CODEC_ID_XAN_DPCM as u32 => Id::XAN_DPCM,
             i if i == AV_CODEC_ID_SOL_DPCM as u32 => Id::SOL_DPCM,
             i if i == AV_CODEC_ID_SDX2_DPCM as u32 => Id::SDX2_DPCM,
 
-                       /* audio codecs */
-
+            /* audio codecs */
             i if i == AV_CODEC_ID_MP2 as u32 => Id::MP2,
             i if i == AV_CODEC_ID_MP3 as u32 => Id::MP3,
             i if i == AV_CODEC_ID_AAC as u32 => Id::AAC,
@@ -1017,8 +1009,8 @@ impl From<u32> for Id {
             i if i == AV_CODEC_ID_GSM_MS as u32 => Id::GSM_MS,
             i if i == AV_CODEC_ID_ATRAC3 as u32 => Id::ATRAC3,
 
-                       #[cfg(feature = "ff_api_voxware")]
-            i if i ==            AV_CODEC_ID_VOXWARE as u32 => Id::VOXWARE,
+            #[cfg(feature = "ff_api_voxware")]
+            i if i == AV_CODEC_ID_VOXWARE as u32 => Id::VOXWARE,
 
             i if i == AV_CODEC_ID_APE as u32 => Id::APE,
             i if i == AV_CODEC_ID_NELLYMOSER as u32 => Id::NELLYMOSER,
@@ -1055,8 +1047,8 @@ impl From<u32> for Id {
             i if i == AV_CODEC_ID_PAF_AUDIO as u32 => Id::PAF_AUDIO,
             i if i == AV_CODEC_ID_ON2AVC as u32 => Id::ON2AVC,
             i if i == AV_CODEC_ID_DSS_SP as u32 => Id::DSS_SP,
-                      #[cfg(feature = "ffmpeg_4_0")]
-            i if i ==            AV_CODEC_ID_CODEC2 as u32 => Id::CODEC2,
+            #[cfg(feature = "ffmpeg_4_0")]
+            i if i == AV_CODEC_ID_CODEC2 as u32 => Id::CODEC2,
             i if i == AV_CODEC_ID_FFWAVESYNTH as u32 => Id::FFWAVESYNTH,
             i if i == AV_CODEC_ID_SONIC as u32 => Id::SONIC,
             i if i == AV_CODEC_ID_SONIC_LS as u32 => Id::SONIC_LS,
@@ -1072,8 +1064,7 @@ impl From<u32> for Id {
             i if i == AV_CODEC_ID_XMA2 as u32 => Id::XMA2,
             i if i == AV_CODEC_ID_DST as u32 => Id::DST,
 
-                        /* subtitle codecs */
-
+            /* subtitle codecs */
             i if i == AV_CODEC_ID_DVD_SUBTITLE as u32 => Id::DVD_SUBTITLE,
             i if i == AV_CODEC_ID_DVB_SUBTITLE as u32 => Id::DVB_SUBTITLE,
             i if i == AV_CODEC_ID_TEXT as u32 => Id::TEXT,
@@ -1100,8 +1091,7 @@ impl From<u32> for Id {
             i if i == AV_CODEC_ID_ASS as u32 => Id::ASS,
             i if i == AV_CODEC_ID_HDMV_TEXT_SUBTITLE as u32 => Id::HDMV_TEXT_SUBTITLE,
 
-                       /* other specific kind of codecs (generally used for attachments) */
-
+            /* other specific kind of codecs (generally used for attachments) */
             i if i == AV_CODEC_ID_TTF as u32 => Id::TTF,
             i if i == AV_CODEC_ID_SCTE_35 as u32 => Id::SCTE_35,
             i if i == AV_CODEC_ID_BINTEXT as u32 => Id::BINTEXT,
@@ -1147,133 +1137,133 @@ impl From<u32> for Id {
             i if i == AV_CODEC_ID_APTX_HD as u32 => Id::APTX_HD,
             #[cfg(feature = "ffmpeg_4_0")]
             i if i == AV_CODEC_ID_SBC as u32 => Id::SBC,
-                        #[cfg(feature = "ffmpeg_4_1")]
+            #[cfg(feature = "ffmpeg_4_1")]
             i if i == AV_CODEC_ID_AVS2 as u32 => Id::AVS2,
-                        #[cfg(feature = "ffmpeg_4_1")]
+            #[cfg(feature = "ffmpeg_4_1")]
             i if i == AV_CODEC_ID_IMM4 as u32 => Id::IMM4,
-                        #[cfg(feature = "ffmpeg_4_1")]
+            #[cfg(feature = "ffmpeg_4_1")]
             i if i == AV_CODEC_ID_PROSUMER as u32 => Id::PROSUMER,
-                        #[cfg(feature = "ffmpeg_4_1")]
+            #[cfg(feature = "ffmpeg_4_1")]
             i if i == AV_CODEC_ID_MWSC as u32 => Id::MWSC,
-                        #[cfg(feature = "ffmpeg_4_1")]
+            #[cfg(feature = "ffmpeg_4_1")]
             i if i == AV_CODEC_ID_WCMV as u32 => Id::WCMV,
-                       #[cfg(feature = "ffmpeg_4_1")]
+            #[cfg(feature = "ffmpeg_4_1")]
             i if i == AV_CODEC_ID_RASC as u32 => Id::RASC,
-                       #[cfg(feature = "ffmpeg_4_1")]
+            #[cfg(feature = "ffmpeg_4_1")]
             i if i == AV_CODEC_ID_PCM_VIDC as u32 => Id::PCM_VIDC,
-                       #[cfg(feature = "ffmpeg_4_1")]
+            #[cfg(feature = "ffmpeg_4_1")]
             i if i == AV_CODEC_ID_ATRAC9 as u32 => Id::ATRAC9,
-                      #[cfg(feature = "ffmpeg_4_1")]
+            #[cfg(feature = "ffmpeg_4_1")]
             i if i == AV_CODEC_ID_TTML as u32 => Id::TTML,
-                        #[cfg(feature = "ffmpeg_4_2")]
+            #[cfg(feature = "ffmpeg_4_2")]
             i if i == AV_CODEC_ID_HYMT as u32 => Id::HYMT,
-                       #[cfg(feature = "ffmpeg_4_2")]
+            #[cfg(feature = "ffmpeg_4_2")]
             i if i == AV_CODEC_ID_ARBC as u32 => Id::ARBC,
-                       #[cfg(feature = "ffmpeg_4_2")]
+            #[cfg(feature = "ffmpeg_4_2")]
             i if i == AV_CODEC_ID_AGM as u32 => Id::AGM,
-                      #[cfg(feature = "ffmpeg_4_2")]
+            #[cfg(feature = "ffmpeg_4_2")]
             i if i == AV_CODEC_ID_LSCR as u32 => Id::LSCR,
-                      #[cfg(feature = "ffmpeg_4_2")]
+            #[cfg(feature = "ffmpeg_4_2")]
             i if i == AV_CODEC_ID_VP4 as u32 => Id::VP4,
-                      #[cfg(feature = "ffmpeg_4_2")]
+            #[cfg(feature = "ffmpeg_4_2")]
             i if i == AV_CODEC_ID_ADPCM_AGM as u32 => Id::ADPCM_AGM,
-                    #[cfg(feature = "ffmpeg_4_2")]
+            #[cfg(feature = "ffmpeg_4_2")]
             i if i == AV_CODEC_ID_HCOM as u32 => Id::HCOM,
-                     #[cfg(feature = "ffmpeg_4_2")]
+            #[cfg(feature = "ffmpeg_4_2")]
             i if i == AV_CODEC_ID_ARIB_CAPTION as u32 => Id::ARIB_CAPTION,
-                       #[cfg(feature = "ffmpeg_4_3")]
+            #[cfg(feature = "ffmpeg_4_3")]
             i if i == AV_CODEC_ID_IMM5 as u32 => Id::IMM5,
-                  #[cfg(feature = "ffmpeg_4_3")]
+            #[cfg(feature = "ffmpeg_4_3")]
             i if i == AV_CODEC_ID_MVDV as u32 => Id::MVDV,
-                        #[cfg(feature = "ffmpeg_4_3")]
+            #[cfg(feature = "ffmpeg_4_3")]
             i if i == AV_CODEC_ID_MVHA as u32 => Id::MVHA,
-                        #[cfg(feature = "ffmpeg_4_3")]
+            #[cfg(feature = "ffmpeg_4_3")]
             i if i == AV_CODEC_ID_CDTOONS as u32 => Id::CDTOONS,
-                        #[cfg(feature = "ffmpeg_4_3")]
+            #[cfg(feature = "ffmpeg_4_3")]
             i if i == AV_CODEC_ID_MV30 as u32 => Id::MV30,
-                       #[cfg(feature = "ffmpeg_4_3")]
+            #[cfg(feature = "ffmpeg_4_3")]
             i if i == AV_CODEC_ID_NOTCHLC as u32 => Id::NOTCHLC,
-                       #[cfg(feature = "ffmpeg_4_3")]
+            #[cfg(feature = "ffmpeg_4_3")]
             i if i == AV_CODEC_ID_PFM as u32 => Id::PFM,
-                       #[cfg(feature = "ffmpeg_4_3")]
+            #[cfg(feature = "ffmpeg_4_3")]
             i if i == AV_CODEC_ID_ADPCM_ARGO as u32 => Id::ADPCM_ARGO,
-                       #[cfg(feature = "ffmpeg_4_3")]
+            #[cfg(feature = "ffmpeg_4_3")]
             i if i == AV_CODEC_ID_ADPCM_IMA_SSI as u32 => Id::ADPCM_IMA_SSI,
-                       #[cfg(feature = "ffmpeg_4_3")]
+            #[cfg(feature = "ffmpeg_4_3")]
             i if i == AV_CODEC_ID_ADPCM_ZORK as u32 => Id::ADPCM_ZORK,
-                       #[cfg(feature = "ffmpeg_4_3")]
+            #[cfg(feature = "ffmpeg_4_3")]
             i if i == AV_CODEC_ID_ADPCM_IMA_APM as u32 => Id::ADPCM_IMA_APM,
-                       #[cfg(feature = "ffmpeg_4_3")]
+            #[cfg(feature = "ffmpeg_4_3")]
             i if i == AV_CODEC_ID_ADPCM_IMA_ALP as u32 => Id::ADPCM_IMA_ALP,
-                        #[cfg(feature = "ffmpeg_4_3")]
+            #[cfg(feature = "ffmpeg_4_3")]
             i if i == AV_CODEC_ID_ADPCM_IMA_MTF as u32 => Id::ADPCM_IMA_MTF,
-                       #[cfg(feature = "ffmpeg_4_3")]
+            #[cfg(feature = "ffmpeg_4_3")]
             i if i == AV_CODEC_ID_ADPCM_IMA_CUNNING as u32 => Id::ADPCM_IMA_CUNNING,
-                       #[cfg(feature = "ffmpeg_4_3")]
+            #[cfg(feature = "ffmpeg_4_3")]
             i if i == AV_CODEC_ID_DERF_DPCM as u32 => Id::DERF_DPCM,
-                       #[cfg(feature = "ffmpeg_4_3")]
+            #[cfg(feature = "ffmpeg_4_3")]
             i if i == AV_CODEC_ID_ACELP_KELVIN as u32 => Id::ACELP_KELVIN,
-                    #[cfg(feature = "ffmpeg_4_3")]
+            #[cfg(feature = "ffmpeg_4_3")]
             i if i == AV_CODEC_ID_MPEGH_3D_AUDIO as u32 => Id::MPEGH_3D_AUDIO,
-                   #[cfg(feature = "ffmpeg_4_3")]
+            #[cfg(feature = "ffmpeg_4_3")]
             i if i == AV_CODEC_ID_SIREN as u32 => Id::SIREN,
-                   #[cfg(feature = "ffmpeg_4_3")]
+            #[cfg(feature = "ffmpeg_4_3")]
             i if i == AV_CODEC_ID_HCA as u32 => Id::HCA,
-                    #[cfg(feature = "ffmpeg_4_3")]
+            #[cfg(feature = "ffmpeg_4_3")]
             i if i == AV_CODEC_ID_EPG as u32 => Id::EPG,
 
-                     #[cfg(feature = "ffmpeg_4_4")]
+            #[cfg(feature = "ffmpeg_4_4")]
             i if i == AV_CODEC_ID_PGX as u32 => Id::PGX,
-                 #[cfg(feature = "ffmpeg_4_4")]
+            #[cfg(feature = "ffmpeg_4_4")]
             i if i == AV_CODEC_ID_AVS3 as u32 => Id::AVS3,
-                     #[cfg(feature = "ffmpeg_4_4")]
+            #[cfg(feature = "ffmpeg_4_4")]
             i if i == AV_CODEC_ID_MSP2 as u32 => Id::MSP2,
-                    #[cfg(feature = "ffmpeg_4_4")]
+            #[cfg(feature = "ffmpeg_4_4")]
             i if i == AV_CODEC_ID_VVC as u32 => Id::VVC,
-                     #[cfg(feature = "ffmpeg_4_4")]
+            #[cfg(feature = "ffmpeg_4_4")]
             i if i == AV_CODEC_ID_MOBICLIP as u32 => Id::MOBICLIP,
-                     #[cfg(feature = "ffmpeg_4_4")]
+            #[cfg(feature = "ffmpeg_4_4")]
             i if i == AV_CODEC_ID_PHOTOCD as u32 => Id::PHOTOCD,
-                     #[cfg(feature = "ffmpeg_4_4")]
+            #[cfg(feature = "ffmpeg_4_4")]
             i if i == AV_CODEC_ID_IPU as u32 => Id::IPU,
-                     #[cfg(feature = "ffmpeg_4_4")]
+            #[cfg(feature = "ffmpeg_4_4")]
             i if i == AV_CODEC_ID_ARGO as u32 => Id::ARGO,
-                      #[cfg(feature = "ffmpeg_4_4")]
+            #[cfg(feature = "ffmpeg_4_4")]
             i if i == AV_CODEC_ID_CRI as u32 => Id::CRI,
-                     #[cfg(feature = "ffmpeg_4_4")]
+            #[cfg(feature = "ffmpeg_4_4")]
             i if i == AV_CODEC_ID_SIMBIOSIS_IMX as u32 => Id::SIMBIOSIS_IMX,
-                      #[cfg(feature = "ffmpeg_4_4")]
+            #[cfg(feature = "ffmpeg_4_4")]
             i if i == AV_CODEC_ID_SGA_VIDEO as u32 => Id::SGA_VIDEO,
-                       #[cfg(feature = "ffmpeg_4_4")]
+            #[cfg(feature = "ffmpeg_4_4")]
             i if i == AV_CODEC_ID_PCM_SGA as u32 => Id::PCM_SGA,
-                     #[cfg(feature = "ffmpeg_4_4")]
+            #[cfg(feature = "ffmpeg_4_4")]
             i if i == AV_CODEC_ID_ADPCM_IMA_MOFLEX as u32 => Id::ADPCM_IMA_MOFLEX,
-                     #[cfg(feature = "ffmpeg_4_4")]
+            #[cfg(feature = "ffmpeg_4_4")]
             i if i == AV_CODEC_ID_FASTAUDIO as u32 => Id::FASTAUDIO,
-                     #[cfg(feature = "ffmpeg_5_0")]
+            #[cfg(feature = "ffmpeg_5_0")]
             i if i == AV_CODEC_ID_GEM as u32 => Id::GEM,
-                    #[cfg(feature = "ffmpeg_5_0")]
+            #[cfg(feature = "ffmpeg_5_0")]
             i if i == AV_CODEC_ID_ADPCM_IMA_ACORN as u32 => Id::ADPCM_IMA_ACORN,
-                   #[cfg(feature = "ffmpeg_5_0")]
+            #[cfg(feature = "ffmpeg_5_0")]
             i if i == AV_CODEC_ID_MSNSIREN as u32 => Id::MSNSIREN,
-                      #[cfg(feature = "ffmpeg_5_1")]
+            #[cfg(feature = "ffmpeg_5_1")]
             i if i == AV_CODEC_ID_VBN as u32 => Id::VBN,
-                    #[cfg(feature = "ffmpeg_5_1")]
+            #[cfg(feature = "ffmpeg_5_1")]
             i if i == AV_CODEC_ID_JPEGXL as u32 => Id::JPEGXL,
-                      #[cfg(feature = "ffmpeg_5_1")]
+            #[cfg(feature = "ffmpeg_5_1")]
             i if i == AV_CODEC_ID_QOI as u32 => Id::QOI,
-                     #[cfg(feature = "ffmpeg_5_1")]
+            #[cfg(feature = "ffmpeg_5_1")]
             i if i == AV_CODEC_ID_PHM as u32 => Id::PHM,
-                     #[cfg(feature = "ffmpeg_5_1")]
+            #[cfg(feature = "ffmpeg_5_1")]
             i if i == AV_CODEC_ID_DFPWM as u32 => Id::DFPWM,
 
-                       #[cfg(feature = "ffmpeg_6_0")]
+            #[cfg(feature = "ffmpeg_6_0")]
             i if i == AV_CODEC_ID_RADIANCE_HDR as u32 => Id::RADIANCE_HDR,
-                       #[cfg(feature = "ffmpeg_6_0")]
+            #[cfg(feature = "ffmpeg_6_0")]
             i if i == AV_CODEC_ID_WBMP as u32 => Id::WBMP,
-                        #[cfg(feature = "ffmpeg_6_0")]
+            #[cfg(feature = "ffmpeg_6_0")]
             i if i == AV_CODEC_ID_MEDIA100 as u32 => Id::MEDIA100,
-                      #[cfg(feature = "ffmpeg_6_0")]
+            #[cfg(feature = "ffmpeg_6_0")]
             i if i == AV_CODEC_ID_VQC as u32 => Id::VQC,
             #[cfg(feature = "ffmpeg_6_0")]
             i if i == AV_CODEC_ID_ADPCM_XMD as u32 => Id::ADPCM_XMD,
@@ -1297,7 +1287,7 @@ impl From<u32> for Id {
             i if i == AV_CODEC_ID_VNULL => Id::VNULL,
             #[cfg(feature = "ffmpeg_6_0")]
             i if i == AV_CODEC_ID_ANULL => Id::ANULL,
-            _ => Id::None
+            _ => Id::None,
         }
     }
 }
@@ -1310,7 +1300,7 @@ impl From<Id> for u32 {
             /* video codecs */
             Id::MPEG1VIDEO => AV_CODEC_ID_MPEG1VIDEO as u32,
             Id::MPEG2VIDEO => AV_CODEC_ID_MPEG2VIDEO as u32,
-            #[cfg(all(feature = "ff_api_xvmc" , not(feature = "ffmpeg_5_0")))]
+            #[cfg(all(feature = "ff_api_xvmc", not(feature = "ffmpeg_5_0")))]
             Id::MPEG2VIDEO_XVMC => AV_CODEC_ID_MPEG2VIDEO_XVMC as u32,
             Id::H261 => AV_CODEC_ID_H261 as u32,
             Id::H263 => AV_CODEC_ID_H263 as u32,

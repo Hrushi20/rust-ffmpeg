@@ -30,11 +30,10 @@ impl TransferCharacteristic {
             return None;
         }
         unsafe {
-
             let transfer_id = (*self).into();
             let len = avutil_wasmedge::av_color_transfer_name_length(transfer_id) as usize;
-            let name = vec![0u8;len];
-            avutil_wasmedge::av_color_transfer_name(transfer_id,name.as_ptr(),len);
+            let name = vec![0u8; len];
+            avutil_wasmedge::av_color_transfer_name(transfer_id, name.as_ptr(), len);
             Some(String::from_utf8_unchecked(name))
         }
     }
@@ -43,9 +42,9 @@ impl TransferCharacteristic {
 impl From<AVColorTransferCharacteristic> for TransferCharacteristic {
     fn from(value: AVColorTransferCharacteristic) -> TransferCharacteristic {
         match value {
-            value if value == 0  => TransferCharacteristic::Reserved0,
-            value if value == 1  => TransferCharacteristic::BT709,
-            value if value == 2  => TransferCharacteristic::Unspecified,
+            value if value == 0 => TransferCharacteristic::Reserved0,
+            value if value == 1 => TransferCharacteristic::BT709,
+            value if value == 2 => TransferCharacteristic::Unspecified,
             value if value == 3 => TransferCharacteristic::Reserved,
             value if value == 4 => TransferCharacteristic::GAMMA22,
             value if value == 5 => TransferCharacteristic::GAMMA28,
@@ -63,7 +62,7 @@ impl From<AVColorTransferCharacteristic> for TransferCharacteristic {
             value if value == 17 => TransferCharacteristic::SMPTE428,
             value if value == 18 => TransferCharacteristic::ARIB_STD_B67,
             value if value == 19 => TransferCharacteristic::Reserved0,
-            _ => TransferCharacteristic::Reserved0
+            _ => TransferCharacteristic::Reserved0,
         }
     }
 }

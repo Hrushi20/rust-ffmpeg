@@ -1,11 +1,12 @@
+use std::mem;
 use std::ops::{Deref, DerefMut};
-use std::{mem};
 
-use super::{audio, subtitle, video};
+use avUtilTypes::AVFrame;
+use avcodec_wasmedge;
 use codec::Context;
 use {media, packet, Error, Frame, Rational};
-use avcodec_wasmedge;
-use avUtilTypes::AVFrame;
+
+use super::{audio, subtitle, video};
 
 pub struct Encoder(pub Context);
 
@@ -14,7 +15,10 @@ impl Encoder {
         match self.medium() {
             media::Type::Unknown => {
                 unsafe {
-                    avcodec_wasmedge::avcodeccontext_set_codec_type(self.ptr(),media::Type::Video.into());
+                    avcodec_wasmedge::avcodeccontext_set_codec_type(
+                        self.ptr(),
+                        media::Type::Video.into(),
+                    );
                 }
 
                 Ok(video::Video(self))
@@ -30,7 +34,10 @@ impl Encoder {
         match self.medium() {
             media::Type::Unknown => {
                 unsafe {
-                    avcodec_wasmedge::avcodeccontext_set_codec_type(self.ptr(),media::Type::Audio.into());
+                    avcodec_wasmedge::avcodeccontext_set_codec_type(
+                        self.ptr(),
+                        media::Type::Audio.into(),
+                    );
                 }
 
                 Ok(audio::Audio(self))
@@ -46,7 +53,10 @@ impl Encoder {
         match self.medium() {
             media::Type::Unknown => {
                 unsafe {
-                    avcodec_wasmedge::avcodeccontext_set_codec_type(self.ptr(),media::Type::Subtitle.into());
+                    avcodec_wasmedge::avcodeccontext_set_codec_type(
+                        self.ptr(),
+                        media::Type::Subtitle.into(),
+                    );
                 }
 
                 Ok(subtitle::Subtitle(self))
@@ -84,34 +94,34 @@ impl Encoder {
 
     pub fn set_bit_rate(&mut self, value: usize) {
         unsafe {
-            avcodec_wasmedge::avcodeccontext_set_bit_rate(self.ptr(),value as i64);
+            avcodec_wasmedge::avcodeccontext_set_bit_rate(self.ptr(), value as i64);
         }
     }
 
     pub fn set_max_bit_rate(&mut self, value: usize) {
         unsafe {
-            avcodec_wasmedge::avcodeccontext_set_rc_max_rate(self.ptr(),value as i64);
+            avcodec_wasmedge::avcodeccontext_set_rc_max_rate(self.ptr(), value as i64);
         }
     }
 
     pub fn set_tolerance(&mut self, value: usize) {
         unsafe {
-            avcodec_wasmedge::avcodeccontext_set_bit_rate_tolerance(self.ptr(),value as i32);
+            avcodec_wasmedge::avcodeccontext_set_bit_rate_tolerance(self.ptr(), value as i32);
         }
     }
 
     pub fn set_quality(&mut self, value: usize) {
         unsafe {
-            avcodec_wasmedge::avcodeccontext_set_global_quality(self.ptr(),value as i32);
+            avcodec_wasmedge::avcodeccontext_set_global_quality(self.ptr(), value as i32);
         }
     }
 
     pub fn set_compression(&mut self, value: Option<usize>) {
         unsafe {
             if let Some(value) = value {
-                avcodec_wasmedge::avcodeccontext_set_compression_level(self.ptr(),value as i32);
+                avcodec_wasmedge::avcodeccontext_set_compression_level(self.ptr(), value as i32);
             } else {
-                avcodec_wasmedge::avcodeccontext_set_compression_level(self.ptr(),-1);
+                avcodec_wasmedge::avcodeccontext_set_compression_level(self.ptr(), -1);
             }
         }
     }
@@ -119,7 +129,11 @@ impl Encoder {
     pub fn set_time_base<R: Into<Rational>>(&mut self, value: R) {
         unsafe {
             let rational = value.into();
-            avcodec_wasmedge::avcodeccontext_set_time_base(self.ptr(),rational.numerator(),rational.denominator());
+            avcodec_wasmedge::avcodeccontext_set_time_base(
+                self.ptr(),
+                rational.numerator(),
+                rational.denominator(),
+            );
         }
     }
 
@@ -127,9 +141,13 @@ impl Encoder {
         unsafe {
             if let Some(value) = value {
                 let rational = value.into();
-                avcodec_wasmedge::avcodeccontext_set_framerate(self.ptr(),rational.numerator(),rational.denominator());
+                avcodec_wasmedge::avcodeccontext_set_framerate(
+                    self.ptr(),
+                    rational.numerator(),
+                    rational.denominator(),
+                );
             } else {
-                avcodec_wasmedge::avcodeccontext_set_framerate(self.ptr(),0,1);
+                avcodec_wasmedge::avcodeccontext_set_framerate(self.ptr(), 0, 1);
             }
         }
     }

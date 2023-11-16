@@ -1,6 +1,7 @@
-use super::Context;
-use {Error, Frame};
 use avfilter_wasmedge;
+use {Error, Frame};
+
+use super::Context;
 
 pub struct Sink<'a> {
     ctx: &'a mut Context<'a>,

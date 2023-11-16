@@ -1,5 +1,5 @@
-use Error;
 use avutil_wasmedge;
+use Error;
 
 #[inline(always)]
 pub fn current() -> i64 {

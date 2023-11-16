@@ -1,8 +1,9 @@
-mod context;
 pub use self::context::Context;
-
-mod source;
+pub use self::sink::Sink;
 pub use self::source::Source;
 
+mod context;
+
+mod source;
+
 mod sink;
-pub use self::sink::Sink;

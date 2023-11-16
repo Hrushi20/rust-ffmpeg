@@ -25,7 +25,7 @@ impl From<AVAudioServiceType> for AudioService {
             value if value == 6 => AudioService::Emergency,
             value if value == 7 => AudioService::VoiceOver,
             value if value == 8 => AudioService::Karaoke,
-             _ => AudioService::Main,
+            _ => AudioService::Main,
         }
     }
 }

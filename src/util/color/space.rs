@@ -18,7 +18,7 @@ pub enum Space {
 
     ChromaDerivedNCL = 12,
     ChromaDerivedCL = 13,
-    ICTCP = 14
+    ICTCP = 14,
 }
 
 impl Space {
@@ -31,8 +31,8 @@ impl Space {
         unsafe {
             let space_id = (*self).into();
             let len = avutil_wasmedge::av_color_space_name_length(space_id) as usize;
-            let name = vec![0u8;len];
-            avutil_wasmedge::av_color_space_name(space_id,name.as_ptr(),len);
+            let name = vec![0u8; len];
+            avutil_wasmedge::av_color_space_name(space_id, name.as_ptr(), len);
             Some(String::from_utf8_unchecked(name))
         }
     }
@@ -54,11 +54,11 @@ impl From<AVColorSpace> for Space {
             value if value == 10 => Space::BT2020CL,
             value if value == 11 => Space::SMPTE2085,
 
-            value if value == 12  => Space::ChromaDerivedNCL,
+            value if value == 12 => Space::ChromaDerivedNCL,
             value if value == 13 => Space::ChromaDerivedCL,
             value if value == 14 => Space::ICTCP,
             value if value == 15 => Space::Unspecified,
-            _ => Space::RGB
+            _ => Space::RGB,
         }
     }
 }

@@ -1,5 +1,5 @@
-use format::types::AVFormatContext;
 use avformat_wasmedge;
+use format::types::AVFormatContext;
 
 #[derive(Copy, Clone, Debug)]
 pub enum Mode {
@@ -23,8 +23,8 @@ impl Drop for Destructor {
         unsafe {
             match self.mode {
                 Mode::Input => {
-                    avformat_wasmedge::avformat_close_input( self.ptr as u32);
-                },
+                    avformat_wasmedge::avformat_close_input(self.ptr as u32);
+                }
 
                 Mode::Output => {
                     avformat_wasmedge::avio_close(self.ptr);

@@ -1,5 +1,6 @@
-pub mod rounding;
+pub use self::rescale::Rescale;
 pub use self::rounding::Rounding;
 
+pub mod rounding;
+
 pub mod rescale;
-pub use self::rescale::Rescale;

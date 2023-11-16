@@ -1,29 +1,29 @@
 [package]
-name    = "ffmpeg-next"
+name = "ffmpeg-next"
 version = "6.0.0"
-build   = "build.rs"
+build = "build.rs"
 
 authors = ["meh. <meh@schizofreni.co>", "Zhiming Wang <i@zhimingwang.org>"]
 license = "WTFPL"
 
-description   = "Safe FFmpeg wrapper (FFmpeg 4 compatible fork of the ffmpeg crate)"
+description = "Safe FFmpeg wrapper (FFmpeg 4 compatible fork of the ffmpeg crate)"
 documentation = "https://docs.rs/ffmpeg-next"
-homepage      = "https://github.com/zmwangx/rust-ffmpeg#readme"
-repository    = "https://github.com/zmwangx/rust-ffmpeg"
-readme        = "README.md"
-keywords      = ["ffmpeg", "multimedia", "video", "audio"]
-categories    = ["multimedia"]
+homepage = "https://github.com/zmwangx/rust-ffmpeg#readme"
+repository = "https://github.com/zmwangx/rust-ffmpeg"
+readme = "README.md"
+keywords = ["ffmpeg", "multimedia", "video", "audio"]
+categories = ["multimedia"]
 
 [features]
 default = ["codec", "device", "filter", "format", "software-resampling", "software-scaling"]
-codec               = []
-device              = ["format"]
-filter              = []
-format              = ["codec"]
-resampling          = []
-postprocessing      = []
+codec = []
+device = ["format"]
+filter = []
+format = ["codec"]
+resampling = []
+postprocessing = []
 software-resampling = []
-software-scaling    = ["codec"]
+software-scaling = ["codec"]
 
 # ffmpeg<xy> are obsolete features kept for backward compatibility purposes and
 # don't do anything anymore (equivalents are automatically specified through
@@ -42,9 +42,9 @@ os_info = { version = "3.7.0", default-features = false }
 powershell_script = "1.1.0"
 
 [dependencies]
-libc     = "0.2"
+libc = "0.2"
 bitflags = "1.2"
 
 [dependencies.image]
-version  = "0.23"
+version = "0.23"
 optional = true

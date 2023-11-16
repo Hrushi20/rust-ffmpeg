@@ -1,8 +1,8 @@
 use std::marker::PhantomData;
 use std::mem::MaybeUninit;
 use std::{ptr, slice};
-use software::scaling::types::SwsVector;
 
+use software::scaling::types::SwsVector;
 use swscale_wasmedge;
 
 pub struct Vector<'a> {
@@ -24,14 +24,13 @@ impl<'a> Vector<'a> {
     pub unsafe fn ptr(&self) -> SwsVector {
         self.ptr
     }
-
 }
 
 impl<'a> Vector<'a> {
     pub fn new(length: usize) -> Self {
         unsafe {
             let sws_vec = MaybeUninit::<SwsVector>::uninit();
-            swscale_wasmedge::sws_allocVec(sws_vec.as_ptr() as u32,length as i32);
+            swscale_wasmedge::sws_allocVec(sws_vec.as_ptr() as u32, length as i32);
 
             Vector {
                 ptr: ptr::read(sws_vec.as_ptr()),
@@ -44,7 +43,7 @@ impl<'a> Vector<'a> {
     pub fn gaussian(variance: f64, quality: f64) -> Self {
         unsafe {
             let sws_vec = MaybeUninit::<SwsVector>::uninit();
-            swscale_wasmedge::sws_getGaussianVec(sws_vec.as_ptr() as u32, variance,quality);
+            swscale_wasmedge::sws_getGaussianVec(sws_vec.as_ptr() as u32, variance, quality);
             Vector {
                 ptr: ptr::read(sws_vec.as_ptr()),
                 _own: true,
@@ -75,7 +74,7 @@ impl<'a> Vector<'a> {
     //     }
     // }
 
-    pub fn scale(& self, scalar: f64) {
+    pub fn scale(&self, scalar: f64) {
         unsafe {
             swscale_wasmedge::sws_scaleVec(self.ptr(), scalar);
         }
@@ -119,8 +118,8 @@ impl<'a> Vector<'a> {
         unsafe {
             let length = swscale_wasmedge::sws_getCoeffVecLength(self.ptr()) as usize; // This length is in uint format
 
-            let coeff = vec![0;length];
-            swscale_wasmedge::sws_getCoeff(self.ptr(),coeff.as_ptr(),length);
+            let coeff = vec![0; length];
+            swscale_wasmedge::sws_getCoeff(self.ptr(), coeff.as_ptr(), length);
             slice::from_raw_parts(coeff.as_ptr() as *const f64, length)
         }
     }

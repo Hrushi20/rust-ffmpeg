@@ -32,7 +32,7 @@ impl From<i32> for Comparison {
             value if value == 8 => Comparison::VSAD,
             value if value == 9 => Comparison::VSSE,
             value if value == 10 => Comparison::NSSE,
-            value if value == 11  => Comparison::W53,
+            value if value == 11 => Comparison::W53,
             value if value == 12 => Comparison::W97,
             value if value == 13 => Comparison::DCTMAX,
             value if value == 14 => Comparison::DCT264,
@@ -44,6 +44,6 @@ impl From<i32> for Comparison {
 
 impl From<Comparison> for i32 {
     fn from(value: Comparison) -> i32 {
-       value as i32
+        value as i32
     }
 }

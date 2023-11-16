@@ -2,15 +2,7 @@ use std::error;
 use std::ffi::CStr;
 use std::fmt;
 use std::io;
-use std::str::{from_utf8_unchecked};
-
-use avutil_wasmedge;
-
-// Export POSIX error codes so that users can do something like
-//
-//   if error == (Error::Other { errno: EAGAIN }) {
-//       ...
-//   }
+use std::str::from_utf8_unchecked;
 
 // Few Error codes missing.
 pub use libc::{
@@ -18,14 +10,20 @@ pub use libc::{
     EBUSY, ECANCELED, ECHILD, ECONNABORTED, ECONNREFUSED, ECONNRESET, EDEADLK, EDESTADDRREQ, EDOM,
     EEXIST, EFAULT, EFBIG, EHOSTUNREACH, EIDRM, EILSEQ, EINPROGRESS, EINTR, EINVAL, EIO, EISCONN,
     EISDIR, ELOOP, EMFILE, EMLINK, EMSGSIZE, ENAMETOOLONG, ENETDOWN, ENETRESET, ENETUNREACH,
-    ENFILE, ENOBUFS, ENODEV, ENOENT, ENOEXEC, ENOLCK, ENOLINK, ENOMEM, ENOMSG,
-    ENOPROTOOPT, ENOSPC, ENOSYS, ENOTCONN, ENOTDIR, ENOTEMPTY, ENOTRECOVERABLE,
-    ENOTSOCK, ENOTSUP, ENOTTY, ENXIO, EOPNOTSUPP, EOVERFLOW, EOWNERDEAD, EPERM, EPIPE, EPROTO,
-    EPROTONOSUPPORT, EPROTOTYPE, ERANGE, EROFS, ESPIPE, ESRCH, ETIMEDOUT, ETXTBSY,
-    EWOULDBLOCK, EXDEV
+    ENFILE, ENOBUFS, ENODEV, ENOENT, ENOEXEC, ENOLCK, ENOLINK, ENOMEM, ENOMSG, ENOPROTOOPT, ENOSPC,
+    ENOSYS, ENOTCONN, ENOTDIR, ENOTEMPTY, ENOTRECOVERABLE, ENOTSOCK, ENOTSUP, ENOTTY, ENXIO,
+    EOPNOTSUPP, EOVERFLOW, EOWNERDEAD, EPERM, EPIPE, EPROTO, EPROTONOSUPPORT, EPROTOTYPE, ERANGE,
+    EROFS, ESPIPE, ESRCH, ETIMEDOUT, ETXTBSY, EWOULDBLOCK, EXDEV,
 };
 
+use avutil_wasmedge;
 use error::ErrorCode::AV_ERROR_MAX_STRING_SIZE;
+
+// Export POSIX error codes so that users can do something like
+//
+//   if error == (Error::Other { errno: EAGAIN }) {
+//       ...
+//   }
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub enum Error {
@@ -82,7 +80,7 @@ impl From<i32> for Error {
             i if i == ErrorCode::AVERROR_EOF as i32 => Error::Eof,
             i if i == ErrorCode::AVERROR_EXIT as i32 => Error::Exit,
             i if i == ErrorCode::AVERROR_EXTERNAL as i32 => Error::External,
-            i if i == ErrorCode::AVERROR_FILTER_NOT_FOUND as i32  => Error::FilterNotFound,
+            i if i == ErrorCode::AVERROR_FILTER_NOT_FOUND as i32 => Error::FilterNotFound,
             i if i == ErrorCode::AVERROR_INVALIDDATA as i32 => Error::InvalidData,
             i if i == ErrorCode::AVERROR_MUXER_NOT_FOUND as i32 => Error::MuxerNotFound,
             i if i == ErrorCode::AVERROR_OPTION_NOT_FOUND as i32 => Error::OptionNotFound,
@@ -103,7 +101,7 @@ impl From<i32> for Error {
             i if i == ErrorCode::WASMEDGE_MISSING_MEMORY as i32 => Error::WasmEdgeMissingMemory,
             i if i == ErrorCode::WASMEDGE_NULL_STRUCT_ID as i32 => Error::WasmEdgeNullStructId,
             e => Error::Other {
-                errno: unsafe{avutil_wasmedge::AVUNERROR(e)},
+                errno: unsafe { avutil_wasmedge::AVUNERROR(e) },
             },
         }
     }
@@ -112,36 +110,36 @@ impl From<i32> for Error {
 enum ErrorCode {
     AVERROR_BSF_NOT_FOUND = compute_error_code(0xF8 as u8 as char, 'B', 'S', 'F'),
     AVERROR_BUG = compute_error_code('B', 'U', 'G', '!'),
-    AVERROR_BUFFER_TOO_SMALL = compute_error_code('B','U','F','S'),
-    AVERROR_DECODER_NOT_FOUND = compute_error_code(0xF8 as u8 as char,'D','E','C'),
-    AVERROR_DEMUXER_NOT_FOUND = compute_error_code(0xF8 as u8 as char,'D','E','M'),
-    AVERROR_ENCODER_NOT_FOUND = compute_error_code(0xF8 as u8 as char,'E','N','C'),
-    AVERROR_EOF = compute_error_code('E','O','F',' '),
-    AVERROR_EXIT = compute_error_code('E','X','I','T'),
-    AVERROR_EXTERNAL = compute_error_code('E','X','T',' '),
-    AVERROR_FILTER_NOT_FOUND = compute_error_code(0xF8 as u8 as char,'F','I','L'),
-    AVERROR_INVALIDDATA = compute_error_code('I','N','D','A'),
-    AVERROR_MUXER_NOT_FOUND = compute_error_code(0xF8 as u8 as char,'M','U','X'),
-    AVERROR_OPTION_NOT_FOUND = compute_error_code(0xF8 as u8 as char,'O','P','T'),
-    AVERROR_PATCHWELCOME = compute_error_code('P','A','W','E'),
-    AVERROR_PROTOCOL_NOT_FOUND = compute_error_code(0xF8 as u8 as char,'P','R','O'),
-    AVERROR_STREAM_NOT_FOUND = compute_error_code(0xF8 as u8 as char,'S','T','R'),
-    AVERROR_BUG2 = compute_error_code('B','U','G',' '),
-    AVERROR_UNKNOWN = compute_error_code('U','N','K','N'),
+    AVERROR_BUFFER_TOO_SMALL = compute_error_code('B', 'U', 'F', 'S'),
+    AVERROR_DECODER_NOT_FOUND = compute_error_code(0xF8 as u8 as char, 'D', 'E', 'C'),
+    AVERROR_DEMUXER_NOT_FOUND = compute_error_code(0xF8 as u8 as char, 'D', 'E', 'M'),
+    AVERROR_ENCODER_NOT_FOUND = compute_error_code(0xF8 as u8 as char, 'E', 'N', 'C'),
+    AVERROR_EOF = compute_error_code('E', 'O', 'F', ' '),
+    AVERROR_EXIT = compute_error_code('E', 'X', 'I', 'T'),
+    AVERROR_EXTERNAL = compute_error_code('E', 'X', 'T', ' '),
+    AVERROR_FILTER_NOT_FOUND = compute_error_code(0xF8 as u8 as char, 'F', 'I', 'L'),
+    AVERROR_INVALIDDATA = compute_error_code('I', 'N', 'D', 'A'),
+    AVERROR_MUXER_NOT_FOUND = compute_error_code(0xF8 as u8 as char, 'M', 'U', 'X'),
+    AVERROR_OPTION_NOT_FOUND = compute_error_code(0xF8 as u8 as char, 'O', 'P', 'T'),
+    AVERROR_PATCHWELCOME = compute_error_code('P', 'A', 'W', 'E'),
+    AVERROR_PROTOCOL_NOT_FOUND = compute_error_code(0xF8 as u8 as char, 'P', 'R', 'O'),
+    AVERROR_STREAM_NOT_FOUND = compute_error_code(0xF8 as u8 as char, 'S', 'T', 'R'),
+    AVERROR_BUG2 = compute_error_code('B', 'U', 'G', ' '),
+    AVERROR_UNKNOWN = compute_error_code('U', 'N', 'K', 'N'),
     AVERROR_EXPERIMENTAL = -0x2bb2afa8,
     AVERROR_INPUT_CHANGED = -0x636e6701,
     AVERROR_OUTPUT_CHANGED = -0x536e7702,
-    AVERROR_HTTP_BAD_REQUEST = compute_error_code(0xF8 as u8 as char,'4','0','0'),
-    AVERROR_HTTP_UNAUTHORIZED = compute_error_code(0xF8 as u8 as char, '4','0','1'),
-    AVERROR_HTTP_FORBIDDEN = compute_error_code(0xF8 as u8 as char, '4','0','3'),
-    AVERROR_HTTP_NOT_FOUND = compute_error_code(0xF8 as u8 as char, '4','0','4'),
-    AVERROR_HTTP_OTHER_4XX = compute_error_code(0xF8 as u8 as char, '4','X','X'),
-    AVERROR_HTTP_SERVER_ERROR = compute_error_code(0xF8 as u8 as char, '5','X','X'),
-    AV_ERROR_MAX_STRING_SIZE  = 64,
+    AVERROR_HTTP_BAD_REQUEST = compute_error_code(0xF8 as u8 as char, '4', '0', '0'),
+    AVERROR_HTTP_UNAUTHORIZED = compute_error_code(0xF8 as u8 as char, '4', '0', '1'),
+    AVERROR_HTTP_FORBIDDEN = compute_error_code(0xF8 as u8 as char, '4', '0', '3'),
+    AVERROR_HTTP_NOT_FOUND = compute_error_code(0xF8 as u8 as char, '4', '0', '4'),
+    AVERROR_HTTP_OTHER_4XX = compute_error_code(0xF8 as u8 as char, '4', 'X', 'X'),
+    AVERROR_HTTP_SERVER_ERROR = compute_error_code(0xF8 as u8 as char, '5', 'X', 'X'),
+    AV_ERROR_MAX_STRING_SIZE = 64,
 
     // WASMEDGE Plugin ERROR CODES BELOW
     WASMEDGE_MISSING_MEMORY = -201,
-    WASMEDGE_NULL_STRUCT_ID = -202
+    WASMEDGE_NULL_STRUCT_ID = -202,
 }
 
 impl From<Error> for i32 {
@@ -176,7 +174,7 @@ impl From<Error> for i32 {
             Error::HttpServerError => ErrorCode::AVERROR_HTTP_SERVER_ERROR as i32,
             Error::WasmEdgeMissingMemory => ErrorCode::WASMEDGE_MISSING_MEMORY as i32,
             Error::WasmEdgeNullStructId => ErrorCode::WASMEDGE_NULL_STRUCT_ID as i32,
-            Error::Other { errno } => unsafe {avutil_wasmedge::AVERROR(errno)},
+            Error::Other { errno } => unsafe { avutil_wasmedge::AVERROR(errno) },
         }
     }
 }
@@ -191,21 +189,19 @@ impl From<Error> for io::Error {
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-
-        f.write_str(
-            match self {
-                // WasmEdge Errors.
-               Error::WasmEdgeMissingMemory => "WasmEdge Missing Memory Frame",
-               Error::WasmEdgeNullStructId => "Struct Pointer missing for given Id",
-               _ => unsafe {
-                   from_utf8_unchecked(
-                   CStr::from_ptr(match self {
-                       Error::Other { errno } => libc::strerror(*errno),
-                       _ => STRINGS[index(self)].as_ptr() as *const i8,
-                   })
-                       .to_bytes(),
-               )
-            }
+        f.write_str(match self {
+            // WasmEdge Errors.
+            Error::WasmEdgeMissingMemory => "WasmEdge Missing Memory Frame",
+            Error::WasmEdgeNullStructId => "Struct Pointer missing for given Id",
+            _ => unsafe {
+                from_utf8_unchecked(
+                    CStr::from_ptr(match self {
+                        Error::Other { errno } => libc::strerror(*errno),
+                        _ => STRINGS[index(self)].as_ptr() as *const i8,
+                    })
+                    .to_bytes(),
+                )
+            },
         })
     }
 }
@@ -222,8 +218,8 @@ impl fmt::Debug for Error {
 }
 
 // Took this function from FFMPEG error.h file.
-const fn compute_error_code(a:char, b:char, c:char, d:char) -> isize {
-    (a as isize | (b as isize) << 8 | (c as isize) << 16 | (d as isize) << 24)  * -1
+const fn compute_error_code(a: char, b: char, c: char, d: char) -> isize {
+    (a as isize | (b as isize) << 8 | (c as isize) << 16 | (d as isize) << 24) * -1
 }
 
 #[inline(always)]
@@ -257,7 +253,7 @@ fn index(error: &Error) -> usize {
         Error::HttpOther4xx => 25,
         Error::HttpServerError => 26,
         Error::Other { errno: _ } => (-1isize) as usize,
-        _ => (-1isize) as usize
+        _ => (-1isize) as usize,
     }
 }
 

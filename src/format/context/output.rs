@@ -1,15 +1,16 @@
-use std::mem::{MaybeUninit};
+use std::mem::MaybeUninit;
 use std::ops::{Deref, DerefMut};
 use std::{mem, ptr};
 
-use super::common::Context;
-use super::destructor;
-use codec::traits;
-use {format, ChapterMut, Dictionary, Error, Rational, StreamMut};
 use avCodecType::AVCodec;
 use avFormatTypes::AVFormatContext;
 use avformat_wasmedge;
+use codec::traits;
 use format::{AVChapter, AVOutputFormat};
+use {format, ChapterMut, Dictionary, Error, Rational, StreamMut};
+
+use super::common::Context;
+use super::destructor;
 
 pub struct Output {
     ptr: AVFormatContext,
@@ -29,14 +30,16 @@ impl Output {
     pub unsafe fn ptr(&self) -> AVFormatContext {
         self.ptr
     }
-
 }
 
 impl Output {
     pub fn format(&self) -> format::Output {
         unsafe {
             let av_output_format = MaybeUninit::<AVOutputFormat>::uninit();
-            avformat_wasmedge::avformatContext_oformat(self.ptr(),av_output_format.as_ptr() as u32);
+            avformat_wasmedge::avformatContext_oformat(
+                self.ptr(),
+                av_output_format.as_ptr() as u32,
+            );
             format::Output::wrap(ptr::read(av_output_format.as_ptr()))
         }
     }
@@ -126,7 +129,10 @@ impl Output {
                 let nb_chapters = ptr::read(nb_chapters.as_ptr());
 
                 if nb_chapters > 0 {
-                    avformat_wasmedge::avformatContext_set_nb_chapters(self.ptr(),nb_chapters as u32);
+                    avformat_wasmedge::avformatContext_set_nb_chapters(
+                        self.ptr(),
+                        nb_chapters as u32,
+                    );
                     let index = avformat_wasmedge::avformatContext_nb_chapters(self.ptr()) - 1;
                     index as usize
                 } else {
@@ -151,7 +157,7 @@ impl Output {
     pub fn set_metadata(&mut self, dictionary: Dictionary) {
         unsafe {
             let dict = dictionary.disown();
-            avformat_wasmedge::avformatContext_set_metadata(self.ptr(),dict);
+            avformat_wasmedge::avformatContext_set_metadata(self.ptr(), dict);
         }
     }
 }
@@ -176,7 +182,6 @@ pub fn dump(ctx: &Output, index: i32, url: Option<&str>) {
             ctx.ptr(),
             index,
             url.unwrap_or_else(|| "").as_ptr(),
-
             url.unwrap_or_else(|| "").len(),
             1,
         );

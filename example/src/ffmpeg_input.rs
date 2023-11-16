@@ -1,11 +1,13 @@
+use std::ops::DerefMut;
+
 use ffmpeg_next::codec::Context;
 use ffmpeg_next::decoder::Opened;
 use ffmpeg_next::format::context::Input;
-use std::ops::DerefMut;
+
 pub struct FFMpegInput<Decoder, Frame>
-    where
-        Decoder: DerefMut<Target = Opened> + AsMut<Context>,
-        Frame: DerefMut<Target = ffmpeg_next::frame::Frame>,
+where
+    Decoder: DerefMut<Target = Opened> + AsMut<Context>,
+    Frame: DerefMut<Target = ffmpeg_next::frame::Frame>,
 {
     input: Input,
     pub decoder: Decoder,
@@ -48,9 +50,9 @@ impl_new_func!(Video, Video, video, Video);
 impl_new_func!(Audio, Audio, audio, Audio);
 
 impl<Decoder, Frame> FFMpegInput<Decoder, Frame>
-    where
-        Decoder: DerefMut<Target = Opened> + AsMut<Context>,
-        Frame: DerefMut<Target = ffmpeg_next::frame::Frame>,
+where
+    Decoder: DerefMut<Target = Opened> + AsMut<Context>,
+    Frame: DerefMut<Target = ffmpeg_next::frame::Frame>,
 {
     const RESOURCE_TEMPORARILY_UNAVAILABLE: ffmpeg_next::Error = ffmpeg_next::Error::Other {
         errno: ffmpeg_next::util::error::EAGAIN,

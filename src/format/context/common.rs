@@ -1,12 +1,14 @@
-use std::{fmt, ptr};
 use std::mem;
 use std::mem::MaybeUninit;
 use std::rc::Rc;
-use super::destructor::{self, Destructor};
-use format::types::AVFormatContext;
-use { media, Chapter, ChapterMut, DictionaryRef, Stream, StreamMut };
-use avformat_wasmedge;
+use std::{fmt, ptr};
+
 use avUtilTypes::AVDictionary;
+use avformat_wasmedge;
+use format::types::AVFormatContext;
+use {media, Chapter, ChapterMut, DictionaryRef, Stream, StreamMut};
+
+use super::destructor::{self, Destructor};
 
 pub struct Context {
     ptr: AVFormatContext,
@@ -35,9 +37,7 @@ impl Context {
 impl Context {
     #[inline]
     pub fn nb_streams(&self) -> u32 {
-        unsafe {
-            avformat_wasmedge::avformatContext_nb_streams(self.ptr()) as u32
-        }
+        unsafe { avformat_wasmedge::avformatContext_nb_streams(self.ptr()) as u32 }
     }
 
     pub fn stream<'a, 'b>(&'a self, index: usize) -> Option<Stream<'b>>
@@ -75,22 +75,16 @@ impl Context {
     }
 
     pub fn bit_rate(&self) -> i64 {
-        unsafe {
-            avformat_wasmedge::avformatContext_bit_rate(self.ptr())
-        }
+        unsafe { avformat_wasmedge::avformatContext_bit_rate(self.ptr()) }
     }
 
     pub fn duration(&self) -> i64 {
-        unsafe {
-            avformat_wasmedge::avformatContext_duration(self.ptr())
-        }
+        unsafe { avformat_wasmedge::avformatContext_duration(self.ptr()) }
     }
 
     #[inline]
     pub fn nb_chapters(&self) -> u32 {
-        unsafe {
-            avformat_wasmedge::avformatContext_nb_chapters(self.ptr())
-        }
+        unsafe { avformat_wasmedge::avformatContext_nb_chapters(self.ptr()) }
     }
 
     pub fn chapter<'a, 'b>(&'a self, index: usize) -> Option<Chapter<'b>>
@@ -130,7 +124,7 @@ impl Context {
     pub fn metadata(&self) -> DictionaryRef {
         unsafe {
             let av_dictionary = MaybeUninit::<AVDictionary>::uninit().as_ptr();
-            avformat_wasmedge::avformatContext_metadata(self.ptr(),av_dictionary as u32);
+            avformat_wasmedge::avformatContext_metadata(self.ptr(), av_dictionary as u32);
             DictionaryRef::wrap(ptr::read(av_dictionary))
         }
     }
@@ -228,11 +222,9 @@ impl<'a> StreamIter<'a> {
     where
         'a: 'b,
     {
-        unsafe {
-            Best::new(self.context).best(kind)
-        }
+        unsafe { Best::new(self.context).best(kind) }
     }
- }
+}
 
 impl<'a> Iterator for StreamIter<'a> {
     type Item = Stream<'a>;
@@ -323,7 +315,6 @@ impl<'a> Iterator for ChapterIter<'a> {
 
     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
         unsafe {
-
             let nb_chapters = avformat_wasmedge::avformatContext_nb_chapters(self.context.ptr());
             if self.current >= nb_chapters {
                 return None;
@@ -337,7 +328,6 @@ impl<'a> Iterator for ChapterIter<'a> {
 
     fn size_hint(&self) -> (usize, Option<usize>) {
         unsafe {
-
             let nb_chapters = avformat_wasmedge::avformatContext_nb_chapters(self.context.ptr());
             let length = nb_chapters as usize;
 
@@ -370,7 +360,6 @@ impl<'a> Iterator for ChapterIterMut<'a> {
 
     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
         unsafe {
-
             let nb_chapters = avformat_wasmedge::avformatContext_nb_chapters(self.context.ptr());
             if self.current >= nb_chapters {
                 return None;

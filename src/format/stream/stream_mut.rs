@@ -1,12 +1,13 @@
 use std::mem;
 use std::ops::Deref;
 
-use super::Stream;
+use avFormatTypes::AVFormatContext;
+use avcodec_wasmedge;
+use avformat_wasmedge;
 use format::context::common::Context;
 use {codec, Dictionary, Rational};
-use avFormatTypes::AVFormatContext;
-use avformat_wasmedge;
-use avcodec_wasmedge;
+
+use super::Stream;
 
 pub struct StreamMut<'a> {
     context: &'a mut Context,
@@ -34,21 +35,36 @@ impl<'a> StreamMut<'a> {
     pub fn set_time_base<R: Into<Rational>>(&mut self, value: R) {
         unsafe {
             let rational = value.into();
-            avformat_wasmedge::avStream_set_timebase(rational.0,rational.1,self.ptr(),self.index as u32);
+            avformat_wasmedge::avStream_set_timebase(
+                rational.0,
+                rational.1,
+                self.ptr(),
+                self.index as u32,
+            );
         }
     }
 
     pub fn set_rate<R: Into<Rational>>(&mut self, value: R) {
         unsafe {
             let rational = value.into();
-            avformat_wasmedge::avStream_set_r_frame_rate(rational.0,rational.1,self.ptr(),self.index as u32);
+            avformat_wasmedge::avStream_set_r_frame_rate(
+                rational.0,
+                rational.1,
+                self.ptr(),
+                self.index as u32,
+            );
         }
     }
 
     pub fn set_avg_frame_rate<R: Into<Rational>>(&mut self, value: R) {
         unsafe {
             let rational = value.into();
-            avformat_wasmedge::avStream_set_avg_frame_rate(rational.0,rational.1,self.ptr(),self.index as u32);
+            avformat_wasmedge::avStream_set_avg_frame_rate(
+                rational.0,
+                rational.1,
+                self.ptr(),
+                self.index as u32,
+            );
         }
     }
 
@@ -56,7 +72,11 @@ impl<'a> StreamMut<'a> {
         let parameters = parameters.into();
 
         unsafe {
-            avcodec_wasmedge::avcodec_parameters_copy(self.ptr(), parameters.ptr(),self.index as u32);
+            avcodec_wasmedge::avcodec_parameters_copy(
+                self.ptr(),
+                parameters.ptr(),
+                self.index as u32,
+            );
         }
     }
 
@@ -64,7 +84,7 @@ impl<'a> StreamMut<'a> {
         unsafe {
             let metadata = metadata.disown();
 
-            avformat_wasmedge::avStream_set_metadata(self.ptr(),self.index as u32,metadata);
+            avformat_wasmedge::avStream_set_metadata(self.ptr(), self.index as u32, metadata);
         }
     }
 }

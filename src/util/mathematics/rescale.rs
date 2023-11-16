@@ -1,5 +1,5 @@
-use {Rational, Rounding};
 use avutil_wasmedge;
+use {Rational, Rounding};
 
 pub const TIME_BASE: Rational = Rational(1, 1000000);
 
@@ -30,7 +30,7 @@ impl<T: Into<i64> + Clone> Rescale for T {
                 src_rational.numerator(),
                 src_rational.denominator(),
                 dest_rational.numerator(),
-               dest_rational.denominator()
+                dest_rational.denominator(),
             )
         }
     }
@@ -41,7 +41,6 @@ impl<T: Into<i64> + Clone> Rescale for T {
         D: Into<Rational>,
     {
         unsafe {
-
             let src_rational = source.into();
             let dest_rational = destination.into();
 

@@ -1,5 +1,10 @@
-pub mod flag;
+use avfilter_wasmedge;
+
+pub use self::context::{Context, Sink, Source};
 pub use self::flag::Flags;
+pub use self::graph::Graph;
+
+pub mod flag;
 
 // pub mod pad;
 // pub use self::pad::Pad;
@@ -8,12 +13,8 @@ pub use self::flag::Flags;
 // pub use self::filter::Filter;
 
 pub mod context;
-pub use self::context::{Context, Sink, Source};
 
 pub mod graph;
-pub use self::graph::Graph;
-
-use avfilter_wasmedge;
 
 pub mod types;
 // #[cfg(not(feature = "ffmpeg_5_0"))]
@@ -37,16 +38,14 @@ pub mod types;
 // }
 
 pub fn version() -> u32 {
-    unsafe {
-        avfilter_wasmedge::avfilter_version() as u32
-    }
+    unsafe { avfilter_wasmedge::avfilter_version() as u32 }
 }
 
 pub fn configuration() -> String {
     unsafe {
         let config_len = avfilter_wasmedge::avfilter_configuration_length() as usize;
-        let config = vec![0u8;config_len];
-        avfilter_wasmedge::avfilter_configuration(config.as_ptr(),config_len);
+        let config = vec![0u8; config_len];
+        avfilter_wasmedge::avfilter_configuration(config.as_ptr(), config_len);
         String::from_utf8_unchecked(config)
     }
 }
@@ -54,8 +53,8 @@ pub fn configuration() -> String {
 pub fn license() -> String {
     unsafe {
         let license_len = avfilter_wasmedge::avfilter_license_length() as usize;
-        let license = vec![0u8;license_len];
-        avfilter_wasmedge::avfilter_license(license.as_ptr(),license_len);
+        let license = vec![0u8; license_len];
+        avfilter_wasmedge::avfilter_license(license.as_ptr(), license_len);
         String::from_utf8_unchecked(license)
     }
 }

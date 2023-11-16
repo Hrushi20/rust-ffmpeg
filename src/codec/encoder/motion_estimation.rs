@@ -1,4 +1,3 @@
-
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum MotionEstimation {
     Zero,

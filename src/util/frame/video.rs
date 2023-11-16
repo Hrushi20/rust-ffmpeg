@@ -1,16 +1,17 @@
+use std::mem::MaybeUninit;
 use std::ops::{Deref, DerefMut};
 use std::{ptr, slice};
-use std::mem::MaybeUninit;
 
-use super::Frame;
+use avUtilTypes::AVFrame;
+use avutil_wasmedge;
 use color;
-use avUtilTypes::{AVFrame};
 use picture;
 use util::chroma;
 use util::format;
-use Rational;
 use util::format::Pixel;
-use avutil_wasmedge;
+use Rational;
+
+use super::Frame;
 
 #[derive(PartialEq, Eq)]
 pub struct Video(Frame);
@@ -27,7 +28,7 @@ impl Video {
         self.set_width(width);
         self.set_height(height);
 
-        avutil_wasmedge::av_frame_get_buffer(self.ptr(),32);
+        avutil_wasmedge::av_frame_get_buffer(self.ptr(), 32);
     }
 }
 
@@ -53,7 +54,7 @@ impl Video {
             let format = avutil_wasmedge::av_frame_video_format(self.ptr());
             if format == -1 {
                 Pixel::None
-            }else{
+            } else {
                 Pixel::from(format as u32)
             }
         }
@@ -62,7 +63,7 @@ impl Video {
     #[inline]
     pub fn set_format(&self, value: format::Pixel) {
         unsafe {
-            avutil_wasmedge::av_frame_set_video_format(self.ptr(),value.into());
+            avutil_wasmedge::av_frame_set_video_format(self.ptr(), value.into());
         }
     }
 
@@ -77,29 +78,23 @@ impl Video {
     #[inline]
     pub fn set_kind(&mut self, value: picture::Type) {
         unsafe {
-            avutil_wasmedge::av_frame_set_pict_type(self.ptr(),value.into());
+            avutil_wasmedge::av_frame_set_pict_type(self.ptr(), value.into());
         }
     }
 
     #[inline]
     pub fn is_interlaced(&self) -> bool {
-        unsafe {
-            avutil_wasmedge::av_frame_interlaced_frame(self.ptr()) != 0
-        }
+        unsafe { avutil_wasmedge::av_frame_interlaced_frame(self.ptr()) != 0 }
     }
 
     #[inline]
     pub fn is_top_first(&self) -> bool {
-        unsafe {
-            avutil_wasmedge::av_frame_top_field_first(self.ptr()) != 0
-        }
+        unsafe { avutil_wasmedge::av_frame_top_field_first(self.ptr()) != 0 }
     }
 
     #[inline]
     pub fn has_palette_changed(&self) -> bool {
-        unsafe {
-            avutil_wasmedge::av_frame_palette_has_changed(self.ptr()) != 0
-        }
+        unsafe { avutil_wasmedge::av_frame_palette_has_changed(self.ptr()) != 0 }
     }
 
     #[inline]
@@ -113,7 +108,7 @@ impl Video {
     #[inline]
     pub fn set_width(&self, value: u32) {
         unsafe {
-            avutil_wasmedge::av_frame_set_width(self.ptr(),value);
+            avutil_wasmedge::av_frame_set_width(self.ptr(), value);
         }
     }
 
@@ -128,7 +123,7 @@ impl Video {
     #[inline]
     pub fn set_height(&self, value: u32) {
         unsafe {
-            avutil_wasmedge::av_frame_set_height(self.ptr(),value);
+            avutil_wasmedge::av_frame_set_height(self.ptr(), value);
         }
     }
 
@@ -143,7 +138,7 @@ impl Video {
     #[inline]
     pub fn set_color_space(&mut self, value: color::Space) {
         unsafe {
-            avutil_wasmedge::av_frame_set_colorspace(self.ptr(),value.into());
+            avutil_wasmedge::av_frame_set_colorspace(self.ptr(), value.into());
         }
     }
 
@@ -158,7 +153,7 @@ impl Video {
     #[inline]
     pub fn set_color_range(&mut self, value: color::Range) {
         unsafe {
-            avutil_wasmedge::av_frame_set_color_range(self.ptr(),value.into());
+            avutil_wasmedge::av_frame_set_color_range(self.ptr(), value.into());
         }
     }
 
@@ -173,7 +168,7 @@ impl Video {
     #[inline]
     pub fn set_color_primaries(&mut self, value: color::Primaries) {
         unsafe {
-            avutil_wasmedge::av_frame_set_color_primaries(self.ptr(),value.into());
+            avutil_wasmedge::av_frame_set_color_primaries(self.ptr(), value.into());
         }
     }
 
@@ -188,7 +183,7 @@ impl Video {
     #[inline]
     pub fn set_color_transfer_characteristic(&mut self, value: color::TransferCharacteristic) {
         unsafe {
-            avutil_wasmedge::av_frame_set_color_trc(self.ptr(),value.into());
+            avutil_wasmedge::av_frame_set_color_trc(self.ptr(), value.into());
         }
     }
 
@@ -205,25 +200,25 @@ impl Video {
         unsafe {
             let num = MaybeUninit::<i32>::uninit();
             let den = MaybeUninit::<i32>::uninit();
-            avutil_wasmedge::av_frame_sample_aspect_ratio(self.ptr(),num.as_ptr() as u32,den.as_ptr() as u32);
+            avutil_wasmedge::av_frame_sample_aspect_ratio(
+                self.ptr(),
+                num.as_ptr() as u32,
+                den.as_ptr() as u32,
+            );
             let num = ptr::read(num.as_ptr());
             let den = ptr::read(den.as_ptr());
-            Rational::new(num,den)
+            Rational::new(num, den)
         }
     }
 
     #[inline]
     pub fn coded_number(&self) -> usize {
-        unsafe {
-            avutil_wasmedge::av_frame_coded_picture_number(self.ptr()) as usize
-        }
+        unsafe { avutil_wasmedge::av_frame_coded_picture_number(self.ptr()) as usize }
     }
 
     #[inline]
     pub fn display_number(&self) -> usize {
-        unsafe {
-            avutil_wasmedge::av_frame_display_picture_number(self.ptr()) as usize
-        }
+        unsafe { avutil_wasmedge::av_frame_display_picture_number(self.ptr()) as usize }
     }
 
     #[inline]
@@ -240,17 +235,15 @@ impl Video {
             panic!("out of bounds");
         }
 
-        unsafe {
-            avutil_wasmedge::av_frame_linesize(self.ptr(),index as u32) as usize
-        }
+        unsafe { avutil_wasmedge::av_frame_linesize(self.ptr(), index as u32) as usize }
     }
 
     #[inline]
     pub fn planes(&self) -> usize {
         for i in 0..8 {
             unsafe {
-                if avutil_wasmedge::av_frame_linesize(self.ptr(),i) == 0 {
-                     return i as usize;
+                if avutil_wasmedge::av_frame_linesize(self.ptr(), i) == 0 {
+                    return i as usize;
                 }
             }
         }
@@ -340,12 +333,9 @@ impl Video {
 
         unsafe {
             let size = self.stride(index) * self.plane_height(index) as usize;
-            let data = vec![0;size];
-            avutil_wasmedge::av_frame_data(self.ptr(),data.as_ptr(),data.len(),index as u32);
-            slice::from_raw_parts(
-                data.as_ptr(),
-                size
-            )
+            let data = vec![0; size];
+            avutil_wasmedge::av_frame_data(self.ptr(), data.as_ptr(), data.len(), index as u32);
+            slice::from_raw_parts(data.as_ptr(), size)
         }
     }
 

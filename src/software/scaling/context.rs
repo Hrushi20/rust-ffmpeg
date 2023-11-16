@@ -1,11 +1,12 @@
 use std::mem::MaybeUninit;
 use std::{mem, ptr};
 
-use super::Flags;
+use software::scaling::types::{SwsContext, SwsFilter};
+use swscale_wasmedge;
 use util::format;
 use {frame, Error};
-use swscale_wasmedge;
-use software::scaling::types::{SwsContext, SwsFilter};
+
+use super::Flags;
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub struct Definition {
@@ -42,7 +43,7 @@ impl Context {
             let sws_context = MaybeUninit::<SwsContext>::uninit();
             swscale_wasmedge::sws_getContext(
                 sws_context.as_ptr() as u32,
-                src_w ,
+                src_w,
                 src_h,
                 src_format.into(),
                 dst_w,
@@ -102,8 +103,8 @@ impl Context {
         unsafe {
             let sws_cached_context = MaybeUninit::<SwsContext>::uninit();
 
-           swscale_wasmedge::sws_getCachedContext(
-               sws_cached_context.as_ptr() as u32,
+            swscale_wasmedge::sws_getCachedContext(
+                sws_cached_context.as_ptr() as u32,
                 self.ptr(),
                 src_w,
                 src_h,
@@ -157,7 +158,7 @@ impl Context {
                 input.ptr(),
                 0,
                 self.input.height as i32,
-                output.ptr()
+                output.ptr(),
             );
         }
 

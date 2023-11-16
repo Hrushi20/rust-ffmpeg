@@ -1,8 +1,10 @@
 use std::mem::MaybeUninit;
 use std::ptr;
+
 use software::scaling::types::{SwsFilter, SwsVector};
-use super::Vector;
 use swscale_wasmedge;
+
+use super::Vector;
 
 pub struct Filter {
     ptr: SwsFilter,
@@ -33,10 +35,10 @@ impl Filter {
                 chroma_sharpen,
                 chroma_h_shift,
                 chroma_v_shift,
-                0
+                0,
             );
             Filter {
-                ptr: ptr::read(sws_filter.as_ptr())
+                ptr: ptr::read(sws_filter.as_ptr()),
             }
         }
     }
@@ -48,7 +50,7 @@ impl Filter {
     pub fn luma_horizontal(&self) -> Vector {
         unsafe {
             let luma_h = MaybeUninit::<SwsVector>::uninit();
-            swscale_wasmedge::sws_getLumaH(self.ptr(),luma_h.as_ptr() as u32);
+            swscale_wasmedge::sws_getLumaH(self.ptr(), luma_h.as_ptr() as u32);
             Vector::wrap(ptr::read(luma_h.as_ptr()))
         }
     }
@@ -60,7 +62,7 @@ impl Filter {
     pub fn luma_vertical(&self) -> Vector {
         unsafe {
             let luma_v = MaybeUninit::<SwsVector>::uninit();
-            swscale_wasmedge::sws_getLumaV(self.ptr(),luma_v.as_ptr() as u32);
+            swscale_wasmedge::sws_getLumaV(self.ptr(), luma_v.as_ptr() as u32);
             Vector::wrap(ptr::read(luma_v.as_ptr()))
         }
     }
@@ -72,7 +74,7 @@ impl Filter {
     pub fn chroma_horizontal(&self) -> Vector {
         unsafe {
             let chroma_h = MaybeUninit::<SwsVector>::uninit();
-            swscale_wasmedge::sws_getChromaH(self.ptr(),chroma_h.as_ptr() as u32);
+            swscale_wasmedge::sws_getChromaH(self.ptr(), chroma_h.as_ptr() as u32);
             Vector::wrap(ptr::read(chroma_h.as_ptr()))
         }
     }
@@ -84,7 +86,7 @@ impl Filter {
     pub fn chroma_vertical(&self) -> Vector {
         unsafe {
             let chroma_v = MaybeUninit::<SwsVector>::uninit();
-            swscale_wasmedge::sws_getChromaV(self.ptr(),chroma_v.as_ptr() as u32);
+            swscale_wasmedge::sws_getChromaV(self.ptr(), chroma_v.as_ptr() as u32);
             Vector::wrap(ptr::read(chroma_v.as_ptr()))
         }
     }

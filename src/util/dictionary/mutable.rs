@@ -1,7 +1,8 @@
-use std::{fmt, ptr};
 use std::marker::PhantomData;
 use std::mem::MaybeUninit;
 use std::ops::Deref;
+use std::{fmt, ptr};
+
 use avUtilTypes::AVDictionary;
 use avutil_wasmedge;
 
@@ -31,9 +32,16 @@ impl<'a> Ref<'a> {
 impl<'a> Ref<'a> {
     pub fn set(&mut self, key: &str, value: &str) {
         unsafe {
-
             let ptr = MaybeUninit::<AVDictionary>::new(self.ptr());
-            if avutil_wasmedge::av_dict_set(ptr.as_ptr() as u32, key.as_ptr(),key.len(),value.as_ptr(),value.len(), 0) < 0 {
+            if avutil_wasmedge::av_dict_set(
+                ptr.as_ptr() as u32,
+                key.as_ptr(),
+                key.len(),
+                value.as_ptr(),
+                value.len(),
+                0,
+            ) < 0
+            {
                 panic!("out of memory");
             }
 

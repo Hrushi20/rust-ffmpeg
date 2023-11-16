@@ -1,13 +1,14 @@
+use std::mem::MaybeUninit;
 use std::{mem, ptr};
 
-use super::Delay;
-use std::mem::MaybeUninit;
-use util::format;
-use Dictionary;
-use {frame, ChannelLayout, Error};
 use avUtilTypes::AVDictionary;
 use software::resampling::types::SwrContext;
 use swresample_wasmedge;
+use util::format;
+use Dictionary;
+use {frame, ChannelLayout, Error};
+
+use super::Delay;
 
 #[derive(Eq, PartialEq, Copy, Clone)]
 pub struct Definition {
@@ -79,7 +80,7 @@ impl Context {
 
             let swr_context = ptr::read(swr_context.as_ptr());
             let opts = options.disown();
-            let res = swresample_wasmedge::av_opt_set_dict(swr_context,opts);
+            let res = swresample_wasmedge::av_opt_set_dict(swr_context, opts);
             Dictionary::own(opts);
 
             if res != 0 {
@@ -125,7 +126,7 @@ impl Context {
     /// Get the remaining delay.
     pub fn delay(&self) -> Option<Delay> {
         unsafe {
-            match swresample_wasmedge::swr_get_delay(self.ptr(),1) {
+            match swresample_wasmedge::swr_get_delay(self.ptr(), 1) {
                 0 => None,
                 _ => Some(Delay::from(self)),
             }

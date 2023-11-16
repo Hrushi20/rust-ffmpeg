@@ -1,4 +1,3 @@
-
 bitflags! {
     pub struct Flags: i32 {
         const NO_FILE       = 0x0001;

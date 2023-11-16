@@ -1,11 +1,12 @@
-pub mod flag;
 pub use self::flag::Flags;
+pub use self::input::Input;
+pub use self::output::Output;
+
+pub mod flag;
 
 mod input;
-pub use self::input::Input;
 
 mod output;
-pub use self::output::Output;
 
 //
 // #[cfg(not(feature = "ffmpeg_5_0"))]

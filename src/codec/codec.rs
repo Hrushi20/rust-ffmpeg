@@ -1,8 +1,9 @@
-use super::{Audio,Capabilities,Id,Video};
-// use super::{Audio, Capabilities, Id, Profile, Video};
-use {media, Error};
-use avCodecType::AVCodec;
 use avcodec_wasmedge;
+use {media, Error};
+// use super::{Audio, Capabilities, Id, Profile, Video};
+use avCodecType::AVCodec;
+
+use super::{Audio, Capabilities, Id, Video};
 
 #[derive(PartialEq, Eq, Copy, Clone)]
 pub struct Codec {
@@ -10,6 +11,7 @@ pub struct Codec {
 }
 
 unsafe impl Send for Codec {}
+
 unsafe impl Sync for Codec {}
 
 impl Codec {
@@ -34,8 +36,8 @@ impl Codec {
     pub fn name(&self) -> String {
         unsafe {
             let name_len = avcodec_wasmedge::avcodec_get_name_len(self.ptr()) as usize;
-            let name = vec![0u8;name_len];
-            avcodec_wasmedge::avcodec_get_name(self.ptr(),name.as_ptr(),name.len());
+            let name = vec![0u8; name_len];
+            avcodec_wasmedge::avcodec_get_name(self.ptr(), name.as_ptr(), name.len());
 
             String::from_utf8_unchecked(name)
         }
@@ -47,8 +49,12 @@ impl Codec {
             if long_name_len == 0 {
                 String::from("")
             } else {
-                let long_name = vec![0u8;long_name_len];
-                avcodec_wasmedge::avcodec_get_long_name(self.ptr(),long_name.as_ptr(),long_name_len);
+                let long_name = vec![0u8; long_name_len];
+                avcodec_wasmedge::avcodec_get_long_name(
+                    self.ptr(),
+                    long_name.as_ptr(),
+                    long_name_len,
+                );
                 String::from_utf8_unchecked(long_name)
             }
         }
@@ -97,9 +103,7 @@ impl Codec {
     }
 
     pub fn max_lowres(&self) -> i32 {
-        unsafe {
-            avcodec_wasmedge::avcodec_max_lowres(self.ptr())
-        }
+        unsafe { avcodec_wasmedge::avcodec_max_lowres(self.ptr()) }
     }
 
     pub fn capabilities(&self) -> Capabilities {

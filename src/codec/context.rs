@@ -1,15 +1,16 @@
 use std::any::Any;
 use std::mem::MaybeUninit;
-use std::{mem, ptr};
 use std::rc::Rc;
+use std::{mem, ptr};
+
+use avCodecType::{AVCodec, AVCodecContext};
+use avcodec_wasmedge;
+use media;
+use {Codec, Error};
 
 use super::decoder::Decoder;
 use super::encoder::Encoder;
 use super::{threading, Compliance, Debug, Flags, Id, Parameters};
-use media;
-use {Codec,Error};
-use avCodecType::{AVCodec, AVCodecContext};
-use avcodec_wasmedge;
 
 pub struct Context {
     ptr: AVCodecContext,
@@ -26,7 +27,6 @@ impl Context {
     pub unsafe fn ptr(&self) -> AVCodecContext {
         self.ptr
     }
-
 }
 
 impl Context {
@@ -65,7 +65,7 @@ impl Context {
     pub fn codec(&self) -> Option<Codec> {
         unsafe {
             let codec = MaybeUninit::<AVCodec>::uninit();
-            let res = avcodec_wasmedge::avcodeccontext_codec(self.ptr(),codec.as_ptr() as u32);
+            let res = avcodec_wasmedge::avcodeccontext_codec(self.ptr(), codec.as_ptr() as u32);
             if res == -1 {
                 None
             } else {
@@ -75,14 +75,12 @@ impl Context {
     }
 
     pub fn medium(&self) -> media::Type {
-        unsafe {
-            media::Type::from(avcodec_wasmedge::avcodeccontext_codec_type(self.ptr()))
-        }
+        unsafe { media::Type::from(avcodec_wasmedge::avcodeccontext_codec_type(self.ptr())) }
     }
 
     pub fn set_flags(&mut self, value: Flags) {
         unsafe {
-            avcodec_wasmedge::avcodeccontext_set_flags(self.ptr(),value.bits() as i32);
+            avcodec_wasmedge::avcodeccontext_set_flags(self.ptr(), value.bits() as i32);
         }
     }
 
@@ -95,21 +93,21 @@ impl Context {
 
     pub fn compliance(&mut self, value: Compliance) {
         unsafe {
-            avcodec_wasmedge::avcodeccontext_set_strict_std_compliance(self.ptr(),value.into());
+            avcodec_wasmedge::avcodeccontext_set_strict_std_compliance(self.ptr(), value.into());
         }
     }
 
     pub fn debug(&mut self, value: Debug) {
         unsafe {
-            avcodec_wasmedge::avcodeccontext_set_debug(self.ptr(),value.bits());
+            avcodec_wasmedge::avcodeccontext_set_debug(self.ptr(), value.bits());
         }
     }
 
     pub fn set_threading(&mut self, config: threading::Config) {
         unsafe {
-            let thread_type:i32 = config.kind.into();
-            avcodec_wasmedge::avcodeccontext_set_thread_count(self.ptr(),config.count as i32);
-            avcodec_wasmedge::avcodeccontext_set_thread_type(self.ptr(),thread_type);
+            let thread_type: i32 = config.kind.into();
+            avcodec_wasmedge::avcodeccontext_set_thread_count(self.ptr(), config.count as i32);
+            avcodec_wasmedge::avcodeccontext_set_thread_type(self.ptr(), thread_type);
             // #[cfg(not(feature = "ffmpeg_6_0"))]
             // {
             //     (*self.as_mut_ptr()).thread_safe_callbacks = if config.safe { 1 } else { 0 };
@@ -119,7 +117,8 @@ impl Context {
 
     pub fn threading(&self) -> threading::Config {
         unsafe {
-            let active_thread_type = avcodec_wasmedge::avcodeccontext_active_thread_type(self.ptr());
+            let active_thread_type =
+                avcodec_wasmedge::avcodeccontext_active_thread_type(self.ptr());
             let thread_count = avcodec_wasmedge::avcodeccontext_thread_count(self.ptr());
 
             threading::Config {

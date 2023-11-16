@@ -1,9 +1,10 @@
 use std::marker::PhantomData;
 use std::slice;
 
-use super::Packet;
 use ffi::AVPacketSideDataType::*;
 use ffi::*;
+
+use super::Packet;
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub enum Type {

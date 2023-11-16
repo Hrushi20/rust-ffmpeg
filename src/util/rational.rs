@@ -1,7 +1,7 @@
 use std::cmp::Ordering;
-use std::{fmt, ptr};
 use std::mem::MaybeUninit;
 use std::ops::{Add, Div, Mul, Sub};
+use std::{fmt, ptr};
 
 use avutil_wasmedge;
 
@@ -61,10 +61,15 @@ impl Rational {
         unsafe {
             let num = MaybeUninit::<i32>::uninit();
             let den = MaybeUninit::<i32>::uninit();
-            avutil_wasmedge::av_inv_q(self.numerator(),self.denominator(),num.as_ptr() as u32,den.as_ptr() as u32);
+            avutil_wasmedge::av_inv_q(
+                self.numerator(),
+                self.denominator(),
+                num.as_ptr() as u32,
+                den.as_ptr() as u32,
+            );
             let num = ptr::read(num.as_ptr());
             let den = ptr::read(den.as_ptr());
-            Rational::new(num,den)
+            Rational::new(num, den)
         }
     }
 }
@@ -92,10 +97,10 @@ impl From<f64> for Rational {
         unsafe {
             let num = MaybeUninit::<i32>::uninit();
             let den = MaybeUninit::<i32>::uninit();
-            avutil_wasmedge::av_d2q(value,i32::MAX,num.as_ptr() as u32,den.as_ptr() as u32);
+            avutil_wasmedge::av_d2q(value, i32::MAX, num.as_ptr() as u32, den.as_ptr() as u32);
             let num = ptr::read(num.as_ptr());
             let den = ptr::read(den.as_ptr());
-            Rational::new(num,den)
+            Rational::new(num, den)
         }
     }
 }
@@ -103,18 +108,14 @@ impl From<f64> for Rational {
 impl From<Rational> for f64 {
     #[inline]
     fn from(value: Rational) -> f64 {
-        unsafe {
-            avutil_wasmedge::av_q2d(value.numerator(),value.denominator())
-        }
+        unsafe { avutil_wasmedge::av_q2d(value.numerator(), value.denominator()) }
     }
 }
 
 impl From<Rational> for u32 {
     #[inline]
     fn from(value: Rational) -> u32 {
-        unsafe {
-            avutil_wasmedge::av_q2intfloat(value.numerator(),value.denominator())
-        }
+        unsafe { avutil_wasmedge::av_q2intfloat(value.numerator(), value.denominator()) }
     }
 }
 
@@ -147,7 +148,12 @@ impl PartialOrd for Rational {
     #[inline]
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         unsafe {
-            match avutil_wasmedge::av_cmp_q(self.numerator(),self.denominator(), other.numerator(),other.denominator()) {
+            match avutil_wasmedge::av_cmp_q(
+                self.numerator(),
+                self.denominator(),
+                other.numerator(),
+                other.denominator(),
+            ) {
                 0 => Some(Ordering::Equal),
                 1 => Some(Ordering::Greater),
                 -1 => Some(Ordering::Less),
@@ -164,13 +170,19 @@ impl Add for Rational {
     #[inline]
     fn add(self, other: Rational) -> Rational {
         unsafe {
-
             let num = MaybeUninit::<i32>::uninit();
             let den = MaybeUninit::<i32>::uninit();
-            avutil_wasmedge::av_add_q(self.numerator(),self.denominator(),other.numerator(),other.denominator(),num.as_ptr() as u32,den.as_ptr() as u32);
+            avutil_wasmedge::av_add_q(
+                self.numerator(),
+                self.denominator(),
+                other.numerator(),
+                other.denominator(),
+                num.as_ptr() as u32,
+                den.as_ptr() as u32,
+            );
             let num = ptr::read(num.as_ptr());
             let den = ptr::read(den.as_ptr());
-            Rational::new(num,den)
+            Rational::new(num, den)
         }
     }
 }
@@ -183,10 +195,17 @@ impl Sub for Rational {
         unsafe {
             let num = MaybeUninit::<i32>::uninit();
             let den = MaybeUninit::<i32>::uninit();
-            avutil_wasmedge::av_sub_q(self.numerator(),self.denominator(),other.numerator(),other.denominator(),num.as_ptr() as u32,den.as_ptr() as u32);
+            avutil_wasmedge::av_sub_q(
+                self.numerator(),
+                self.denominator(),
+                other.numerator(),
+                other.denominator(),
+                num.as_ptr() as u32,
+                den.as_ptr() as u32,
+            );
             let num = ptr::read(num.as_ptr());
             let den = ptr::read(den.as_ptr());
-            Rational::new(num,den)
+            Rational::new(num, den)
         }
     }
 }
@@ -199,11 +218,18 @@ impl Mul for Rational {
         unsafe {
             let num = MaybeUninit::<i32>::uninit();
             let den = MaybeUninit::<i32>::uninit();
-            avutil_wasmedge::av_mul_q(self.numerator(),self.denominator(),other.numerator(),other.denominator(),num.as_ptr() as u32,den.as_ptr() as u32);
+            avutil_wasmedge::av_mul_q(
+                self.numerator(),
+                self.denominator(),
+                other.numerator(),
+                other.denominator(),
+                num.as_ptr() as u32,
+                den.as_ptr() as u32,
+            );
 
             let num = ptr::read(num.as_ptr());
             let den = ptr::read(den.as_ptr());
-            Rational::new(num,den)
+            Rational::new(num, den)
         }
     }
 }
@@ -216,11 +242,18 @@ impl Div for Rational {
         unsafe {
             let num = MaybeUninit::<i32>::uninit();
             let den = MaybeUninit::<i32>::uninit();
-            avutil_wasmedge::av_div_q(self.numerator(),self.denominator(),other.numerator(),other.denominator(),num.as_ptr() as u32,den.as_ptr() as u32);
+            avutil_wasmedge::av_div_q(
+                self.numerator(),
+                self.denominator(),
+                other.numerator(),
+                other.denominator(),
+                num.as_ptr() as u32,
+                den.as_ptr() as u32,
+            );
 
             let num = ptr::read(num.as_ptr());
             let den = ptr::read(den.as_ptr());
-            Rational::new(num,den)
+            Rational::new(num, den)
         }
     }
 }
@@ -244,7 +277,14 @@ impl fmt::Debug for Rational {
 #[inline]
 pub fn nearer(q: Rational, q1: Rational, q2: Rational) -> Ordering {
     unsafe {
-        match avutil_wasmedge::av_nearer_q(q.numerator(),q.denominator(), q1.numerator(),q1.denominator(), q2.numerator(),q2.denominator()) {
+        match avutil_wasmedge::av_nearer_q(
+            q.numerator(),
+            q.denominator(),
+            q1.numerator(),
+            q1.denominator(),
+            q2.numerator(),
+            q2.denominator(),
+        ) {
             1 => Ordering::Greater,
             -1 => Ordering::Less,
             _ => Ordering::Equal,

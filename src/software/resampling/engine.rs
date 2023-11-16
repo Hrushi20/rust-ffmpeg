@@ -13,7 +13,7 @@ impl From<SwrEngine> for Engine {
             i if i == Engine::Software as u32 => Engine::Software,
             i if i == Engine::SoundExchange as u32 => Engine::SoundExchange,
             i if i == 3 => Engine::Software,
-            _ =>  Engine::Software
+            _ => Engine::Software,
         }
     }
 }

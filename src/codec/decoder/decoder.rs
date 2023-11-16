@@ -1,13 +1,14 @@
-use std::ops::{Deref, DerefMut};
-use std::{mem};
+use std::mem;
 use std::mem::MaybeUninit;
+use std::ops::{Deref, DerefMut};
 
-use super::{Audio, Check, Conceal, Opened, Subtitle, Video};
-use codec::{traits, Context};
-use {Dictionary, Discard, Error, Rational};
 use avCodecType::AVCodec;
 use avUtilTypes::AVDictionary;
 use avcodec_wasmedge;
+use codec::{traits, Context};
+use {Dictionary, Discard, Error, Rational};
+
+use super::{Audio, Check, Conceal, Opened, Subtitle, Video};
 
 pub struct Decoder(pub Context);
 
@@ -25,7 +26,6 @@ impl Decoder {
 
     pub fn open_as<D: traits::Decoder>(mut self, codec: D) -> Result<Opened, Error> {
         unsafe {
-
             let av_dictionary = mem::zeroed::<AVDictionary>();
             if let Some(codec) = codec.decoder() {
                 match avcodec_wasmedge::avcodec_open2(self.ptr(), codec.ptr(), av_dictionary) {
@@ -86,31 +86,31 @@ impl Decoder {
 
     pub fn conceal(&mut self, value: Conceal) {
         unsafe {
-            avcodec_wasmedge::avcodeccontext_set_error_concealment(self.ptr(),value.bits());
+            avcodec_wasmedge::avcodeccontext_set_error_concealment(self.ptr(), value.bits());
         }
     }
 
     pub fn check(&mut self, value: Check) {
         unsafe {
-            avcodec_wasmedge::avcodeccontext_set_err_recognition(self.ptr(),value.bits());
+            avcodec_wasmedge::avcodeccontext_set_err_recognition(self.ptr(), value.bits());
         }
     }
 
     pub fn skip_loop_filter(&mut self, value: Discard) {
         unsafe {
-            avcodec_wasmedge::avcodeccontext_set_skip_loop_filter(self.ptr(),value.into());
+            avcodec_wasmedge::avcodeccontext_set_skip_loop_filter(self.ptr(), value.into());
         }
     }
 
     pub fn skip_idct(&mut self, value: Discard) {
         unsafe {
-            avcodec_wasmedge::avcodeccontext_set_skip_idct(self.ptr(),value.into());
+            avcodec_wasmedge::avcodeccontext_set_skip_idct(self.ptr(), value.into());
         }
     }
 
     pub fn skip_frame(&mut self, value: Discard) {
         unsafe {
-            avcodec_wasmedge::avcodeccontext_set_skip_frame(self.ptr(),value.into());
+            avcodec_wasmedge::avcodeccontext_set_skip_frame(self.ptr(), value.into());
         }
     }
 
@@ -118,8 +118,12 @@ impl Decoder {
         unsafe {
             let num = MaybeUninit::<i32>::uninit();
             let den = MaybeUninit::<i32>::uninit();
-            avcodec_wasmedge::avcodeccontext_time_base(self.ptr() as u32, num.as_ptr() as u32,den.as_ptr() as u32);
-            Rational::new(std::ptr::read(num.as_ptr()),std::ptr::read(den.as_ptr()))
+            avcodec_wasmedge::avcodeccontext_time_base(
+                self.ptr() as u32,
+                num.as_ptr() as u32,
+                den.as_ptr() as u32,
+            );
+            Rational::new(std::ptr::read(num.as_ptr()), std::ptr::read(den.as_ptr()))
         }
     }
 }

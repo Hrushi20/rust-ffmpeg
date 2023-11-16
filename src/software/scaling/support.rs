@@ -1,5 +1,5 @@
-use util::format;
 use swscale_wasmedge;
+use util::format;
 
 pub fn input(format: format::Pixel) -> bool {
     unsafe { swscale_wasmedge::sws_isSupportedInput(format.into()) != 0 }

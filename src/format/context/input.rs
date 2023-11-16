@@ -1,15 +1,16 @@
-use std::{mem, ptr};
 use std::mem::MaybeUninit;
 use std::ops::{Deref, DerefMut};
+use std::{mem, ptr};
+
+use {format, Error, Packet, Stream};
+// #[cfg(not(feature = "ffmpeg_5_0"))]
+// use Codec;
+use avformat_wasmedge;
+use format::types::{AVFormatContext, AVInputFormat};
+use util::range::Range;
 
 use super::common::Context;
 use super::destructor;
-use util::range::Range;
-// #[cfg(not(feature = "ffmpeg_5_0"))]
-// use Codec;
-use {format, Error, Packet, Stream};
-use format::types::{AVFormatContext, AVInputFormat};
-use avformat_wasmedge;
 
 pub struct Input {
     ptr: AVFormatContext,
@@ -29,7 +30,6 @@ impl Input {
     pub unsafe fn ptr(&self) -> AVFormatContext {
         self.ptr
     }
-
 }
 
 impl Input {
@@ -41,7 +41,10 @@ impl Input {
             // way to clear the pointer in C++ Plugin. Need to Pass AVFormatCtxID to AVInputFormat
             // and fetch the functionalities.
             let av_input_format = MaybeUninit::<AVInputFormat>::uninit();
-            avformat_wasmedge::avformatContext_iformat(self.ptr as u32,av_input_format.as_ptr() as u32);
+            avformat_wasmedge::avformatContext_iformat(
+                self.ptr as u32,
+                av_input_format.as_ptr() as u32,
+            );
             format::Input::wrap(ptr::read(av_input_format.as_ptr()))
         }
     }
@@ -99,9 +102,7 @@ impl Input {
     // }
 
     pub fn probe_score(&self) -> i32 {
-        unsafe {
-            avformat_wasmedge::avformatContext_probescope(self.ptr())
-        }
+        unsafe { avformat_wasmedge::avformatContext_probescope(self.ptr()) }
     }
 
     pub fn packets(&mut self) -> PacketIter {
@@ -198,7 +199,6 @@ pub fn dump(ctx: &Input, index: i32, url: Option<&str>) {
             ctx.ptr() as u32,
             index,
             url.unwrap_or_else(|| "").as_ptr(),
-
             url.unwrap_or_else(|| "").len(),
             0,
         );

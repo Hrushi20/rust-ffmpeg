@@ -1,7 +1,6 @@
 //! NOTE: this will be much better once specialization comes
 
 use std::ffi::CString;
-use std::mem;
 
 use util::format;
 use {ChannelLayout, Error, Rational};

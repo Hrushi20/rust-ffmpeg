@@ -1,8 +1,9 @@
-use super::{Context, Flags};
-use util::format;
+use {decoder, frame, Error};
 // #[cfg(not(feature = "ffmpeg_5_0"))]
 // use Picture;
-use {decoder, frame, Error};
+use util::format;
+
+use super::{Context, Flags};
 
 // #[cfg(not(feature = "ffmpeg_5_0"))]
 // impl<'a> Picture<'a> {

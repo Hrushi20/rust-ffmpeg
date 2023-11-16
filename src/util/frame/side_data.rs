@@ -3,10 +3,11 @@ use std::marker::PhantomData;
 use std::slice;
 use std::str::from_utf8_unchecked;
 
-use super::Frame;
 use ffi::AVFrameSideDataType::*;
 use ffi::*;
 use DictionaryRef;
+
+use super::Frame;
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub enum Type {

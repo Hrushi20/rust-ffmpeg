@@ -1,12 +1,13 @@
-use std::{mem, ptr};
 use std::mem::MaybeUninit;
 use std::ops::Deref;
+use std::{mem, ptr};
 
-use super::Chapter;
+use avUtilTypes::AVDictionary;
+use avformat_wasmedge;
 use format::context::common::Context;
 use {Dictionary, DictionaryMut, Rational};
-use avformat_wasmedge;
-use avUtilTypes::AVDictionary;
+
+use super::Chapter;
 
 // WARNING: index refers to the offset in the chapters array (starting from 0)
 // it is not necessarly equal to the id (which may start at 1)
@@ -35,26 +36,31 @@ impl<'a> ChapterMut<'a> {
 impl<'a> ChapterMut<'a> {
     pub fn set_id(&mut self, value: i64) {
         unsafe {
-            avformat_wasmedge::avChapter_set_id(self.ptr(),self.index as u32,value);
+            avformat_wasmedge::avChapter_set_id(self.ptr(), self.index as u32, value);
         }
     }
 
     pub fn set_time_base<R: Into<Rational>>(&mut self, value: R) {
         unsafe {
             let rational = value.into();
-           avformat_wasmedge::avChapter_set_timebase(rational.0,rational.1,self.ptr(),self.index as u32);
+            avformat_wasmedge::avChapter_set_timebase(
+                rational.0,
+                rational.1,
+                self.ptr(),
+                self.index as u32,
+            );
         }
     }
 
     pub fn set_start(&mut self, value: i64) {
         unsafe {
-            avformat_wasmedge::avChapter_set_start(self.ptr(),self.index as u32,value);
+            avformat_wasmedge::avChapter_set_start(self.ptr(), self.index as u32, value);
         }
     }
 
     pub fn set_end(&mut self, value: i64) {
         unsafe {
-            avformat_wasmedge::avChapter_set_end(self.ptr(),self.index as u32,value);
+            avformat_wasmedge::avChapter_set_end(self.ptr(), self.index as u32, value);
         }
     }
 
@@ -65,14 +71,18 @@ impl<'a> ChapterMut<'a> {
             let mut dictionary = Dictionary::own(self.metadata().ptr());
             dictionary.set(key.as_ref(), value.as_ref());
             let av_dictionary = dictionary.disown();
-            avformat_wasmedge::avChapter_set_metadata(self.ptr(),self.index as u32,av_dictionary);
+            avformat_wasmedge::avChapter_set_metadata(self.ptr(), self.index as u32, av_dictionary);
         }
     }
 
     pub fn metadata(&mut self) -> DictionaryMut {
         unsafe {
             let av_dictionary = MaybeUninit::<AVDictionary>::uninit();
-            avformat_wasmedge::avChapter_metadata(self.ptr(),self.index as u32,av_dictionary.as_ptr() as u32);
+            avformat_wasmedge::avChapter_metadata(
+                self.ptr(),
+                self.index as u32,
+                av_dictionary.as_ptr() as u32,
+            );
             DictionaryMut::wrap(ptr::read(av_dictionary.as_ptr()))
         }
     }

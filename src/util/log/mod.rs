@@ -1,12 +1,13 @@
-pub mod level;
-pub use self::level::Level;
-
-pub mod flag;
-pub use self::flag::Flags;
+use std::convert::TryInto;
 
 use avutil_wasmedge;
 
-use std::convert::TryInto;
+pub use self::flag::Flags;
+pub use self::level::Level;
+
+pub mod level;
+
+pub mod flag;
 
 pub fn set_level(value: Level) {
     unsafe { avutil_wasmedge::av_log_set_level(value.into()) }

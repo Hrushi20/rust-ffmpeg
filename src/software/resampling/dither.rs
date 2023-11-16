@@ -33,13 +33,13 @@ impl From<SwrDitherType> for Dither {
             i if i == 9 => Dither::NoiseShapingLowShibata,
             i if i == 10 => Dither::NoiseShapingHighShibata,
             i if i == 11 => Dither::None,
-            _ => Dither::None
+            _ => Dither::None,
         }
     }
 }
 
 impl From<Dither> for SwrDitherType {
     fn from(value: Dither) -> SwrDitherType {
-       value as SwrDitherType
+        value as SwrDitherType
     }
 }

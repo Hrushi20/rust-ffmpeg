@@ -1,6 +1,7 @@
 use std::ffi::CStr;
 use std::marker::PhantomData;
 use std::str::from_utf8_unchecked;
+
 use filter::types::AVFilter;
 
 use super::{Flags, Pad};
@@ -17,7 +18,6 @@ impl Filter {
     pub unsafe fn ptr(&self) -> AVFilter {
         self.ptr
     }
-
 }
 
 impl Filter {

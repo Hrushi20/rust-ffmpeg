@@ -1,9 +1,10 @@
-use std::{mem};
+use std::mem;
 
-use super::Context;
-use {Error, Frame};
 use avUtilTypes::AVFrame;
 use avfilter_wasmedge;
+use {Error, Frame};
+
+use super::Context;
 
 pub struct Source<'a> {
     ctx: &'a mut Context<'a>,

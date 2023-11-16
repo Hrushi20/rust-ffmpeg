@@ -1,4 +1,3 @@
-
 bitflags! {
     pub struct Flags: i32 {
         const SKIP_REPEATED = 1;

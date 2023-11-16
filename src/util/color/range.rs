@@ -1,5 +1,5 @@
-use avutil_wasmedge;
 use avUtilTypes::AVColorRange;
+use avutil_wasmedge;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Range {
@@ -16,8 +16,8 @@ impl Range {
         unsafe {
             let range_id = (*self).into();
             let len = avutil_wasmedge::av_color_range_name_length(range_id) as usize;
-            let name = vec![0u8;len];
-            avutil_wasmedge::av_color_range_name(range_id,name.as_ptr(),len);
+            let name = vec![0u8; len];
+            avutil_wasmedge::av_color_range_name(range_id, name.as_ptr(), len);
             Some(String::from_utf8_unchecked(name))
         }
     }

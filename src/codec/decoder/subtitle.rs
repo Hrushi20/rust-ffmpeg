@@ -1,7 +1,9 @@
 use std::ops::{Deref, DerefMut};
 
-use super::Opened;
 use codec::Context;
+
+use super::Opened;
+
 // use {packet, Error};
 
 pub struct Subtitle(pub Opened);

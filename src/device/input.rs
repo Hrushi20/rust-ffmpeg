@@ -1,8 +1,9 @@
 use std::ptr;
+
 use avFormatTypes::AVInputFormat;
+use Format;
 
 use format;
-use Format;
 
 pub struct AudioIter(AVInputFormat);
 
@@ -54,16 +55,12 @@ pub fn video() -> VideoIter {
 
 impl Drop for AudioIter {
     fn drop(&mut self) {
-        unsafe{
-
-        }
+        unsafe {}
     }
 }
 
 impl Drop for VideoIter {
     fn drop(&mut self) {
-        unsafe{
-
-        }
+        unsafe {}
     }
 }

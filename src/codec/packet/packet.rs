@@ -1,18 +1,20 @@
 // use std::marker::PhantomData;
-use std::{ptr};
 use std::mem::MaybeUninit;
+use std::ptr;
 
-use super::{Flags,Ref};
-// use super::{Borrow, Flags, Mut, Ref, SideData};
+use {avcodec_wasmedge, avformat_wasmedge};
 use {format, Error, Rational};
+// use super::{Borrow, Flags, Mut, Ref, SideData};
 use avCodecType::AVPacket;
-use ::{avcodec_wasmedge, avformat_wasmedge};
 use constants::AV_NOPTS_VALUE;
 use packet::traits::Mut;
+
+use super::{Flags, Ref};
 
 pub struct Packet(AVPacket);
 
 unsafe impl Send for Packet {}
+
 unsafe impl Sync for Packet {}
 
 impl Packet {
@@ -63,14 +65,14 @@ impl Packet {
     #[inline]
     pub fn shrink(&mut self, size: usize) {
         unsafe {
-            avcodec_wasmedge::av_shrink_packet(self.0,size as i32);
+            avcodec_wasmedge::av_shrink_packet(self.0, size as i32);
         }
     }
 
     #[inline]
     pub fn grow(&mut self, size: usize) {
         unsafe {
-            avcodec_wasmedge::av_grow_packet(self.0,size as i32);
+            avcodec_wasmedge::av_grow_packet(self.0, size as i32);
         }
     }
 
@@ -88,7 +90,7 @@ impl Packet {
                 src.numerator(),
                 src.denominator(),
                 dest.numerator(),
-                dest.denominator()
+                dest.denominator(),
             );
         }
     }
@@ -115,16 +117,12 @@ impl Packet {
 
     #[inline]
     pub fn is_corrupt(&self) -> bool {
-        unsafe {
-            self.flags().contains(Flags::CORRUPT)
-        }
+        unsafe { self.flags().contains(Flags::CORRUPT) }
     }
 
     #[inline]
     pub fn stream(&self) -> usize {
-        unsafe {
-            avcodec_wasmedge::av_packet_stream_index(self.0) as usize
-        }
+        unsafe { avcodec_wasmedge::av_packet_stream_index(self.0) as usize }
     }
 
     #[inline]
@@ -140,9 +138,9 @@ impl Packet {
             let pts = avcodec_wasmedge::av_packet_pts(self.ptr());
 
             if pts == AV_NOPTS_VALUE {
-                return None
+                return None;
             }
-            return Some(pts)
+            return Some(pts);
         }
     }
 
@@ -175,16 +173,12 @@ impl Packet {
 
     #[inline]
     pub fn size(&self) -> usize {
-        unsafe {
-            avcodec_wasmedge::av_packet_size(self.ptr()) as usize
-        }
+        unsafe { avcodec_wasmedge::av_packet_size(self.ptr()) as usize }
     }
 
     #[inline]
     pub fn duration(&self) -> i64 {
-        unsafe {
-            avcodec_wasmedge::av_packet_duration(self.ptr())
-        }
+        unsafe { avcodec_wasmedge::av_packet_duration(self.ptr()) }
     }
 
     #[inline]
@@ -196,9 +190,7 @@ impl Packet {
 
     #[inline]
     pub fn position(&self) -> isize {
-        unsafe {
-            avcodec_wasmedge::av_packet_pos(self.ptr()) as isize
-        }
+        unsafe { avcodec_wasmedge::av_packet_pos(self.ptr()) as isize }
     }
 
     #[inline]
@@ -226,10 +218,9 @@ impl Packet {
             if res == 1 {
                 None
             } else {
-
                 let size = self.size();
-                let data = vec![0u8;size];
-                avcodec_wasmedge::av_packet_data(self.ptr(),data.as_ptr(),size);
+                let data = vec![0u8; size];
+                avcodec_wasmedge::av_packet_data(self.ptr(), data.as_ptr(), size);
                 Some(data)
             }
         }
@@ -263,7 +254,7 @@ impl Packet {
                 return Err(Error::InvalidData);
             }
 
-            match avformat_wasmedge::av_write_frame(format.ptr(), self.ptr() ) {
+            match avformat_wasmedge::av_write_frame(format.ptr(), self.ptr()) {
                 1 => Ok(true),
                 0 => Ok(false),
                 e => Err(Error::from(e)),

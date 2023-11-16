@@ -2,11 +2,12 @@ use std::mem::size_of;
 use std::ops::{Deref, DerefMut};
 use std::slice;
 
-use super::Frame;
 use avUtilTypes::AVFrame;
+use avutil_wasmedge;
 use util::format;
 use ChannelLayout;
-use avutil_wasmedge;
+
+use super::Frame;
 
 #[derive(PartialEq, Eq)]
 pub struct Audio(Frame);
@@ -58,7 +59,7 @@ impl Audio {
     #[inline]
     pub fn set_format(&self, value: format::Sample) {
         unsafe {
-            avutil_wasmedge::av_frame_set_audio_format(self.ptr(),u32::from(value));
+            avutil_wasmedge::av_frame_set_audio_format(self.ptr(), u32::from(value));
         }
     }
 
@@ -72,49 +73,43 @@ impl Audio {
     #[inline]
     pub fn set_channel_layout(&self, value: ChannelLayout) {
         unsafe {
-            avutil_wasmedge::av_frame_set_channel_layout(self.ptr(),value.bits());
+            avutil_wasmedge::av_frame_set_channel_layout(self.ptr(), value.bits());
         }
     }
 
     #[inline]
     pub fn channels(&self) -> u16 {
-        unsafe {
-            avutil_wasmedge::av_frame_channels(self.ptr()) as u16
-        }
+        unsafe { avutil_wasmedge::av_frame_channels(self.ptr()) as u16 }
     }
 
     #[inline]
     pub fn set_channels(&mut self, value: u16) {
         unsafe {
-            avutil_wasmedge::av_frame_set_channels(self.ptr(),i32::from(value));
+            avutil_wasmedge::av_frame_set_channels(self.ptr(), i32::from(value));
         }
     }
 
     #[inline]
     pub fn rate(&self) -> u32 {
-        unsafe {
-            avutil_wasmedge::av_frame_sample_rate(self.ptr()) as u32
-        }
+        unsafe { avutil_wasmedge::av_frame_sample_rate(self.ptr()) as u32 }
     }
 
     #[inline]
     pub fn set_rate(&self, value: u32) {
         unsafe {
-            avutil_wasmedge::av_frame_set_sample_rate(self.ptr(),value as i32);
+            avutil_wasmedge::av_frame_set_sample_rate(self.ptr(), value as i32);
         }
     }
 
     #[inline]
     pub fn samples(&self) -> usize {
-        unsafe {
-            avutil_wasmedge::av_frame_nb_samples(self.ptr()) as usize
-        }
+        unsafe { avutil_wasmedge::av_frame_nb_samples(self.ptr()) as usize }
     }
 
     #[inline]
     pub fn set_samples(&self, value: usize) {
         unsafe {
-            avutil_wasmedge::av_frame_set_nb_samples(self.ptr(),value as i32);
+            avutil_wasmedge::av_frame_set_nb_samples(self.ptr(), value as i32);
         }
     }
 
@@ -131,7 +126,7 @@ impl Audio {
     #[inline]
     pub fn planes(&self) -> usize {
         unsafe {
-            let linesize = avutil_wasmedge::av_frame_linesize(self.ptr(),0);
+            let linesize = avutil_wasmedge::av_frame_linesize(self.ptr(), 0);
             if linesize == 0 {
                 return 0;
             }
@@ -156,14 +151,10 @@ impl Audio {
 
         unsafe {
             let size = self.samples() * size_of::<T>(); // (Read all data in u8 and later fetch the tuples.)
-            let data = vec![0;size];
-            avutil_wasmedge::av_frame_data(self.ptr(),data.as_ptr(),size,index as u32);
+            let data = vec![0; size];
+            avutil_wasmedge::av_frame_data(self.ptr(), data.as_ptr(), size, index as u32);
 
-            slice::from_raw_parts(
-               data.as_ptr() as *const T,
-                   self.samples()
-            )
-
+            slice::from_raw_parts(data.as_ptr() as *const T, self.samples())
         }
     }
 
@@ -189,14 +180,10 @@ impl Audio {
         }
 
         unsafe {
-
-            let size = avutil_wasmedge::av_frame_linesize(self.ptr(),index as u32) as usize;
-            let data = vec![0;size];
-            avutil_wasmedge::av_frame_data(self.ptr(),data.as_ptr(),size,index as u32);
-            slice::from_raw_parts(
-                data.as_ptr(),
-                size
-            )
+            let size = avutil_wasmedge::av_frame_linesize(self.ptr(), index as u32) as usize;
+            let data = vec![0; size];
+            avutil_wasmedge::av_frame_data(self.ptr(), data.as_ptr(), size, index as u32);
+            slice::from_raw_parts(data.as_ptr(), size)
         }
     }
 

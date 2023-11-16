@@ -3,10 +3,11 @@ use std::mem::MaybeUninit;
 use std::ptr;
 use std::rc::Rc;
 
-use super::{Context, Id};
-use media;
 use avCodecType::AVCodecParameters;
 use avcodec_wasmedge;
+use media;
+
+use super::{Context, Id};
 
 pub struct Parameters {
     ptr: AVCodecParameters,
@@ -23,7 +24,6 @@ impl Parameters {
     pub unsafe fn ptr(&self) -> AVCodecParameters {
         self.ptr
     }
-
 }
 
 impl Parameters {
@@ -52,10 +52,10 @@ impl Parameters {
         }
     }
 
-    pub fn set_codec_tag(&self,codec_tag:u32){
-       unsafe {
-           avcodec_wasmedge::avcodecparam_set_codec_tag(self.ptr,codec_tag);
-       }
+    pub fn set_codec_tag(&self, codec_tag: u32) {
+        unsafe {
+            avcodec_wasmedge::avcodecparam_set_codec_tag(self.ptr, codec_tag);
+        }
     }
 }
 
@@ -69,7 +69,7 @@ impl Drop for Parameters {
     fn drop(&mut self) {
         unsafe {
             if self.owner.is_none() {
-                avcodec_wasmedge::avcodec_parameters_free( self.ptr());
+                avcodec_wasmedge::avcodec_parameters_free(self.ptr());
             }
         }
     }
@@ -96,7 +96,10 @@ impl<C: AsRef<Context>> From<C> for Parameters {
         let mut parameters = Parameters::new();
         let context = context.as_ref();
         unsafe {
-            avcodec_wasmedge::avcodec_parameters_from_context(parameters.ptr(),context.ptr() as u32);
+            avcodec_wasmedge::avcodec_parameters_from_context(
+                parameters.ptr(),
+                context.ptr() as u32,
+            );
         }
         parameters
     }

@@ -1,8 +1,9 @@
+extern crate os_info;
+
 use std::env;
 use std::fs;
 use std::path::Path;
 use std::process::Command;
-extern crate os_info;
 
 static WIT_FILES: &'static [&str] = &[
     "wasmedge_ffmpeg_avcodec.wit",
@@ -11,7 +12,7 @@ static WIT_FILES: &'static [&str] = &[
     "wasmedge_ffmpeg_avformat.wit",
     "wasmedge_ffmpeg_avutil.wit",
     "wasmedge_ffmpeg_swscale.wit",
-    "wasmedge_ffmpeg_swresample.wit"
+    "wasmedge_ffmpeg_swresample.wit",
 ];
 
 fn program_exists(program: &str) -> bool {
@@ -27,7 +28,6 @@ fn program_exists(program: &str) -> bool {
 }
 
 fn main() {
-
     let out_dir = env::var_os("OUT_DIR").unwrap();
 
     let witc_in_path = program_exists("witc");
@@ -84,22 +84,19 @@ fn main() {
         "witc".to_string()
     };
 
-
     for wit_file in WIT_FILES {
-
         // witc plugin wasmedge_opencvmini.wit > src/generated.rs
         let output = Command::new(&exe)
             .arg("plugin")
-            .arg(format!("witc/{}",wit_file))
+            .arg(format!("witc/{}", wit_file))
             .output()
             .expect("Failed to execute command");
 
         println!("status: {}", output.status);
 
-        let wit_file = wit_file.replace("wasmedge_ffmpeg_","").replace(".wit","");
-        let dest_path = Path::new(&out_dir).join(format!("{}.rs",wit_file));
+        let wit_file = wit_file.replace("wasmedge_ffmpeg_", "").replace(".wit", "");
+        let dest_path = Path::new(&out_dir).join(format!("{}.rs", wit_file));
         fs::write(&dest_path, String::from_utf8_lossy(&output.stdout).as_ref()).unwrap();
-
     }
 
     if !witc_in_path {

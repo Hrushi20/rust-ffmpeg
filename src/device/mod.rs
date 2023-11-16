@@ -1,11 +1,12 @@
+use std::marker::PhantomData;
+
+use avdevice_wasmedge;
+use device::types::AVDeviceInfoList;
+
 pub mod extensions;
 // pub mod input;
 // pub mod output;
 pub mod types;
-
-use std::marker::PhantomData;
-use device::types::{AVDeviceInfoList};
-use avdevice_wasmedge;
 
 pub struct Info<'a> {
     ptr: AVDeviceInfoList,
@@ -14,7 +15,7 @@ pub struct Info<'a> {
 }
 
 impl<'a> Info<'a> {
-    pub unsafe fn wrap(ptr: AVDeviceInfoList,idx:isize) -> Self {
+    pub unsafe fn wrap(ptr: AVDeviceInfoList, idx: isize) -> Self {
         Info {
             ptr,
             idx,
@@ -25,7 +26,6 @@ impl<'a> Info<'a> {
     pub unsafe fn ptr(&self) -> AVDeviceInfoList {
         self.ptr
     }
-
 }
 
 // impl<'a> Info<'a> {
@@ -47,16 +47,14 @@ pub fn register_all() {
 }
 
 pub fn version() -> u32 {
-    unsafe {
-        avdevice_wasmedge::avdevice_version()
-    }
+    unsafe { avdevice_wasmedge::avdevice_version() }
 }
 
 pub fn configuration() -> String {
     unsafe {
         let config_len = avdevice_wasmedge::avdevice_configuration_length() as usize;
-        let config = vec![0u8;config_len];
-        avdevice_wasmedge::avdevice_configuration(config.as_ptr(),config_len);
+        let config = vec![0u8; config_len];
+        avdevice_wasmedge::avdevice_configuration(config.as_ptr(), config_len);
         String::from_utf8_unchecked(config)
     }
 }
@@ -64,8 +62,8 @@ pub fn configuration() -> String {
 pub fn license() -> String {
     unsafe {
         let license_len = avdevice_wasmedge::avdevice_license_length() as usize;
-        let license = vec![0u8;license_len];
-        avdevice_wasmedge::avdevice_license(license.as_ptr(),license_len);
+        let license = vec![0u8; license_len];
+        avdevice_wasmedge::avdevice_license(license.as_ptr(), license_len);
         String::from_utf8_unchecked(license)
     }
 }

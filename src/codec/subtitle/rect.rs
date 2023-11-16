@@ -2,8 +2,10 @@ use std::ffi::CStr;
 use std::marker::PhantomData;
 use std::str::from_utf8_unchecked;
 
-use super::{Flags, Type};
 use ffi::*;
+
+use super::{Flags, Type};
+
 #[cfg(not(feature = "ffmpeg_5_0"))]
 use {format, Picture};
 

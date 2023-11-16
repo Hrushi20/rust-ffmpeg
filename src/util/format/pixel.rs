@@ -1,5 +1,6 @@
-use std::{mem};
-use avUtilTypes::{AVPixelFormat};
+use std::mem;
+
+use avUtilTypes::AVPixelFormat;
 use avutil_wasmedge;
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
@@ -71,9 +72,9 @@ pub enum Pixel {
 
     #[cfg(all(feature = "ff_api_vaapi", not(feature = "ffmpeg_5_0")))]
     VAAPI_MOCO = 53,
-    #[cfg(all(feature = "ff_api_vaapi" , not(feature = "ffmpeg_5_0")))]
+    #[cfg(all(feature = "ff_api_vaapi", not(feature = "ffmpeg_5_0")))]
     VAAPI_IDCT = 54,
-    #[cfg(all(feature = "ff_api_vaapi" , not(feature = "ffmpeg_5_0")))]
+    #[cfg(all(feature = "ff_api_vaapi", not(feature = "ffmpeg_5_0")))]
     VAAPI_VLD = 55,
     #[cfg(any(not(feature = "ff_api_vaapi"), feature = "ffmpeg_5_0"))]
     VAAPI = 56,
@@ -211,7 +212,7 @@ pub enum Pixel {
     YUV440P10LE = 167,
     YUV440P10BE = 168,
     YUV440P12LE = 169,
-    YUV440P12BE =  170,
+    YUV440P12BE = 170,
     AYUV64LE = 171,
     AYUV64BE = 172,
 
@@ -417,6 +418,7 @@ pub struct Descriptor {
 }
 
 unsafe impl Send for Descriptor {}
+
 unsafe impl Sync for Descriptor {}
 
 impl Pixel {
@@ -427,7 +429,7 @@ impl Pixel {
     pub const XVMC: Pixel = Pixel::XVMC_MPEG2_IDCT;
 
     pub fn descriptor(self) -> Option<Descriptor> {
-        Some(Descriptor{ ptr:self.into() })
+        Some(Descriptor { ptr: self.into() })
     }
 }
 
@@ -439,37 +441,29 @@ impl Descriptor {
     pub fn name(self) -> String {
         unsafe {
             let len = avutil_wasmedge::av_pix_format_name_length(self.ptr()) as usize;
-            let name = vec![0u8;len];
-            avutil_wasmedge::av_pix_format_name(self.ptr(),name.as_ptr(),len);
+            let name = vec![0u8; len];
+            avutil_wasmedge::av_pix_format_name(self.ptr(), name.as_ptr(), len);
             String::from_utf8_unchecked(name)
         }
     }
 
     pub fn nb_components(self) -> u8 {
-        unsafe {
-            avutil_wasmedge::avpixfmtdescriptor_nb_components(self.ptr().into()) as u8
-        }
+        unsafe { avutil_wasmedge::avpixfmtdescriptor_nb_components(self.ptr().into()) as u8 }
     }
 
     pub fn log2_chroma_w(self) -> u8 {
-        unsafe {
-            avutil_wasmedge::avpixfmtdescriptor_log2_chromaw(self.ptr().into()) as u8
-        }
+        unsafe { avutil_wasmedge::avpixfmtdescriptor_log2_chromaw(self.ptr().into()) as u8 }
     }
 
     pub fn log2_chroma_h(self) -> u8 {
-        unsafe {
-            avutil_wasmedge::avpixfmtdescriptor_log2_chromah(self.ptr().into()) as u8
-        }
+        unsafe { avutil_wasmedge::avpixfmtdescriptor_log2_chromah(self.ptr().into()) as u8 }
     }
 }
 
 impl From<AVPixelFormat> for Pixel {
     #[inline]
     fn from(value: AVPixelFormat) -> Self {
-       unsafe {
-          mem::transmute(value)
-       }
+        unsafe { mem::transmute(value) }
     }
 }
 

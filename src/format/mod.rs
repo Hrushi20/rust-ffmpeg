@@ -1,7 +1,20 @@
 use std::mem::MaybeUninit;
+use std::path::Path;
+use std::{mem, ptr};
+
 use avformat_wasmedge;
+pub use format::types::*;
 pub use util::format::{pixel, Pixel};
 pub use util::format::{sample, Sample};
+use util::types::AVDictionary;
+use {Dictionary, Error, Format};
+
+pub use self::context::Context;
+// #[cfg(not(feature = "ffmpeg_5_0"))]
+// pub use self::format::list;
+pub use self::format::{flag, Flags};
+pub use self::format::{Input, Output};
+
 // use util::interrupt;
 
 pub mod stream;
@@ -9,25 +22,12 @@ pub mod stream;
 pub mod chapter;
 
 pub mod context;
-pub use self::context::Context;
-
 
 pub mod types;
-use util::types::AVDictionary;
 
 pub mod format;
-// #[cfg(not(feature = "ffmpeg_5_0"))]
-// pub use self::format::list;
-pub use self::format::{flag, Flags};
-pub use self::format::{Input,Output};
 
 pub mod network;
-
-use std::path::Path;
-use std::{mem, ptr};
-
-use {Dictionary, Error, Format};
-pub use format::types::*;
 
 //
 // #[cfg(not(feature = "ffmpeg_5_0"))]
@@ -57,8 +57,8 @@ pub fn version() -> u32 {
 pub fn configuration() -> String {
     unsafe {
         let config_len = avformat_wasmedge::avformat_configuration_length() as usize;
-        let config = vec![0u8;config_len];
-        avformat_wasmedge::avformat_configuration(config.as_ptr(),config_len);
+        let config = vec![0u8; config_len];
+        avformat_wasmedge::avformat_configuration(config.as_ptr(), config_len);
         String::from_utf8_unchecked(config)
     }
 }
@@ -66,8 +66,8 @@ pub fn configuration() -> String {
 pub fn license() -> String {
     unsafe {
         let license_len = avformat_wasmedge::avformat_license_length() as usize;
-        let license = vec![0u8;license_len];
-        avformat_wasmedge::avformat_license(license.as_ptr(),license_len);
+        let license = vec![0u8; license_len];
+        avformat_wasmedge::avformat_license(license.as_ptr(), license_len);
         String::from_utf8_unchecked(license)
     }
 }
@@ -76,11 +76,11 @@ pub fn license() -> String {
 fn from_path<P: AsRef<Path>>(path: &P) -> &str {
     path.as_ref().as_os_str().to_str().unwrap()
 }
+
 //
 // // NOTE: this will be better with specialization or anonymous return types
 pub fn open<P: AsRef<Path>>(path: &P, format: &Format) -> Result<Context, Error> {
     unsafe {
-
         let avio_flag_write = 2;
         let av_format_ctx = MaybeUninit::<AVFormatContext>::uninit();
         let path = from_path(path);
@@ -90,11 +90,16 @@ pub fn open<P: AsRef<Path>>(path: &P, format: &Format) -> Result<Context, Error>
                 av_format_ctx.as_ptr() as u32,
                 path.as_ptr(),
                 path.len(),
-                format.ptr() ,
+                format.ptr(),
                 mem::zeroed::<AVDictionary>(),
             ) {
-                0 => match avformat_wasmedge::avformat_find_stream_info(ptr::read(av_format_ctx.as_ptr()), mem::zeroed::<AVDictionary>()) {
-                    r if r >= 0 => Ok(Context::Input(context::Input::wrap(ptr::read(av_format_ctx.as_ptr())))),
+                0 => match avformat_wasmedge::avformat_find_stream_info(
+                    ptr::read(av_format_ctx.as_ptr()),
+                    mem::zeroed::<AVDictionary>(),
+                ) {
+                    r if r >= 0 => Ok(Context::Input(context::Input::wrap(ptr::read(
+                        av_format_ctx.as_ptr(),
+                    )))),
                     e => Err(Error::from(e)),
                 },
 
@@ -107,10 +112,17 @@ pub fn open<P: AsRef<Path>>(path: &P, format: &Format) -> Result<Context, Error>
                 mem::zeroed(),
                 0,
                 path.as_ptr(),
-                path.len()
+                path.len(),
             ) {
-                0 => match avformat_wasmedge::avio_open(ptr::read(av_format_ctx.as_ptr()), path.as_ptr(),path.len(), avio_flag_write) {
-                    0 => Ok(Context::Output(context::Output::wrap(ptr::read(av_format_ctx.as_ptr())))),
+                0 => match avformat_wasmedge::avio_open(
+                    ptr::read(av_format_ctx.as_ptr()),
+                    path.as_ptr(),
+                    path.len(),
+                    avio_flag_write,
+                ) {
+                    0 => Ok(Context::Output(context::Output::wrap(ptr::read(
+                        av_format_ctx.as_ptr(),
+                    )))),
                     e => Err(Error::from(e)),
                 },
 
@@ -126,7 +138,6 @@ pub fn open_with<P: AsRef<Path>>(
     options: Dictionary,
 ) -> Result<Context, Error> {
     unsafe {
-
         let avio_flag_write = 2;
         let av_format_ctx = MaybeUninit::<AVFormatContext>::uninit();
         let path = from_path(path);
@@ -145,8 +156,13 @@ pub fn open_with<P: AsRef<Path>>(
                 Dictionary::own(opts);
 
                 match res {
-                    0 => match avformat_wasmedge::avformat_find_stream_info(ptr::read(av_format_ctx.as_ptr()), mem::zeroed::<AVDictionary>()) {
-                        r if r >= 0 => Ok(Context::Input(context::Input::wrap(ptr::read(av_format_ctx.as_ptr())))),
+                    0 => match avformat_wasmedge::avformat_find_stream_info(
+                        ptr::read(av_format_ctx.as_ptr()),
+                        mem::zeroed::<AVDictionary>(),
+                    ) {
+                        r if r >= 0 => Ok(Context::Input(context::Input::wrap(ptr::read(
+                            av_format_ctx.as_ptr(),
+                        )))),
                         e => Err(Error::from(e)),
                     },
 
@@ -160,10 +176,17 @@ pub fn open_with<P: AsRef<Path>>(
                 mem::zeroed(),
                 0,
                 path.as_ptr(),
-                path.len()
+                path.len(),
             ) {
-                0 => match avformat_wasmedge::avio_open(ptr::read(av_format_ctx.as_ptr()), path.as_ptr(),path.len(), avio_flag_write) {
-                    0 => Ok(Context::Output(context::Output::wrap(ptr::read(av_format_ctx.as_ptr())))),
+                0 => match avformat_wasmedge::avio_open(
+                    ptr::read(av_format_ctx.as_ptr()),
+                    path.as_ptr(),
+                    path.len(),
+                    avio_flag_write,
+                ) {
+                    0 => Ok(Context::Output(context::Output::wrap(ptr::read(
+                        av_format_ctx.as_ptr(),
+                    )))),
                     e => Err(Error::from(e)),
                 },
 
@@ -175,18 +198,26 @@ pub fn open_with<P: AsRef<Path>>(
 
 pub fn input<P: AsRef<Path>>(path: &P) -> Result<context::Input, Error> {
     unsafe {
-
         let path = from_path(path);
 
         let av_format_ctx = MaybeUninit::<AVFormatContext>::uninit();
         let av_input_format = mem::zeroed::<AVInputFormat>();
         let av_dictionary = mem::zeroed::<AVDictionary>();
 
-        match avformat_wasmedge::avformat_open_input(av_format_ctx.as_ptr() as u32, path.as_ptr() ,path.len(), av_input_format, av_dictionary) {
-            0 => match avformat_wasmedge::avformat_find_stream_info( ptr::read(av_format_ctx.as_ptr()), av_dictionary) {
+        match avformat_wasmedge::avformat_open_input(
+            av_format_ctx.as_ptr() as u32,
+            path.as_ptr(),
+            path.len(),
+            av_input_format,
+            av_dictionary,
+        ) {
+            0 => match avformat_wasmedge::avformat_find_stream_info(
+                ptr::read(av_format_ctx.as_ptr()),
+                av_dictionary,
+            ) {
                 r if r >= 0 => Ok(context::Input::wrap(ptr::read(av_format_ctx.as_ptr()))),
                 e => {
-                    avformat_wasmedge::avformat_close_input( av_format_ctx.as_ptr() as u32);
+                    avformat_wasmedge::avformat_close_input(av_format_ctx.as_ptr() as u32);
                     Err(Error::from(e))
                 }
             },
@@ -205,12 +236,21 @@ pub fn input_with_dictionary<P: AsRef<Path>>(
 
         let path = from_path(path);
         let opts = options.disown();
-        let res = avformat_wasmedge::avformat_open_input(av_format_ctx.as_ptr() as u32, path.as_ptr(),path.len(), av_input_format,opts);
+        let res = avformat_wasmedge::avformat_open_input(
+            av_format_ctx.as_ptr() as u32,
+            path.as_ptr(),
+            path.len(),
+            av_input_format,
+            opts,
+        );
 
         Dictionary::own(opts);
 
         match res {
-            0 => match avformat_wasmedge::avformat_find_stream_info(ptr::read(av_format_ctx.as_ptr()), mem::zeroed()) {
+            0 => match avformat_wasmedge::avformat_find_stream_info(
+                ptr::read(av_format_ctx.as_ptr()),
+                mem::zeroed(),
+            ) {
                 r if r >= 0 => Ok(context::Input::wrap(ptr::read(av_format_ctx.as_ptr()))),
                 e => {
                     avformat_wasmedge::avformat_close_input(ptr::read(av_format_ctx.as_ptr()));
@@ -256,8 +296,20 @@ pub fn output<P: AsRef<Path>>(path: &P) -> Result<context::Output, Error> {
         let av_format_ctx = MaybeUninit::<AVFormatContext>::uninit();
         let path = from_path(path);
 
-        match avformat_wasmedge::avformat_alloc_output_context2(av_format_ctx.as_ptr() as u32, mem::zeroed::<AVOutputFormat>(), mem::zeroed(),0, path.as_ptr(),path.len()) {
-            0 => match avformat_wasmedge::avio_open(ptr::read(av_format_ctx.as_ptr()), path.as_ptr(),path.len(), avio_flag_write) {
+        match avformat_wasmedge::avformat_alloc_output_context2(
+            av_format_ctx.as_ptr() as u32,
+            mem::zeroed::<AVOutputFormat>(),
+            mem::zeroed(),
+            0,
+            path.as_ptr(),
+            path.len(),
+        ) {
+            0 => match avformat_wasmedge::avio_open(
+                ptr::read(av_format_ctx.as_ptr()),
+                path.as_ptr(),
+                path.len(),
+                avio_flag_write,
+            ) {
                 0 => Ok(context::Output::wrap(ptr::read(av_format_ctx.as_ptr()))),
                 e => Err(Error::from(e)),
             },
@@ -272,13 +324,19 @@ pub fn output_with<P: AsRef<Path>>(
     options: Dictionary,
 ) -> Result<context::Output, Error> {
     unsafe {
-
         let avio_flag_write = 2;
         let av_format_ctx = MaybeUninit::<AVFormatContext>::uninit();
         let path = from_path(path);
         let opts = options.disown();
 
-        match avformat_wasmedge::avformat_alloc_output_context2(av_format_ctx.as_ptr() as u32, mem::zeroed::<AVOutputFormat>(), mem::zeroed(),0, path.as_ptr(),path.len()) {
+        match avformat_wasmedge::avformat_alloc_output_context2(
+            av_format_ctx.as_ptr() as u32,
+            mem::zeroed::<AVOutputFormat>(),
+            mem::zeroed(),
+            0,
+            path.as_ptr(),
+            path.len(),
+        ) {
             0 => {
                 let res = avformat_wasmedge::avio_open2(
                     ptr::read(av_format_ctx.as_ptr()),
@@ -314,9 +372,14 @@ pub fn output_as<P: AsRef<Path>>(path: &P, format: &str) -> Result<context::Outp
             format.as_ptr(),
             format.len(),
             path.as_ptr(),
-            path.len()
+            path.len(),
         ) {
-            0 => match avformat_wasmedge::avio_open(ptr::read(av_format_ctx.as_ptr()), path.as_ptr(),path.len(), avio_flag_write) {
+            0 => match avformat_wasmedge::avio_open(
+                ptr::read(av_format_ctx.as_ptr()),
+                path.as_ptr(),
+                path.len(),
+                avio_flag_write,
+            ) {
                 0 => Ok(context::Output::wrap(ptr::read(av_format_ctx.as_ptr()))),
                 e => Err(Error::from(e)),
             },
@@ -332,7 +395,6 @@ pub fn output_as_with<P: AsRef<Path>>(
     options: Dictionary,
 ) -> Result<context::Output, Error> {
     unsafe {
-
         let avio_flag_write = 2;
         let av_format_ctx = MaybeUninit::<AVFormatContext>::uninit();
         let path = from_path(path);
@@ -344,7 +406,7 @@ pub fn output_as_with<P: AsRef<Path>>(
             format.as_ptr(),
             format.len(),
             path.as_ptr(),
-            path.len()
+            path.len(),
         ) {
             0 => {
                 let res = avformat_wasmedge::avio_open2(

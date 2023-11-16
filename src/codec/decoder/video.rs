@@ -2,17 +2,18 @@ use std::mem::MaybeUninit;
 use std::ops::{Deref, DerefMut};
 use std::ptr;
 
-use super::{slice, Opened};
+use {FieldOrder, Rational};
+// #[cfg(not(feature = "ffmpeg_5_0"))]
+// use {packet, Error};
+use avcodec_wasmedge;
 use codec::Context;
 use color;
 // #[cfg(not(feature = "ffmpeg_5_0"))]
 // use frame;
 use util::chroma;
 use util::format;
-// #[cfg(not(feature = "ffmpeg_5_0"))]
-// use {packet, Error};
-use {FieldOrder, Rational};
-use avcodec_wasmedge;
+
+use super::{slice, Opened};
 
 pub struct Video(pub Opened);
 
@@ -44,15 +45,11 @@ impl Video {
     // }
 
     pub fn width(&self) -> u32 {
-        unsafe {
-            avcodec_wasmedge::avcodeccontext_width(self.ptr()) as u32
-        }
+        unsafe { avcodec_wasmedge::avcodeccontext_width(self.ptr()) as u32 }
     }
 
     pub fn height(&self) -> u32 {
-        unsafe {
-            avcodec_wasmedge::avcodeccontext_height(self.ptr()) as u32
-        }
+        unsafe { avcodec_wasmedge::avcodeccontext_height(self.ptr()) as u32 }
     }
 
     pub fn format(&self) -> format::Pixel {
@@ -63,9 +60,7 @@ impl Video {
     }
 
     pub fn has_b_frames(&self) -> bool {
-        unsafe {
-            avcodec_wasmedge::avcodeccontext_has_b_frames(self.ptr()) != 0
-        }
+        unsafe { avcodec_wasmedge::avcodeccontext_has_b_frames(self.ptr()) != 0 }
     }
 
     pub fn aspect_ratio(&self) -> Rational {
@@ -73,8 +68,15 @@ impl Video {
             let result_num = MaybeUninit::<i32>::uninit();
             let result_den = MaybeUninit::<i32>::uninit();
 
-            avcodec_wasmedge::avcodeccontext_sample_aspect_ratio(self.ptr(),result_num.as_ptr() as u32,result_den.as_ptr() as u32);
-            Rational::new(ptr::read(result_num.as_ptr()),ptr::read(result_den.as_ptr()))
+            avcodec_wasmedge::avcodeccontext_sample_aspect_ratio(
+                self.ptr(),
+                result_num.as_ptr() as u32,
+                result_den.as_ptr() as u32,
+            );
+            Rational::new(
+                ptr::read(result_num.as_ptr()),
+                ptr::read(result_den.as_ptr()),
+            )
         }
     }
 
@@ -108,44 +110,43 @@ impl Video {
 
     pub fn chroma_location(&self) -> chroma::Location {
         unsafe {
-            let chroma_sample_location = avcodec_wasmedge::avcodeccontext_chroma_sample_location(self.ptr());
+            let chroma_sample_location =
+                avcodec_wasmedge::avcodeccontext_chroma_sample_location(self.ptr());
             chroma::Location::from(chroma_sample_location)
         }
     }
 
     pub fn set_slice_count(&mut self, value: usize) {
         unsafe {
-            avcodec_wasmedge::avcodeccontext_set_slice_count(self.ptr(),value as i32);
+            avcodec_wasmedge::avcodeccontext_set_slice_count(self.ptr(), value as i32);
         }
     }
 
     pub fn set_slice_flags(&mut self, value: slice::Flags) {
         unsafe {
-            avcodec_wasmedge::avcodeccontext_set_slice_flags(self.ptr(),value.bits());
+            avcodec_wasmedge::avcodeccontext_set_slice_flags(self.ptr(), value.bits());
         }
     }
 
     pub fn skip_top(&mut self, value: usize) {
         unsafe {
-            avcodec_wasmedge::avcodeccontext_set_skip_top(self.ptr(),value as i32);
+            avcodec_wasmedge::avcodeccontext_set_skip_top(self.ptr(), value as i32);
         }
     }
 
     pub fn skip_bottom(&mut self, value: usize) {
         unsafe {
-            avcodec_wasmedge::avcodeccontext_set_skip_bottom(self.ptr(),value as i32);
+            avcodec_wasmedge::avcodeccontext_set_skip_bottom(self.ptr(), value as i32);
         }
     }
 
     pub fn references(&self) -> usize {
-        unsafe {
-            avcodec_wasmedge::avcodeccontext_refs(self.ptr()) as usize
-        }
+        unsafe { avcodec_wasmedge::avcodeccontext_refs(self.ptr()) as usize }
     }
 
     pub fn set_field_order(&mut self, value: FieldOrder) {
         unsafe {
-            avcodec_wasmedge::avcodeccontext_set_field_order(self.ptr(),value.into());
+            avcodec_wasmedge::avcodeccontext_set_field_order(self.ptr(), value.into());
         }
     }
 
@@ -153,15 +154,11 @@ impl Video {
     // inter_matrix
 
     pub fn intra_dc_precision(&self) -> u8 {
-        unsafe {
-            avcodec_wasmedge::avcodeccontext_intra_dc_precision(self.ptr()) as u8
-        }
+        unsafe { avcodec_wasmedge::avcodeccontext_intra_dc_precision(self.ptr()) as u8 }
     }
 
     pub fn max_bit_rate(&self) -> usize {
-        unsafe {
-            avcodec_wasmedge::avcodeccontext_rc_max_rate(self.ptr()) as usize
-        }
+        unsafe { avcodec_wasmedge::avcodeccontext_rc_max_rate(self.ptr()) as usize }
     }
 }
 

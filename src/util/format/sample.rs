@@ -1,7 +1,7 @@
-use std::{ptr};
 use std::mem::MaybeUninit;
-use avutil_wasmedge;
+use std::ptr;
 
+use avutil_wasmedge;
 use util::format::sample::AVSampleFormat::*;
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
@@ -28,31 +28,25 @@ impl Sample {
         unsafe {
             let format_id = (*self).into();
             let len = avutil_wasmedge::av_get_sample_fmt_name_length(format_id) as usize;
-            let name = vec![0u8;len];
-            avutil_wasmedge::av_get_sample_fmt_name(format_id,name.as_ptr(),len);
+            let name = vec![0u8; len];
+            avutil_wasmedge::av_get_sample_fmt_name(format_id, name.as_ptr(), len);
             String::from_utf8_unchecked(name)
         }
     }
 
     #[inline]
     pub fn packed(&self) -> Self {
-        unsafe {
-            Sample::from(avutil_wasmedge::av_get_packed_sample_fmt((*self).into()))
-        }
+        unsafe { Sample::from(avutil_wasmedge::av_get_packed_sample_fmt((*self).into())) }
     }
 
     #[inline]
     pub fn planar(&self) -> Self {
-        unsafe {
-            Sample::from(avutil_wasmedge::av_get_planar_sample_fmt((*self).into()))
-        }
+        unsafe { Sample::from(avutil_wasmedge::av_get_planar_sample_fmt((*self).into())) }
     }
 
     #[inline]
     pub fn is_planar(&self) -> bool {
-        unsafe {
-            avutil_wasmedge::av_sample_fmt_is_planar((*self).into()) == 1
-        }
+        unsafe { avutil_wasmedge::av_sample_fmt_is_planar((*self).into()) == 1 }
     }
 
     #[inline]
@@ -62,9 +56,7 @@ impl Sample {
 
     #[inline]
     pub fn bytes(&self) -> usize {
-        unsafe {
-            avutil_wasmedge::av_get_bytes_per_sample((*self).into()) as usize
-        }
+        unsafe { avutil_wasmedge::av_get_bytes_per_sample((*self).into()) as usize }
     }
 
     #[inline]
@@ -77,24 +69,24 @@ impl From<u32> for Sample {
     #[inline]
     fn from(value: u32) -> Self {
         match value {
-             i if i == AV_SAMPLE_FMT_NONE as u32 => Sample::None,
+            i if i == AV_SAMPLE_FMT_NONE as u32 => Sample::None,
 
-             i if i == AV_SAMPLE_FMT_U8 as u32 => Sample::U8(Type::Packed),
-             i if i == AV_SAMPLE_FMT_S16 as u32 => Sample::I16(Type::Packed),
-             i if i == AV_SAMPLE_FMT_S32 as u32 => Sample::I32(Type::Packed),
-             i if i == AV_SAMPLE_FMT_S64 as u32 => Sample::I64(Type::Packed),
-             i if i == AV_SAMPLE_FMT_FLT as u32 => Sample::F32(Type::Packed),
-             i if i == AV_SAMPLE_FMT_DBL as u32 => Sample::F64(Type::Packed),
+            i if i == AV_SAMPLE_FMT_U8 as u32 => Sample::U8(Type::Packed),
+            i if i == AV_SAMPLE_FMT_S16 as u32 => Sample::I16(Type::Packed),
+            i if i == AV_SAMPLE_FMT_S32 as u32 => Sample::I32(Type::Packed),
+            i if i == AV_SAMPLE_FMT_S64 as u32 => Sample::I64(Type::Packed),
+            i if i == AV_SAMPLE_FMT_FLT as u32 => Sample::F32(Type::Packed),
+            i if i == AV_SAMPLE_FMT_DBL as u32 => Sample::F64(Type::Packed),
 
-             i if i == AV_SAMPLE_FMT_U8P as u32 => Sample::U8(Type::Planar),
-             i if i == AV_SAMPLE_FMT_S16P as u32 => Sample::I16(Type::Planar),
-             i if i == AV_SAMPLE_FMT_S32P as u32 => Sample::I32(Type::Planar),
-             i if i == AV_SAMPLE_FMT_S64P as u32 => Sample::I64(Type::Planar),
-             i if i == AV_SAMPLE_FMT_FLTP as u32 => Sample::F32(Type::Planar),
-             i if i == AV_SAMPLE_FMT_DBLP as u32 => Sample::F64(Type::Planar),
+            i if i == AV_SAMPLE_FMT_U8P as u32 => Sample::U8(Type::Planar),
+            i if i == AV_SAMPLE_FMT_S16P as u32 => Sample::I16(Type::Planar),
+            i if i == AV_SAMPLE_FMT_S32P as u32 => Sample::I32(Type::Planar),
+            i if i == AV_SAMPLE_FMT_S64P as u32 => Sample::I64(Type::Planar),
+            i if i == AV_SAMPLE_FMT_FLTP as u32 => Sample::F32(Type::Planar),
+            i if i == AV_SAMPLE_FMT_DBLP as u32 => Sample::F64(Type::Planar),
 
-             i if i == AV_SAMPLE_FMT_NB as u32 => Sample::None,
-             _ => Sample::None,
+            i if i == AV_SAMPLE_FMT_NB as u32 => Sample::None,
+            _ => Sample::None,
         }
     }
 }
@@ -103,7 +95,10 @@ impl From<&'static str> for Sample {
     #[inline]
     fn from(value: &'static str) -> Self {
         unsafe {
-            Sample::from(avutil_wasmedge::av_get_sample_fmt(value.as_ptr(),value.len()))
+            Sample::from(avutil_wasmedge::av_get_sample_fmt(
+                value.as_ptr(),
+                value.len(),
+            ))
         }
     }
 }

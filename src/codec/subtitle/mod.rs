@@ -1,18 +1,19 @@
-pub mod flag;
-pub use self::flag::Flags;
-
-mod rect;
-pub use self::rect::{Ass, Bitmap, Rect, Text};
-
-mod rect_mut;
-pub use self::rect_mut::{AssMut, BitmapMut, RectMut, TextMut};
-
 use std::marker::PhantomData;
 use std::mem;
 
 use ffi::AVSubtitleType::*;
 use ffi::*;
 use libc::{c_uint, size_t};
+
+pub use self::flag::Flags;
+pub use self::rect::{Ass, Bitmap, Rect, Text};
+pub use self::rect_mut::{AssMut, BitmapMut, RectMut, TextMut};
+
+pub mod flag;
+
+mod rect;
+
+mod rect_mut;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Type {

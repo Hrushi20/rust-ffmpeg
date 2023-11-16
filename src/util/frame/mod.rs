@@ -2,22 +2,25 @@
 
 use std::mem::MaybeUninit;
 use std::ptr;
+
 use avUtilTypes::{AVDictionary, AVFrame};
 use avutil_wasmedge;
+use {Dictionary, DictionaryRef};
+
+pub use self::audio::Audio;
+pub use self::flag::Flags;
+pub use self::video::Video;
+
 // pub use self::side_data::SideData;
 
 pub mod video;
-pub use self::video::Video;
 
 pub mod audio;
-pub use self::audio::Audio;
 
 pub mod flag;
-pub use self::flag::Flags;
-
-use {Dictionary, DictionaryRef};
 
 const AV_NOPTS_VALUE: i64 = 0x8000000000000000u64 as i64;
+
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 pub struct Packet {
     pub duration: i64,
@@ -37,6 +40,7 @@ pub struct Frame {
 }
 
 unsafe impl Send for Frame {}
+
 unsafe impl Sync for Frame {}
 
 impl Frame {
@@ -64,16 +68,12 @@ impl Frame {
     pub unsafe fn is_empty(&self) -> bool {
         avutil_wasmedge::av_frame_isnull(self.ptr()) == 1
     }
-
 }
 
 impl Frame {
-
     #[inline]
     pub fn is_key(&self) -> bool {
-        unsafe {
-            avutil_wasmedge::av_frame_key_frame(self.ptr()) == 1
-        }
+        unsafe { avutil_wasmedge::av_frame_key_frame(self.ptr()) == 1 }
     }
 
     #[inline]
@@ -109,7 +109,7 @@ impl Frame {
     #[inline]
     pub fn set_pts(&mut self, value: Option<i64>) {
         unsafe {
-            avutil_wasmedge::av_frame_set_pts(self.ptr(),value.unwrap_or(AV_NOPTS_VALUE));
+            avutil_wasmedge::av_frame_set_pts(self.ptr(), value.unwrap_or(AV_NOPTS_VALUE));
         }
     }
 
@@ -125,9 +125,7 @@ impl Frame {
 
     #[inline]
     pub fn quality(&self) -> usize {
-        unsafe {
-            avutil_wasmedge::av_frame_quality(self.ptr()) as usize
-        }
+        unsafe { avutil_wasmedge::av_frame_quality(self.ptr()) as usize }
     }
 
     #[inline]
@@ -142,7 +140,7 @@ impl Frame {
     pub fn metadata(&self) -> DictionaryRef {
         unsafe {
             let dict = MaybeUninit::<AVDictionary>::uninit();
-            avutil_wasmedge::av_frame_metadata(self.ptr(),dict.as_ptr() as AVDictionary);
+            avutil_wasmedge::av_frame_metadata(self.ptr(), dict.as_ptr() as AVDictionary);
             DictionaryRef::wrap(ptr::read(dict.as_ptr()))
         }
     }
@@ -150,7 +148,7 @@ impl Frame {
     #[inline]
     pub fn set_metadata(&mut self, value: Dictionary) {
         unsafe {
-             avutil_wasmedge::av_frame_set_metadata(self.ptr(),value.disown());
+            avutil_wasmedge::av_frame_set_metadata(self.ptr(), value.disown());
         }
     }
 

@@ -1,22 +1,27 @@
+use std::mem;
 use std::ops::{Deref, DerefMut};
-use std::{mem};
 
-use super::Encoder as Super;
-use codec::{traits, Context};
-use util::format;
+use avcodec_wasmedge;
+use {ChannelLayout, Dictionary, Error};
 // #[cfg(not(feature = "ffmpeg_5_0"))]
 // use {frame, packet};
-use {ChannelLayout, Dictionary, Error};
-use avcodec_wasmedge;
 use avCodecType::AVCodec;
 use avUtilTypes::AVDictionary;
+use codec::{traits, Context};
+use util::format;
+
+use super::Encoder as Super;
 
 pub struct Audio(pub Super);
 
 impl Audio {
     pub fn open(mut self) -> Result<Encoder, Error> {
         unsafe {
-            match avcodec_wasmedge::avcodec_open2(self.ptr(), mem::zeroed::<AVCodec>(), mem::zeroed::<AVDictionary>()) {
+            match avcodec_wasmedge::avcodec_open2(
+                self.ptr(),
+                mem::zeroed::<AVCodec>(),
+                mem::zeroed::<AVDictionary>(),
+            ) {
                 0 => Ok(Encoder(self)),
                 e => Err(Error::from(e)),
             }
@@ -26,7 +31,11 @@ impl Audio {
     pub fn open_as<E: traits::Encoder>(mut self, codec: E) -> Result<Encoder, Error> {
         unsafe {
             if let Some(codec) = codec.encoder() {
-                match avcodec_wasmedge::avcodec_open2(self.ptr(), codec.ptr(), mem::zeroed::<AVDictionary>()) {
+                match avcodec_wasmedge::avcodec_open2(
+                    self.ptr(),
+                    codec.ptr(),
+                    mem::zeroed::<AVDictionary>(),
+                ) {
                     0 => Ok(Encoder(self)),
                     e => Err(Error::from(e)),
                 }
@@ -58,7 +67,7 @@ impl Audio {
         unsafe {
             if let Some(codec) = codec.encoder() {
                 let opts = options.disown();
-                let res = avcodec_wasmedge::avcodec_open2(self.ptr(), codec.ptr(),opts);
+                let res = avcodec_wasmedge::avcodec_open2(self.ptr(), codec.ptr(), opts);
 
                 Dictionary::own(opts);
 
@@ -74,19 +83,17 @@ impl Audio {
 
     pub fn set_rate(&mut self, rate: i32) {
         unsafe {
-            avcodec_wasmedge::avcodeccontext_set_sample_rate(self.ptr(),rate);
+            avcodec_wasmedge::avcodeccontext_set_sample_rate(self.ptr(), rate);
         }
     }
 
     pub fn rate(&self) -> u32 {
-        unsafe {
-            avcodec_wasmedge::avcodeccontext_sample_rate(self.ptr()) as u32
-        }
+        unsafe { avcodec_wasmedge::avcodeccontext_sample_rate(self.ptr()) as u32 }
     }
 
     pub fn set_format(&mut self, value: format::Sample) {
         unsafe {
-            avcodec_wasmedge::avcodeccontext_set_sample_format(self.ptr(),value.into());
+            avcodec_wasmedge::avcodeccontext_set_sample_format(self.ptr(), value.into());
         }
     }
 
@@ -99,28 +106,26 @@ impl Audio {
 
     pub fn set_channel_layout(&mut self, value: ChannelLayout) {
         unsafe {
-            avcodec_wasmedge::avcodeccontext_set_channel_layout(self.ptr(),value.bits());
+            avcodec_wasmedge::avcodeccontext_set_channel_layout(self.ptr(), value.bits());
         }
     }
 
     pub fn channel_layout(&self) -> ChannelLayout {
         unsafe {
-
-            ChannelLayout::from_bits_truncate(
-                avcodec_wasmedge::avcodeccontext_channel_layout(self.ptr()))
+            ChannelLayout::from_bits_truncate(avcodec_wasmedge::avcodeccontext_channel_layout(
+                self.ptr(),
+            ))
         }
     }
 
     pub fn set_channels(&mut self, value: i32) {
         unsafe {
-            avcodec_wasmedge::avcodeccontext_set_channels(self.ptr(),value);
+            avcodec_wasmedge::avcodeccontext_set_channels(self.ptr(), value);
         }
     }
 
     pub fn channels(&self) -> u16 {
-        unsafe {
-            avcodec_wasmedge::avcodeccontext_channels(self.ptr()) as u16
-        }
+        unsafe { avcodec_wasmedge::avcodeccontext_channels(self.ptr()) as u16 }
     }
 }
 
@@ -206,9 +211,7 @@ impl Encoder {
     // }
     //
     pub fn frame_size(&self) -> u32 {
-        unsafe {
-            avcodec_wasmedge::avcodeccontext_frame_size(self.ptr()) as u32
-        }
+        unsafe { avcodec_wasmedge::avcodeccontext_frame_size(self.ptr()) as u32 }
     }
 }
 

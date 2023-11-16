@@ -21,7 +21,7 @@ impl From<AVMediaType> for Type {
             3 => Type::Subtitle,
             4 => Type::Attachment,
             5 => Type::Unknown,
-            _ => Type::Unknown
+            _ => Type::Unknown,
         }
     }
 }

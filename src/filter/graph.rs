@@ -1,17 +1,19 @@
 use std::mem::MaybeUninit;
 use std::{mem, ptr};
 
-use super::{Context};
-// use super::{Context, Filter};
-use Error;
-use filter::types::{AVFilterContext, AVFilterGraph, AVFilterInOut};
 use avfilter_wasmedge;
+use Error;
+// use super::{Context, Filter};
+use filter::types::{AVFilterContext, AVFilterGraph, AVFilterInOut};
+
+use super::Context;
 
 pub struct Graph {
     ptr: AVFilterGraph,
 }
 
 unsafe impl Send for Graph {}
+
 unsafe impl Sync for Graph {}
 
 impl Graph {
@@ -22,7 +24,6 @@ impl Graph {
     pub unsafe fn ptr(&self) -> AVFilterGraph {
         self.ptr
     }
-
 }
 
 impl Graph {
@@ -42,7 +43,6 @@ impl Graph {
 
     pub fn validate(&mut self) -> Result<(), Error> {
         unsafe {
-
             match avfilter_wasmedge::avfilter_graph_config(self.ptr()) {
                 0 => Ok(()),
                 e => Err(Error::from(e)),
@@ -84,7 +84,12 @@ impl Graph {
     {
         unsafe {
             let avfilter_context = MaybeUninit::<AVFilterContext>::uninit();
-            avfilter_wasmedge::avfilter_graph_get_filter(avfilter_context.as_ptr() as u32,self.ptr(), name.as_ptr(),name.len());
+            avfilter_wasmedge::avfilter_graph_get_filter(
+                avfilter_context.as_ptr() as u32,
+                self.ptr(),
+                name.as_ptr(),
+                name.len(),
+            );
 
             let avfilter_context = ptr::read(avfilter_context.as_ptr());
             if avfilter_context == 0 {
@@ -199,13 +204,12 @@ impl<'a> Parser<'a> {
 
     pub fn parse(mut self, spec: &str) -> Result<(), Error> {
         unsafe {
-
             let result = avfilter_wasmedge::avfilter_graph_parse_ptr(
                 self.graph.ptr(),
                 spec.as_ptr(),
                 spec.len(),
                 self.inputs,
-                self.outputs
+                self.outputs,
             );
 
             // This may fail. Check once.

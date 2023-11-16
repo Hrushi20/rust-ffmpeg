@@ -1,19 +1,24 @@
+use std::mem;
 use std::ops::{Deref, DerefMut};
-use std::{mem};
 
-use super::Encoder as Super;
-use codec::{traits, Context};
-use {Dictionary, Error};
-use avcodec_wasmedge;
 use avCodecType::AVCodec;
 use avUtilTypes::AVDictionary;
+use avcodec_wasmedge;
+use codec::{traits, Context};
+use {Dictionary, Error};
+
+use super::Encoder as Super;
 
 pub struct Subtitle(pub Super);
 
 impl Subtitle {
     pub fn open(mut self) -> Result<Encoder, Error> {
         unsafe {
-            match avcodec_wasmedge::avcodec_open2(self.ptr(), mem::zeroed::<AVCodec>(), mem::zeroed::<AVDictionary>()) {
+            match avcodec_wasmedge::avcodec_open2(
+                self.ptr(),
+                mem::zeroed::<AVCodec>(),
+                mem::zeroed::<AVDictionary>(),
+            ) {
                 0 => Ok(Encoder(self)),
                 e => Err(Error::from(e)),
             }
@@ -23,7 +28,11 @@ impl Subtitle {
     pub fn open_as<E: traits::Encoder>(mut self, codec: E) -> Result<Encoder, Error> {
         unsafe {
             if let Some(codec) = codec.encoder() {
-                match avcodec_wasmedge::avcodec_open2(self.ptr(), codec.ptr(), mem::zeroed::<AVDictionary>()) {
+                match avcodec_wasmedge::avcodec_open2(
+                    self.ptr(),
+                    codec.ptr(),
+                    mem::zeroed::<AVDictionary>(),
+                ) {
                     0 => Ok(Encoder(self)),
                     e => Err(Error::from(e)),
                 }

@@ -1,6 +1,7 @@
-use super::Context;
 use util::format;
 use {decoder, frame, ChannelLayout, Error};
+
+use super::Context;
 
 impl frame::Audio {
     #[inline]
@@ -13,7 +14,7 @@ impl frame::Audio {
         Context::get(
             self.format(),
             self.channel_layout(),
-           self.rate(),
+            self.rate(),
             format,
             channel_layout,
             rate,
