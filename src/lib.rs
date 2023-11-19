@@ -103,8 +103,8 @@ pub mod device;
 //
 #[cfg(feature = "filter")]
 pub mod filter;
-// #[cfg(feature = "filter")]
-// pub use filter::Filter;
+#[cfg(feature = "filter")]
+pub use filter::Filter;
 
 pub mod constants;
 pub mod software;

@@ -1,7 +1,5 @@
-use libc::c_int;
-
 bitflags! {
-    pub struct Flags: c_int {
+    pub struct Flags: i32 {
         const DYNAMIC_INPUTS            = 1 << 0;
         const DYNAMIC_OUTPUTS           = 1 << 1;
         const SLICE_THREADS             = 1 << 2;

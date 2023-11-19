@@ -1,4 +1,7 @@
 use avfilter_wasmedge;
+use filter::types::AVFilter;
+use std::mem::MaybeUninit;
+use std::ptr;
 
 pub use self::context::{Context, Sink, Source};
 pub use self::flag::Flags;
@@ -6,11 +9,11 @@ pub use self::graph::Graph;
 
 pub mod flag;
 
-// pub mod pad;
-// pub use self::pad::Pad;
+pub mod pad;
+pub use self::pad::Pad;
 
-// pub mod filter;
-// pub use self::filter::Filter;
+pub mod filter;
+pub use self::filter::Filter;
 
 pub mod context;
 
@@ -59,20 +62,23 @@ pub fn license() -> String {
     }
 }
 
-// pub fn find(name: &str) -> Option<Filter> {
-//     unsafe {
-//
-//         let avfilter = MaybeUninit::<AVFilter>::uninit();
-//         avfilter_wasmedge::avfilter_get_by_name(avfilter.as_ptr(),name.as_ptr(),name.len());
-//
-//         let avfilter = ptr::read(avfilter.as_ptr());
-//         if avfilter == 0 {
-//             None
-//         } else {
-//             Some(Filter::wrap(avfilter))
-//         }
-//     }
-// }
+pub fn find(name: &str) -> Option<Filter> {
+    unsafe {
+        let av_filter = MaybeUninit::<AVFilter>::uninit();
+        avfilter_wasmedge::avfilter_get_by_name(
+            av_filter.as_ptr() as u32,
+            name.as_ptr(),
+            name.len(),
+        );
+
+        let av_filter = ptr::read(av_filter.as_ptr());
+        if av_filter == 0 {
+            None
+        } else {
+            Some(Filter::wrap(av_filter))
+        }
+    }
+}
 
 // #[cfg(test)]
 // mod tests {

@@ -32,6 +32,7 @@ avcodec-license: func(licensePtr:string) -> s32
 avcodeccontext-codec-id : func(avCodecCtxId:u32) -> u32
 avcodeccontext-codec-type : func(avCodecCtxId:u32) -> s32
 avcodeccontext-set-codec-type : func(avCodecCtxId:u32,CodecTypeId:s32) -> s32
+avcodeccontext-set-time-base: func(avCodecCtxId:u32,Num:s32,Den:s32) -> s32
 avcodeccontext-time-base : func(avCodecCtxId:u32,NumPtr:u32,DenPtr:u32) -> s32
 avcodeccontext-width : func(avCodecCtxId:u32) -> s32
 avcodeccontext-set-width: func(avCodecCtxId:u32,width:s32) -> s32
@@ -40,9 +41,9 @@ avcodeccontext-set-height: func(avCodecCtxId:u32,height:s32) -> s32
 avcodeccontext-sample-aspect-ratio : func(avCodecCtxId:u32,NumPtr:u32,DenPtr:u32) -> s32
 avcodeccontext-set-sample-aspect-ratio: func(avCodecCtxId:u32,Num:s32,Den:s32) -> s32
 avcodeccontext-channel-layout : func(AvCodecCtxId:u32) -> u64
-avcodeccontext-set-channel-layout : func(AvCodecCtxId:u32,channelLayoutId:u64) -> u64
+avcodeccontext-set-channel-layout : func(AvCodecCtxId:u32,channelLayoutId:u64) -> s32
 avcodeccontext-pix-fmt : func(AvCodecCtxId:u32) -> u32
-avcodeccontext-set-pix-fmt : func(AvCodecCtxId:u32,PixFmt:u32) -> u32
+avcodeccontext-set-pix-fmt : func(AvCodecCtxId:u32,PixFmt:u32) -> s32
 avcodeccontext-sample-format : func(AvCodecCtxId:u32) -> u32
 avcodeccontext-set-sample-format: func(AvCodecCtxId:u32,sampleFmtId:u32) -> s32
 avcodeccontext-sample-rate : func(AvCodecCtxId:u32) -> s32
@@ -87,7 +88,6 @@ avcodeccontext-rc-max-rate: func(avCodecCtxId:u32) -> s64
 avcodeccontext-set-rc-max-rate: func(avCodecCtxId:u32,RcMaxRate:s64) -> s32
 avcodeccontext-set-bit-rate-tolerance: func(avCodecCtxId:u32,BitRateTolerance:s32) -> s32
 avcodeccontext-set-compression-level: func(avCodecCtxId:u32,CompressionLevel:s32) -> s32
-avcodeccontext-set-time-base: func(avCodecCtxId:u32,Num:s32,Den:s32) -> s32
 avcodeccontext-framerate: func(avCodecCtxId:u32,NumPtr:u32,DenPtr:u32) -> s32
 avcodeccontext-set-framerate: func(avCodecCtxId:u32,Num:s32,Den:s32) -> s32
 avcodeccontext-set-flags: func(avCodecCtxId:u32,Flags:s32) -> s32

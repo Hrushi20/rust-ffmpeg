@@ -1,19 +1,18 @@
-use std::ffi::CStr;
+use avfilter_wasmedge;
+use filter::types::AVFilterPad;
 use std::marker::PhantomData;
-use std::str::from_utf8_unchecked;
 
-use ffi::*;
 use media;
 
 pub struct Pad<'a> {
-    ptr: *const AVFilterPad,
+    ptr: AVFilterPad,
     idx: isize,
 
     _marker: PhantomData<&'a ()>,
 }
 
 impl<'a> Pad<'a> {
-    pub unsafe fn wrap(ptr: *const AVFilterPad, idx: isize) -> Self {
+    pub unsafe fn wrap(ptr: AVFilterPad, idx: isize) -> Self {
         Pad {
             ptr,
             idx,
@@ -21,29 +20,36 @@ impl<'a> Pad<'a> {
         }
     }
 
-    pub unsafe fn as_ptr(&self) -> *const AVFilterPad {
+    pub unsafe fn ptr(&self) -> AVFilterPad {
         self.ptr
-    }
-
-    pub unsafe fn as_mut_ptr(&mut self) -> *mut AVFilterPad {
-        self.ptr as *mut _
     }
 }
 
 impl<'a> Pad<'a> {
-    pub fn name(&self) -> Option<&str> {
+    pub fn name(&self) -> Option<String> {
         unsafe {
-            let ptr = avfilter_pad_get_name(self.ptr, self.idx as i32);
+            let len = avfilter_wasmedge::avfilter_pad_get_name_length(self.ptr(), self.idx as i32)
+                as usize;
 
-            if ptr.is_null() {
+            if len == 0 {
                 None
             } else {
-                Some(from_utf8_unchecked(CStr::from_ptr(ptr).to_bytes()))
+                let name = vec![0u8; len];
+                avfilter_wasmedge::avfilter_pad_get_name(
+                    self.ptr(),
+                    self.idx as i32,
+                    name.as_ptr(),
+                    len,
+                );
+                Some(String::from_utf8_unchecked(name))
             }
         }
     }
 
     pub fn medium(&self) -> media::Type {
-        unsafe { media::Type::from(avfilter_pad_get_type(self.ptr, self.idx as i32)) }
+        unsafe {
+            let media_type = avfilter_wasmedge::avfilter_pad_get_type(self.ptr(), self.idx as i32);
+            media::Type::from(media_type)
+        }
     }
 }

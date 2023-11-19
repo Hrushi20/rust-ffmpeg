@@ -51,6 +51,8 @@ impl<'a> Context<'a> {
     // }
 }
 
+// Add Drop Trait. Else won't be cleaned from C++ Plugin.
+
 // unsafe impl<'a> option::Target for Context<'a> {
 //     fn as_ptr(&self) -> *const c_void {
 //         self.ptr as *const _

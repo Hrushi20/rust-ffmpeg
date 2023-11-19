@@ -1,12 +1,10 @@
 use std::mem::MaybeUninit;
 use std::{mem, ptr};
 
+use super::{Context, Filter};
 use avfilter_wasmedge;
-use Error;
-// use super::{Context, Filter};
 use filter::types::{AVFilterContext, AVFilterGraph, AVFilterInOut};
-
-use super::Context;
+use Error;
 
 pub struct Graph {
     ptr: AVFilterGraph,
@@ -50,33 +48,38 @@ impl Graph {
         }
     }
 
-    // pub fn add<'a, 'b>(
-    //     &'a mut self,
-    //     filter: &Filter,
-    //     name: &str,
-    //     args: &str,
-    // ) -> Result<Context<'b>, Error>
-    // where
-    //     'a: 'b,
-    // {
-    //     unsafe {
-    //         let name = CString::new(name).unwrap();
-    //         let args = CString::new(args).unwrap();
-    //         let mut context = ptr::null_mut();
-    //
-    //         match avfilter_graph_create_filter(
-    //             &mut context as *mut *mut AVFilterContext,
-    //             filter.as_ptr(),
-    //             name.as_ptr(),
-    //             args.as_ptr(),
-    //             ptr::null_mut(),
-    //             self.as_mut_ptr(),
-    //         ) {
-    //             n if n >= 0 => Ok(Context::wrap(context)),
-    //             e => Err(Error::from(e)),
-    //         }
-    //     }
-    // }
+    pub fn add<'a, 'b>(
+        &'a mut self,
+        filter: &Filter,
+        name: &str,
+        args: &str,
+    ) -> Result<Context<'b>, Error>
+    where
+        'a: 'b,
+    {
+        unsafe {
+            // let name = CString::new(name).unwrap();
+            // let args = CString::new(args).unwrap();
+            // let mut context = ptr::null_mut();
+            let ctx = MaybeUninit::<AVFilterContext>::uninit();
+
+            match avfilter_wasmedge::avfilter_graph_create_filter(
+                ctx.as_ptr() as u32,
+                filter.ptr(),
+                name.as_ptr(),
+                name.len(),
+                args.as_ptr(),
+                args.len(),
+                self.ptr(),
+            ) {
+                n if n >= 0 => {
+                    let ctx = ptr::read(ctx.as_ptr());
+                    Ok(Context::wrap(ctx))
+                }
+                e => Err(Error::from(e)),
+            }
+        }
+    }
 
     pub fn get<'a, 'b>(&'b mut self, name: &str) -> Option<Context<'b>>
     where
@@ -212,7 +215,6 @@ impl<'a> Parser<'a> {
                 self.outputs,
             );
 
-            // This may fail. Check once.
             avfilter_wasmedge::avfilter_inout_free(self.inputs);
             avfilter_wasmedge::avfilter_inout_free(self.outputs);
 
