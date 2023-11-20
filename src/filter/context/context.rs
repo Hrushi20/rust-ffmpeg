@@ -52,13 +52,13 @@ impl<'a> Context<'a> {
     // }
 }
 
-impl<'a> Drop for Context<'a> {
-    fn drop(&mut self) {
-        unsafe {
-            avfilter_wasmedge::avfilter_context_drop(self.ptr());
-        }
-    }
-}
+// impl<'a> Drop for Context<'a> {
+//     fn drop(&mut self) {
+//         unsafe {
+//             avfilter_wasmedge::avfilter_context_drop(self.ptr());
+//         }
+//     }
+// }
 
 // unsafe impl<'a> option::Target for Context<'a> {
 //     fn as_ptr(&self) -> *const c_void {

@@ -90,13 +90,13 @@ impl Filter {
     }
 }
 
-impl Drop for Filter {
-    fn drop(&mut self) {
-        unsafe {
-            avfilter_wasmedge::avfilter_drop(self.ptr());
-        }
-    }
-}
+// impl Drop for Filter {
+//     fn drop(&mut self) {
+//         unsafe {
+//             avfilter_wasmedge::avfilter_drop(self.ptr());
+//         }
+//     }
+// }
 
 pub struct PadIter<'a> {
     ptr: AVFilterPad,
@@ -134,10 +134,10 @@ impl<'a> Iterator for PadIter<'a> {
     }
 }
 
-impl<'a> Drop for PadIter<'a> {
-    fn drop(&mut self) {
-        unsafe {
-            avfilter_wasmedge::avfilter_pad_drop(self.ptr);
-        }
-    }
-}
+// impl<'a> Drop for PadIter<'a> {
+//     fn drop(&mut self) {
+//         unsafe {
+//             avfilter_wasmedge::avfilter_pad_drop(self.ptr);
+//         }
+//     }
+// }
