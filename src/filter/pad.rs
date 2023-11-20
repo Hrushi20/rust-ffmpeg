@@ -1,7 +1,7 @@
-use avfilter_wasmedge;
-use filter::types::AVFilterPad;
 use std::marker::PhantomData;
 
+use avfilter_wasmedge;
+use filter::types::AVFilterPad;
 use media;
 
 pub struct Pad<'a> {

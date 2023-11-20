@@ -28,6 +28,8 @@ pub use codec::{decoder, encoder};
 #[cfg(feature = "codec")]
 pub use codec::threading;
 pub use codec::types as avCodecType;
+#[cfg(feature = "filter")]
+pub use filter::Filter;
 #[cfg(feature = "format")]
 pub use format::chapter::{Chapter, ChapterMut};
 #[cfg(feature = "format")]
@@ -103,8 +105,6 @@ pub mod device;
 //
 #[cfg(feature = "filter")]
 pub mod filter;
-#[cfg(feature = "filter")]
-pub use filter::Filter;
 
 pub mod constants;
 pub mod software;

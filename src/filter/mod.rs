@@ -1,19 +1,20 @@
-use avfilter_wasmedge;
-use filter::types::AVFilter;
 use std::mem::MaybeUninit;
 use std::ptr;
 
+use avfilter_wasmedge;
+use filter::types::AVFilter;
+
 pub use self::context::{Context, Sink, Source};
+pub use self::filter::Filter;
 pub use self::flag::Flags;
 pub use self::graph::Graph;
+pub use self::pad::Pad;
 
 pub mod flag;
 
 pub mod pad;
-pub use self::pad::Pad;
 
 pub mod filter;
-pub use self::filter::Filter;
 
 pub mod context;
 

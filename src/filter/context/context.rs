@@ -2,6 +2,7 @@ use std::marker::PhantomData;
 
 // use {format};
 // use {format, option, ChannelLayout};
+use avfilter_wasmedge;
 use filter::types::AVFilterContext;
 
 use super::{Sink, Source};
@@ -51,7 +52,13 @@ impl<'a> Context<'a> {
     // }
 }
 
-// Add Drop Trait. Else won't be cleaned from C++ Plugin.
+impl<'a> Drop for Context<'a> {
+    fn drop(&mut self) {
+        unsafe {
+            avfilter_wasmedge::avfilter_context_drop(self.ptr());
+        }
+    }
+}
 
 // unsafe impl<'a> option::Target for Context<'a> {
 //     fn as_ptr(&self) -> *const c_void {

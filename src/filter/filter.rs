@@ -1,11 +1,10 @@
-use std::ffi::CStr;
-use std::marker::PhantomData;
-use std::str::from_utf8_unchecked;
-
-use super::Flags;
 use avfilter_wasmedge;
-use filter::types::AVFilter;
-// use super::{Flags, Pad};
+use filter::types::{AVFilter, AVFilterPad};
+use std::marker::PhantomData;
+use std::mem::MaybeUninit;
+use std::ptr;
+
+use super::{Flags, Pad};
 
 pub struct Filter {
     ptr: AVFilter,
@@ -45,39 +44,43 @@ impl Filter {
         }
     }
 
-    // pub fn inputs(&self) -> Option<PadIter> {
-    //     unsafe {
-    //         let ptr = (*self.as_ptr()).inputs;
-    //
-    //         if ptr.is_null() {
-    //             None
-    //         } else {
-    //             #[cfg(not(feature = "ffmpeg_6_0"))]
-    //             let nb_inputs = avfilter_pad_count((*self.as_ptr()).inputs) as isize;
-    //             #[cfg(feature = "ffmpeg_6_0")]
-    //             let nb_inputs = (*self.as_ptr()).nb_inputs as isize;
-    //
-    //             Some(PadIter::new((*self.as_ptr()).inputs, nb_inputs))
-    //         }
-    //     }
-    // }
+    pub fn inputs(&self) -> Option<PadIter> {
+        unsafe {
+            let inputs = MaybeUninit::<AVFilterPad>::uninit();
+            avfilter_wasmedge::avfilter_get_inputs_filter_pad(self.ptr(), inputs.as_ptr() as u32);
+            let inputs = ptr::read(inputs.as_ptr());
 
-    // pub fn outputs(&self) -> Option<PadIter> {
-    //     unsafe {
-    //         let ptr = (*self.as_ptr()).outputs;
-    //
-    //         if ptr.is_null() {
-    //             None
-    //         } else {
-    //             #[cfg(not(feature = "ffmpeg_6_0"))]
-    //             let nb_outputs = avfilter_pad_count((*self.as_ptr()).outputs) as isize;
-    //             #[cfg(feature = "ffmpeg_6_0")]
-    //             let nb_outputs = (*self.as_ptr()).nb_outputs as isize;
-    //
-    //             Some(PadIter::new((*self.as_ptr()).outputs, nb_outputs))
-    //         }
-    //     }
-    // }
+            if inputs == 0 {
+                None
+            } else {
+                // #[cfg(not(feature = "ffmpeg_6_0"))]
+                // let nb_inputs = avfilter_pad_count((*self.as_ptr()).inputs) as isize;
+                // #[cfg(feature = "ffmpeg_6_0")]
+                let nb_inputs = avfilter_wasmedge::avfilter_nb_inputs(self.ptr()) as isize;
+                Some(PadIter::new(inputs, nb_inputs))
+            }
+        }
+    }
+
+    pub fn outputs(&self) -> Option<PadIter> {
+        unsafe {
+            let outputs = MaybeUninit::<AVFilterPad>::uninit();
+            avfilter_wasmedge::avfilter_get_outputs_filter_pad(self.ptr(), outputs.as_ptr() as u32);
+            let outputs = ptr::read(outputs.as_ptr());
+
+            if outputs == 0 {
+                None
+            } else {
+                // #[cfg(not(feature = "ffmpeg_6_0"))]
+                // let nb_outputs = avfilter_pad_count((*self.as_ptr()).outputs) as isize;
+                // #[cfg(feature = "ffmpeg_6_0")]
+
+                let nb_outputs = avfilter_wasmedge::avfilter_nb_outputs(self.ptr()) as isize;
+
+                Some(PadIter::new(outputs, nb_outputs))
+            }
+        }
+    }
 
     pub fn flags(&self) -> Flags {
         unsafe {
@@ -86,39 +89,55 @@ impl Filter {
         }
     }
 }
-//
-// pub struct PadIter<'a> {
-//     ptr: *const AVFilterPad,
-//     count: isize,
-//     cur: isize,
-//
-//     _marker: PhantomData<&'a ()>,
-// }
-//
-// impl<'a> PadIter<'a> {
-//     pub fn new(ptr: *const AVFilterPad, count: isize) -> Self {
-//         adIter {
-//             ptr,
-//             count,
-//             cur: 0,
-//             _marker: PhantomData,
-//         }
-//     }
-// }
-//
-// impl<'a> Iterator for PadIter<'a> {
-//     type Item = Pad<'a>;
-//
-//     fn next(&mut self) -> Option<Self::Item> {
-//         unsafe {
-//             if self.cur >= self.count {
-//                 return None;
-//             }
-//
-//             let pad = Pad::wrap(self.ptr, self.cur);
-//             self.cur += 1;
-//
-//             Some(pad)
-//         }
-//     }
-// }
+
+impl Drop for Filter {
+    fn drop(&mut self) {
+        unsafe {
+            avfilter_wasmedge::avfilter_drop(self.ptr());
+        }
+    }
+}
+
+pub struct PadIter<'a> {
+    ptr: AVFilterPad,
+    count: isize,
+    cur: isize,
+
+    _marker: PhantomData<&'a ()>,
+}
+
+impl<'a> PadIter<'a> {
+    pub fn new(ptr: AVFilterPad, count: isize) -> Self {
+        PadIter {
+            ptr,
+            count,
+            cur: 0,
+            _marker: PhantomData,
+        }
+    }
+}
+
+impl<'a> Iterator for PadIter<'a> {
+    type Item = Pad<'a>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        unsafe {
+            if self.cur >= self.count {
+                return None;
+            }
+
+            let pad = Pad::wrap(self.ptr, self.cur);
+            self.cur += 1;
+
+            Some(pad)
+        }
+    }
+}
+
+impl<'a> Drop for PadIter<'a> {
+    fn drop(&mut self) {
+        unsafe {
+            avfilter_wasmedge::avfilter_pad_drop(self.ptr);
+        }
+    }
+}

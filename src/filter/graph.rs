@@ -1,10 +1,11 @@
 use std::mem::MaybeUninit;
 use std::{mem, ptr};
 
-use super::{Context, Filter};
 use avfilter_wasmedge;
 use filter::types::{AVFilterContext, AVFilterGraph, AVFilterInOut};
 use Error;
+
+use super::{Context, Filter};
 
 pub struct Graph {
     ptr: AVFilterGraph,
@@ -58,9 +59,6 @@ impl Graph {
         'a: 'b,
     {
         unsafe {
-            // let name = CString::new(name).unwrap();
-            // let args = CString::new(args).unwrap();
-            // let mut context = ptr::null_mut();
             let ctx = MaybeUninit::<AVFilterContext>::uninit();
 
             match avfilter_wasmedge::avfilter_graph_create_filter(
@@ -103,25 +101,23 @@ impl Graph {
         }
     }
 
-    // pub fn dump(&self) -> String {
-    //     unsafe {
-    //         let ptr = avfilter_graph_dump(self.as_ptr() as *mut _, ptr::null());
-    //         let cstr = from_utf8_unchecked(CStr::from_ptr(ptr).to_bytes());
-    //         let string = cstr.to_owned();
-    //
-    //         av_free(ptr as *mut _);
-    //
-    //         string
-    //     }
-    // }
+    pub fn dump(&self) -> String {
+        unsafe {
+            let len = avfilter_wasmedge::avfilter_graph_dump_length(self.ptr()) as usize;
+            let graph_str = vec![0u8; len];
+            avfilter_wasmedge::avfilter_graph_dump(self.ptr(), graph_str.as_ptr(), len);
+            avfilter_wasmedge::avfilter_free_graph_str(self.ptr());
+            String::from_utf8_unchecked(graph_str)
+        }
+    }
 
-    // pub fn input(&mut self, name: &str, pad: usize) -> Result<Parser, Error> {
-    //     Parser::new(self).input(name, pad)
-    // }
-    //
-    // pub fn output(&mut self, name: &str, pad: usize) -> Result<Parser, Error> {
-    //     Parser::new(self).output(name, pad)
-    // }
+    pub fn input(&mut self, name: &str, pad: usize) -> Result<Parser, Error> {
+        Parser::new(self).input(name, pad)
+    }
+
+    pub fn output(&mut self, name: &str, pad: usize) -> Result<Parser, Error> {
+        Parser::new(self).output(name, pad)
+    }
 
     pub fn parse(&mut self, spec: &str) -> Result<(), Error> {
         Parser::new(self).parse(spec)
@@ -153,57 +149,59 @@ impl<'a> Parser<'a> {
         }
     }
 
-    // pub fn input(mut self, name: &str, pad: usize) -> Result<Self, Error> {
-    //     unsafe {
-    //         let mut context = self.graph.get(name).ok_or(Error::InvalidData)?;
-    //         let input = avfilter_inout_alloc();
-    //
-    //         if input.is_null() {
-    //             panic!("out of memory");
-    //         }
-    //
-    //         let name = CString::new(name).unwrap();
-    //
-    //         (*input).name = av_strdup(name.as_ptr());
-    //         (*input).filter_ctx = context.as_mut_ptr();
-    //         (*input).pad_idx = pad as c_int;
-    //         (*input).next = ptr::null_mut();
-    //
-    //         if self.inputs.is_null() {
-    //             self.inputs = input;
-    //         } else {
-    //             (*self.inputs).next = input;
-    //         }
-    //     }
-    //
-    //     Ok(self)
-    // }
-    //
-    // pub fn output(mut self, name: &str, pad: usize) -> Result<Self, Error> {
-    //     unsafe {
-    //         let mut context = self.graph.get(name).ok_or(Error::InvalidData)?;
-    //         let output = avfilter_inout_alloc();
-    //
-    //         if output.is_null() {
-    //             panic!("out of memory");
-    //         }
-    //
-    //         let name = CString::new(name).unwrap();
-    //
-    //         (*output).name = av_strdup(name.as_ptr());
-    //         (*output).filter_ctx = context.as_mut_ptr();
-    //         (*output).pad_idx = pad as c_int;
-    //         (*output).next = ptr::null_mut();
-    //
-    //         if self.outputs.is_null() {
-    //             self.outputs = output;
-    //         } else {
-    //             (*self.outputs).next = output;
-    //         }
-    //     }
-    //
-    //     Ok(self)
-    // }
+    pub fn input(mut self, name: &str, pad: usize) -> Result<Self, Error> {
+        unsafe {
+            let mut context = self.graph.get(name).ok_or(Error::InvalidData)?;
+
+            let input = MaybeUninit::<AVFilterInOut>::uninit();
+            avfilter_wasmedge::avfilter_inout_alloc(input.as_ptr() as u32);
+            let input = ptr::read(input.as_ptr()) as u32;
+
+            if input == 0 {
+                panic!("out of memory");
+            }
+
+            avfilter_wasmedge::avfilter_inout_set_name(input, name.as_ptr(), name.len());
+            avfilter_wasmedge::avfilter_inout_set_filter_ctx(input, context.ptr());
+            avfilter_wasmedge::avfilter_inout_set_pad_idx(input, pad as i32);
+            avfilter_wasmedge::avfilter_inout_set_next(input, 0); // Setting Null
+
+            if self.inputs == 0 {
+                self.inputs = input;
+            } else {
+                avfilter_wasmedge::avfilter_inout_set_next(self.inputs, input);
+            }
+        }
+
+        Ok(self)
+    }
+
+    pub fn output(mut self, name: &str, pad: usize) -> Result<Self, Error> {
+        unsafe {
+            let mut context = self.graph.get(name).ok_or(Error::InvalidData)?;
+
+            let output = MaybeUninit::<AVFilterInOut>::uninit();
+            avfilter_wasmedge::avfilter_inout_alloc(output.as_ptr() as u32);
+            let output = ptr::read(output.as_ptr());
+
+            if output == 0 {
+                panic!("out of memory");
+            }
+
+            avfilter_wasmedge::avfilter_inout_set_name(output, name.as_ptr(), name.len());
+            avfilter_wasmedge::avfilter_inout_set_filter_ctx(output, context.ptr());
+            avfilter_wasmedge::avfilter_inout_set_pad_idx(output, pad as i32);
+            avfilter_wasmedge::avfilter_inout_set_next(output, 0); // Setting Null
+
+            if self.outputs == 0 {
+                self.outputs = output;
+            } else {
+                avfilter_wasmedge::avfilter_inout_set_next(self.outputs, output);
+            }
+        }
+
+        Ok(self)
+    }
 
     pub fn parse(mut self, spec: &str) -> Result<(), Error> {
         unsafe {
