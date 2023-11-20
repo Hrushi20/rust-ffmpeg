@@ -3,7 +3,7 @@ name = "ffmpeg-next"
 version = "6.0.0"
 build = "build.rs"
 
-authors = ["meh. <meh@schizofreni.co>", "Zhiming Wang <i@zhimingwang.org>"]
+authors = ["hrushikesh20thegreat@gmail.com","meh. <meh@schizofreni.co>", "Zhiming Wang <i@zhimingwang.org>"]
 license = "WTFPL"
 
 description = "Safe FFmpeg wrapper (FFmpeg 4 compatible fork of the ffmpeg crate)"
@@ -15,7 +15,7 @@ keywords = ["ffmpeg", "multimedia", "video", "audio"]
 categories = ["multimedia"]
 
 [features]
-default = ["codec", "device", "filter", "format", "software-resampling", "software-scaling"]
+default = ["codec", "device", "filter", "format", "software-resampling", "software-scaling","ffmpeg_6_0"]
 codec = []
 device = ["format"]
 filter = []
@@ -24,6 +24,7 @@ resampling = []
 postprocessing = []
 software-resampling = []
 software-scaling = ["codec"]
+ffmpeg_6_0 = []
 
 # ffmpeg<xy> are obsolete features kept for backward compatibility purposes and
 # don't do anything anymore (equivalents are automatically specified through
