@@ -1,8 +1,6 @@
-use libc::c_int;
-
 // Values taken from FFMPEG DOC.
 bitflags! {
-    pub struct Flags: c_int {
+    pub struct Flags: i32 {
         const FAST_BILINEAR        = 1;
         const BILINEAR             = 2;
         const BICUBIC              = 4;

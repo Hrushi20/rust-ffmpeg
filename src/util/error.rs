@@ -1,20 +1,8 @@
 use std::error;
-use std::ffi::CStr;
+use std::ffi::{c_char, CStr};
 use std::fmt;
 use std::io;
 use std::str::from_utf8_unchecked;
-
-// Few Error codes missing.
-pub use libc::{
-    E2BIG, EACCES, EADDRINUSE, EADDRNOTAVAIL, EAFNOSUPPORT, EAGAIN, EALREADY, EBADF, EBADMSG,
-    EBUSY, ECANCELED, ECHILD, ECONNABORTED, ECONNREFUSED, ECONNRESET, EDEADLK, EDESTADDRREQ, EDOM,
-    EEXIST, EFAULT, EFBIG, EHOSTUNREACH, EIDRM, EILSEQ, EINPROGRESS, EINTR, EINVAL, EIO, EISCONN,
-    EISDIR, ELOOP, EMFILE, EMLINK, EMSGSIZE, ENAMETOOLONG, ENETDOWN, ENETRESET, ENETUNREACH,
-    ENFILE, ENOBUFS, ENODEV, ENOENT, ENOEXEC, ENOLCK, ENOLINK, ENOMEM, ENOMSG, ENOPROTOOPT, ENOSPC,
-    ENOSYS, ENOTCONN, ENOTDIR, ENOTEMPTY, ENOTRECOVERABLE, ENOTSOCK, ENOTSUP, ENOTTY, ENXIO,
-    EOPNOTSUPP, EOVERFLOW, EOWNERDEAD, EPERM, EPIPE, EPROTO, EPROTONOSUPPORT, EPROTOTYPE, ERANGE,
-    EROFS, ESPIPE, ESRCH, ETIMEDOUT, ETXTBSY, EWOULDBLOCK, EXDEV,
-};
 
 use avutil_wasmedge;
 use error::ErrorCode::AV_ERROR_MAX_STRING_SIZE;
@@ -193,13 +181,10 @@ impl fmt::Display for Error {
             // WasmEdge Errors.
             Error::WasmEdgeMissingMemory => "WasmEdge Missing Memory Frame",
             Error::WasmEdgeNullStructId => "Struct Pointer missing for given Id",
+            Error::Other { errno } => "Libc Error Code: ",
             _ => unsafe {
                 from_utf8_unchecked(
-                    CStr::from_ptr(match self {
-                        Error::Other { errno } => libc::strerror(*errno),
-                        _ => STRINGS[index(self)].as_ptr() as *const i8,
-                    })
-                    .to_bytes(),
+                    CStr::from_ptr(STRINGS[index(self)].as_ptr() as *const c_char).to_bytes(),
                 )
             },
         })
@@ -428,3 +413,94 @@ pub fn register_all() {
 //     }
 // }
 //
+
+// LIBC ERROR CODES. LIBC Error codes not supporting wasm. Hardcoded it.
+pub const EBADF: i32 = 9;
+pub const EBUSY: i32 = 16;
+pub const EADDRINUSE: i32 = 48;
+pub const EADDRNOTAVAIL: i32 = 49;
+pub const EPFNOSUPPORT: i32 = 46;
+
+pub const EAGAIN: i32 = 35;
+pub const EALREADY: i32 = 37;
+pub const EBADMSG: i32 = 94;
+pub const ECANCELED: i32 = 89;
+pub const ECHILD: i32 = 10;
+pub const ECONNABORTED: i32 = 53;
+pub const ECONNREFUSED: i32 = 61;
+
+pub const ECONNRESET: i32 = 54;
+pub const EDEADLK: i32 = 11;
+pub const EDESTADDRREQ: i32 = 39;
+pub const EDOM: i32 = 33;
+pub const EEXIST: i32 = 17;
+pub const EFAULT: i32 = 14;
+pub const EFBIG: i32 = 27;
+pub const EHOSTUNREACH: i32 = 65;
+pub const EIDRM: i32 = 90;
+pub const EILSEQ: i32 = 92;
+pub const EINPROGRESS: i32 = 36;
+pub const EINTR: i32 = 4;
+pub const EINVAL: i32 = 22;
+pub const EIO: i32 = 5;
+pub const EISCONN: i32 = 56;
+pub const EISDIR: i32 = 21;
+pub const ELOOP: i32 = 62;
+
+pub const EMFILE: i32 = 24;
+pub const EMLINK: i32 = 31;
+pub const EMSGSIZE: i32 = 40;
+pub const ENAMETOOLONG: i32 = 63;
+pub const ENETDOWN: i32 = 50;
+pub const ENETRESET: i32 = 52;
+pub const ENETUNREACH: i32 = 51;
+pub const ENFILE: i32 = 23;
+pub const ENOBUFS: i32 = 55;
+pub const ENODATA: i32 = 96;
+pub const ENODEV: i32 = 19;
+pub const ENOENT: i32 = 2;
+pub const ENOEXEC: i32 = 8;
+pub const ENOLCK: i32 = 77;
+pub const ENOLINK: i32 = 97;
+pub const ENOMEM: i32 = 12;
+pub const ENOMSG: i32 = 91;
+pub const ENOPROTOOPT: i32 = 42;
+pub const ENOSPC: i32 = 28;
+pub const ENOSR: i32 = 98;
+pub const ENOSTR: i32 = 99;
+pub const ENOSYS: i32 = 78;
+pub const ENOTCONN: i32 = 57;
+pub const ENOTDIR: i32 = 20;
+pub const ENOTEMPTY: i32 = 66;
+pub const ENOTRECOVERABLE: i32 = 104;
+pub const ENOTSOCK: i32 = 38;
+pub const ENOTSUP: i32 = 45;
+pub const ENOTTY: i32 = 25;
+pub const ENXIO: i32 = 6;
+pub const EOPNOTSUPP: i32 = 102;
+pub const EOVERFLOW: i32 = 84;
+pub const EOWNERDEAD: i32 = 105;
+pub const EPERM: i32 = 1;
+pub const EPIPE: i32 = 32;
+
+pub const EPROTO: i32 = 100;
+
+pub const EPROTONOSUPPORT: i32 = 43;
+pub const EPROTOTYPE: i32 = 41;
+pub const ERANGE: i32 = 34;
+
+pub const EROFS: i32 = 30;
+
+pub const ESPIPE: i32 = 29;
+
+pub const ESRCH: i32 = 3;
+
+pub const ETIME: i32 = 101;
+
+pub const ETIMEDOUT: i32 = 60;
+
+pub const ETXTBSY: i32 = 26;
+
+pub const EWOULDBLOCK: i32 = EAGAIN;
+
+pub const EXDEV: i32 = 18;

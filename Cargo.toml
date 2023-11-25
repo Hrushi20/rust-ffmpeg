@@ -43,7 +43,6 @@ os_info = { version = "3.7.0", default-features = false }
 powershell_script = "1.1.0"
 
 [dependencies]
-libc = "0.2"
 bitflags = "1.2"
 
 [dependencies.image]

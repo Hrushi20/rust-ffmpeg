@@ -40,12 +40,12 @@ impl Input {
             // Need to update this. Can't create a Ptr to AvInputFormat, cuz there is no
             // way to clear the pointer in C++ Plugin. Need to Pass AVFormatCtxID to AVInputFormat
             // and fetch the functionalities.
-            let av_input_format = MaybeUninit::<AVInputFormat>::uninit();
+            let avinput_format = MaybeUninit::<AVInputFormat>::uninit();
             avformat_wasmedge::avformatContext_iformat(
                 self.ptr as u32,
-                av_input_format.as_ptr() as u32,
+                avinput_format.as_ptr() as u32,
             );
-            format::Input::wrap(ptr::read(av_input_format.as_ptr()))
+            format::Input::wrap(ptr::read(avinput_format.as_ptr()))
         }
     }
 

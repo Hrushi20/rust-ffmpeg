@@ -7,7 +7,6 @@
 extern crate bitflags;
 #[cfg(feature = "image")]
 extern crate image;
-extern crate libc;
 
 #[cfg(feature = "codec")]
 pub use codec::audio_service::AudioService;

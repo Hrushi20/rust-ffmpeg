@@ -35,12 +35,9 @@ impl Output {
 impl Output {
     pub fn format(&self) -> format::Output {
         unsafe {
-            let av_output_format = MaybeUninit::<AVOutputFormat>::uninit();
-            avformat_wasmedge::avformatContext_oformat(
-                self.ptr(),
-                av_output_format.as_ptr() as u32,
-            );
-            format::Output::wrap(ptr::read(av_output_format.as_ptr()))
+            let avoutput_format = MaybeUninit::<AVOutputFormat>::uninit();
+            avformat_wasmedge::avformatContext_oformat(self.ptr(), avoutput_format.as_ptr() as u32);
+            format::Output::wrap(ptr::read(avoutput_format.as_ptr()))
         }
     }
 

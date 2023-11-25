@@ -1,9 +1,6 @@
 use std::ffi::CString;
 use std::ops::Deref;
 
-use ffi::*;
-use libc::c_int;
-
 use super::{Ass, Bitmap, Flags, Text, Type};
 
 pub enum RectMut<'a> {
