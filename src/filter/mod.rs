@@ -65,18 +65,18 @@ pub fn license() -> String {
 
 pub fn find(name: &str) -> Option<Filter> {
     unsafe {
-        let av_filter = MaybeUninit::<AVFilter>::uninit();
+        let avfilter = MaybeUninit::<AVFilter>::uninit();
         avfilter_wasmedge::avfilter_get_by_name(
-            av_filter.as_ptr() as u32,
+            avfilter.as_ptr() as u32,
             name.as_ptr(),
             name.len(),
         );
 
-        let av_filter = ptr::read(av_filter.as_ptr());
-        if av_filter == 0 {
+        let avfilter = ptr::read(avfilter.as_ptr());
+        if avfilter == 0 {
             None
         } else {
-            Some(Filter::wrap(av_filter))
+            Some(Filter::wrap(avfilter))
         }
     }
 }

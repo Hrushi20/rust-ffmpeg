@@ -1,4 +1,5 @@
 use std::mem::MaybeUninit;
+use std::process::exit;
 use std::{mem, ptr};
 
 use avfilter_wasmedge;
@@ -213,8 +214,9 @@ impl<'a> Parser<'a> {
                 self.outputs,
             );
 
-            avfilter_wasmedge::avfilter_inout_free(self.inputs);
-            avfilter_wasmedge::avfilter_inout_free(self.outputs);
+            // Look into thisss...
+            // avfilter_wasmedge::avfilter_inout_free(self.inputs);
+            // avfilter_wasmedge::avfilter_inout_free(self.outputs);
 
             match result {
                 n if n >= 0 => Ok(()),

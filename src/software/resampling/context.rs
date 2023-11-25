@@ -69,10 +69,10 @@ impl Context {
             swresample_wasmedge::swr_alloc_set_opts(
                 swr_context.as_ptr() as u32,
                 mem::zeroed::<AVDictionary>(),
-                dst_channel_layout.bits() as i64,
+                dst_channel_layout.bits(),
                 dst_format.into(),
                 dst_rate,
-                src_channel_layout.bits() as i64,
+                src_channel_layout.bits(),
                 src_format.into(),
                 src_rate,
                 0,

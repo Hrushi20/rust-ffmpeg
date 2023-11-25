@@ -1,4 +1,5 @@
 use std::mem::MaybeUninit;
+use std::ops::Index;
 use std::ptr;
 
 use avutil_wasmedge;
@@ -170,10 +171,11 @@ impl Buffer {
     pub fn new(format: Sample, channels: u16, samples: usize, align: bool) -> Self {
         unsafe {
             let buffer = MaybeUninit::<u32>::uninit();
+            let linesize = MaybeUninit::<i32>::uninit();
 
             avutil_wasmedge::av_samples_alloc_array_and_samples(
                 buffer.as_ptr() as u32,
-                0,
+                linesize.as_ptr() as u32,
                 i32::from(channels),
                 samples as i32,
                 format.into(),
@@ -187,7 +189,7 @@ impl Buffer {
                 samples,
                 align,
                 buffer,
-                size: 0,
+                size: ptr::read(linesize.as_ptr()),
             };
 
             buf

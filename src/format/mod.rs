@@ -3,6 +3,7 @@ use std::path::Path;
 use std::{mem, ptr};
 
 use avformat_wasmedge;
+use constants::AVIO_FLAG_WRITE;
 pub use format::types::*;
 pub use util::format::{pixel, Pixel};
 pub use util::format::{sample, Sample};
@@ -81,7 +82,6 @@ fn from_path<P: AsRef<Path>>(path: &P) -> &str {
 // // NOTE: this will be better with specialization or anonymous return types
 pub fn open<P: AsRef<Path>>(path: &P, format: &Format) -> Result<Context, Error> {
     unsafe {
-        let avio_flag_write = 2;
         let av_format_ctx = MaybeUninit::<AVFormatContext>::uninit();
         let path = from_path(path);
 
@@ -118,7 +118,7 @@ pub fn open<P: AsRef<Path>>(path: &P, format: &Format) -> Result<Context, Error>
                     ptr::read(av_format_ctx.as_ptr()),
                     path.as_ptr(),
                     path.len(),
-                    avio_flag_write,
+                    AVIO_FLAG_WRITE,
                 ) {
                     0 => Ok(Context::Output(context::Output::wrap(ptr::read(
                         av_format_ctx.as_ptr(),
@@ -138,7 +138,6 @@ pub fn open_with<P: AsRef<Path>>(
     options: Dictionary,
 ) -> Result<Context, Error> {
     unsafe {
-        let avio_flag_write = 2;
         let av_format_ctx = MaybeUninit::<AVFormatContext>::uninit();
         let path = from_path(path);
         let opts = options.disown();
@@ -182,7 +181,7 @@ pub fn open_with<P: AsRef<Path>>(
                     ptr::read(av_format_ctx.as_ptr()),
                     path.as_ptr(),
                     path.len(),
-                    avio_flag_write,
+                    AVIO_FLAG_WRITE,
                 ) {
                     0 => Ok(Context::Output(context::Output::wrap(ptr::read(
                         av_format_ctx.as_ptr(),
@@ -291,8 +290,6 @@ pub fn input_with_dictionary<P: AsRef<Path>>(
 
 pub fn output<P: AsRef<Path>>(path: &P) -> Result<context::Output, Error> {
     unsafe {
-        let avio_flag_write = 2;
-
         let av_format_ctx = MaybeUninit::<AVFormatContext>::uninit();
         let path = from_path(path);
 
@@ -308,7 +305,7 @@ pub fn output<P: AsRef<Path>>(path: &P) -> Result<context::Output, Error> {
                 ptr::read(av_format_ctx.as_ptr()),
                 path.as_ptr(),
                 path.len(),
-                avio_flag_write,
+                AVIO_FLAG_WRITE,
             ) {
                 0 => Ok(context::Output::wrap(ptr::read(av_format_ctx.as_ptr()))),
                 e => Err(Error::from(e)),
@@ -324,7 +321,6 @@ pub fn output_with<P: AsRef<Path>>(
     options: Dictionary,
 ) -> Result<context::Output, Error> {
     unsafe {
-        let avio_flag_write = 2;
         let av_format_ctx = MaybeUninit::<AVFormatContext>::uninit();
         let path = from_path(path);
         let opts = options.disown();
@@ -342,7 +338,7 @@ pub fn output_with<P: AsRef<Path>>(
                     ptr::read(av_format_ctx.as_ptr()),
                     path.as_ptr(),
                     path.len(),
-                    avio_flag_write,
+                    AVIO_FLAG_WRITE,
                     mem::zeroed(),
                     opts,
                 );
@@ -362,7 +358,6 @@ pub fn output_with<P: AsRef<Path>>(
 
 pub fn output_as<P: AsRef<Path>>(path: &P, format: &str) -> Result<context::Output, Error> {
     unsafe {
-        let avio_flag_write = 2;
         let av_format_ctx = MaybeUninit::<AVFormatContext>::uninit();
         let path = from_path(path);
 
@@ -378,7 +373,7 @@ pub fn output_as<P: AsRef<Path>>(path: &P, format: &str) -> Result<context::Outp
                 ptr::read(av_format_ctx.as_ptr()),
                 path.as_ptr(),
                 path.len(),
-                avio_flag_write,
+                AVIO_FLAG_WRITE,
             ) {
                 0 => Ok(context::Output::wrap(ptr::read(av_format_ctx.as_ptr()))),
                 e => Err(Error::from(e)),
@@ -395,7 +390,6 @@ pub fn output_as_with<P: AsRef<Path>>(
     options: Dictionary,
 ) -> Result<context::Output, Error> {
     unsafe {
-        let avio_flag_write = 2;
         let av_format_ctx = MaybeUninit::<AVFormatContext>::uninit();
         let path = from_path(path);
         let mut opts = options.disown();
@@ -413,7 +407,7 @@ pub fn output_as_with<P: AsRef<Path>>(
                     ptr::read(av_format_ctx.as_ptr()),
                     path.as_ptr(),
                     path.len(),
-                    avio_flag_write,
+                    AVIO_FLAG_WRITE,
                     mem::zeroed(),
                     opts,
                 );

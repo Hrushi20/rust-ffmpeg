@@ -40,10 +40,7 @@ impl<'a> DeviceIter<'a> {
 
 impl<'a> DeviceIter<'a> {
     pub fn default(&self) -> usize {
-        unsafe {
-            println!("I am inside default");
-            avdevice_wasmedge::avdevice_default_device(self.ptr) as usize
-        }
+        unsafe { avdevice_wasmedge::avdevice_default_device(self.ptr) as usize }
     }
 }
 

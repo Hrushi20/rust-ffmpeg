@@ -88,8 +88,10 @@ impl Opened {
                 num.as_ptr() as u32,
                 den.as_ptr() as u32,
             );
+            let num = ptr::read(num.as_ptr());
+            let den = ptr::read(den.as_ptr());
 
-            let value = Rational::new(ptr::read(num.as_ptr()), ptr::read(den.as_ptr()));
+            let value = Rational::new(num, den);
             if value == (Rational::new(0, 1)) {
                 None
             } else {
