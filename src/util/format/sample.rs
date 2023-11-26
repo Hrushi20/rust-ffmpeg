@@ -144,6 +144,12 @@ enum AVSampleFormat {
     AV_SAMPLE_FMT_NB = 13,
 }
 
+impl Sample {
+    pub fn mask(self) -> i32 {
+        unsafe { avutil_wasmedge::av_get_sample_fmt_mask(self.into()) }
+    }
+}
+
 pub struct Buffer {
     pub format: Sample,
     pub channels: u16,

@@ -24,13 +24,13 @@ av-frame-height: func(frameId:u32) -> s32
 av-frame-set-width: func(frameId:u32,width:u32) -> s32
 av-frame-set-height: func(frameId:u32,height:u32) -> s32
 av-frame-video-format: func(frameId:u32) -> s32
-av-frame-set-video-format : func(frameId:u32,AvPixFormatId:u32) -> s32
+av-frame-set-video-format : func(frameId:u32,PixFormatId:u32) -> s32
 av-frame-isnull : func(avPacketId:u32) -> s32
 av-frame-linesize : func(avPacketId:u32,Idx:u32) -> s32
 av-frame-data : func(frameId:u32,data:list<u8>,Index:u32) -> s32
 av-frame-get-buffer : func(frameId:u32,Align:s32) -> s32
 av-frame-audio-format: func(frameId:u32) -> s32
-av-frame-set-audio-format: func(frameId:u32,AvSampleFormatId:u32) -> s32
+av-frame-set-audio-format: func(frameId:u32,SampleFormatId:u32) -> s32
 av-frame-set-nb-samples: func(frameId:u32,Samples:s32) -> s32
 av-frame-set-channel-layout: func(frameId:u32,ChannelLayoutId:u64) -> s32
 av-frame-nb-samples : func(frameId:u32) -> s32
@@ -69,9 +69,9 @@ av-frame-set-color-primaries: func(frameId:u32,colorPrimariesId:s32) -> s32
 av-frame-color-primaries: func(frameId:u32) -> s32
 
 // pixfmt.h
-avpixfmtdescriptor-nb-components : func(AvPixFormatId:u32) -> s32
-avpixfmtdescriptor-log2-chromah : func(AvPixFormatId:u32) -> s32
-avpixfmtdescriptor-log2-chromaw : func(AvPixFormatId:u32) -> s32
+avpixfmtdescriptor-nb-components : func(PixFormatId:u32) -> s32
+avpixfmtdescriptor-log2-chromah : func(PixFormatId:u32) -> s32
+avpixfmtdescriptor-log2-chromaw : func(PixFormatId:u32) -> s32
 av-color-range-name-length: func(ColorRangeId:s32) -> s32
 av-color-range-name: func(ColorRangeId:s32,NamePtr:string) -> s32
 av-color-transfer-name-length: func(TransferId:s32) -> s32
@@ -80,8 +80,9 @@ av-color-space-name-length: func(ColorSpaceId:s32) -> s32
 av-color-space-name: func(ColorSpaceId:s32,NamePtr:string) -> s32
 av-color-primaries-name-length: func(PrimariesId:s32) -> s32
 av-color-primaries-name: func(PrimariesId:s32,NamePtr:string) -> s32
-av-pix-format-name-length: func(AvPixFormatId:u32) -> s32
-av-pix-format-name: func(AvPixFormatId:u32,NamePtr:string) -> s32
+av-pix-format-name-length: func(PixFormatId:u32) -> s32
+av-pix-format-name: func(PixFormatId:u32,NamePtr:string) -> s32
+av-pix-format-mask: func(PixFormatId:u32) -> s32
 
 // samplefmt.h
 av-get-packed-sample-fmt : func(SampleFormatID:u32) -> u32
@@ -95,11 +96,8 @@ av-samples-alloc-array-and-samples : func(BufferPtr:u32,LinesizePtr:u32,NbChanne
 // av-samples-get-buffer : func(BufID:u32,Buf:list<u8>) -> s32
 av-get-sample-fmt-name-length: func(SampleFmtId:u32) -> s32
 av-get-sample-fmt-name: func(SampleFmtId:u32,NamePtr:string) -> s32
+av-get-sample-fmt-mask: func(SampleFmtId:u32) -> s32
 av-freep : func(BufId:u32) -> s32
-
-// channel_layout.h
-av-get-channel-layout-nb-channels : func(ChannelLayoutId:u64) -> s32
-av-get-default-channel-layout : func(Number:s32) -> u64
 
 // dict.h
 av-dict-set: func(DictId:u32,Key:string,Value:string,Flags:s32) -> s32
@@ -115,6 +113,11 @@ av-log-set-flags: func(flagId:s32) -> unit
 av-log-get-flags: func() -> s32
 av-rescale-q: func(a:s64,bNum:s32,bDen:s32,cNum:s32,cDen:s32) -> s64
 av-rescale-q-rnd: func(a:s64,bNum:s32,bDen:s32,cNum:s32,cDen:s32,roundingId:s32) -> s64
+av-get-channel-layout-nb-channels : func(ChannelLayoutId:u64) -> s32
+av-get-default-channel-layout : func(Number:s32) -> u64
+av-get-channel-layout-name-len: func(ChannelLayoutId:u64) -> s32
+av-get-channel-layout-name: func(ChannelLayoutId:u64,NamePtr:string) -> s32
+av-get-channel-layout-mask: func(ChannelLayoutId:u64) -> u64
 avutil-version: func() -> u32
 avutil-configuration-length: func() -> s32
 avutil-configuration: func(configPtr:string) -> s32

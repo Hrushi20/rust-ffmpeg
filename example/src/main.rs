@@ -1,7 +1,7 @@
 // =============================================================================
-//                              Transcoding Example
+//                             Audio Transcoding Example
 // =============================================================================
-//
+
 // extern crate ffmpeg_next as ffmpeg;
 //
 // use std::env;
@@ -22,14 +22,14 @@
 //         decoder.time_base(),
 //         decoder.rate(),
 //         decoder.format().name(),
-//         3
+//         decoder.channel_layout().mask()
 //     );
-//     println!("ChannelLayout: {:?}", decoder.channel_layout());
-//     println!("Args: {:?}", args);
 //
+//     println!("Args: {:?}", args);
 //     filter.add(&filter::find("abuffer").unwrap(), "in", &args)?;
 //     filter.add(&filter::find("abuffersink").unwrap(), "out", "")?;
 //
+//     // Thesse functions need to be implemented.
 //     // {
 //     //     let mut out = filter.get("out").unwrap();
 //     //
@@ -42,7 +42,6 @@
 //     filter.validate()?;
 //
 //     println!("{}", filter.dump());
-//     println!("After Dump");
 //
 //     if let Some(codec) = encoder.codec() {
 //         if !codec
@@ -107,11 +106,6 @@
 //     encoder.set_rate(decoder.rate() as i32);
 //     encoder.set_channel_layout(channel_layout);
 //     encoder.set_channels(channel_layout.channels());
-//     unsafe {
-//         println!("AVCodecPtr: {}", codec.name());
-//         println!("AVCodecPtr: {:?}", codec.formats().expect("Hey").next());
-//         // println!("CodecPtr: {:?}", codec.ptr());
-//     }
 //     encoder.set_format(
 //         codec
 //             .formats()
@@ -126,9 +120,6 @@
 //     output.set_time_base((1, decoder.rate() as i32));
 //
 //     let encoder = encoder.open_as(codec)?;
-//     println!("Encoder format: {:?}", encoder.format());
-//     println!("{:?}", output.id());
-//     println!("{:?}", output.duration());
 //     output.set_parameters(&encoder);
 //
 //     let filter = filter(filter_spec, &decoder, &encoder)?;
@@ -230,7 +221,6 @@
 //     let mut ictx = format::input(&input).unwrap();
 //     let mut octx = format::output(&output).unwrap();
 //     let mut transcoder = transcoder(&mut ictx, &mut octx, &output, &filter).unwrap();
-//     println!("Initialized Transcoder");
 //
 //     if let Some(position) = seek {
 //         // If the position was given in seconds, rescale it to ffmpegs base timebase.
@@ -673,7 +663,4 @@
 //     }
 // }
 
-extern crate ffmpeg_next as ffmpeg;
-fn main() {
-    println!("EAGAIN: {:?}", ffmpeg::util::error::EAGAIN);
-}
+fn main() {}

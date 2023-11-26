@@ -71,8 +71,22 @@ impl ChannelLayout {
 
     pub fn default(number: i32) -> ChannelLayout {
         unsafe {
-            ChannelLayout::from_bits_truncate(avutil_wasmedge::av_get_default_channel_layout(number))
+            ChannelLayout::from_bits_truncate(avutil_wasmedge::av_get_default_channel_layout(
+                number,
+            ))
         }
     }
-}
 
+    pub fn name(&self) -> String {
+        unsafe {
+            let len = avutil_wasmedge::av_get_channel_layout_name_len(self.bits()) as usize;
+            let name = vec![0u8; len];
+            avutil_wasmedge::av_get_channel_layout_name(self.bits(), name.as_ptr(), len);
+            String::from_utf8_unchecked(name)
+        }
+    }
+
+    pub fn mask(&self) -> u64 {
+        unsafe { avutil_wasmedge::av_get_channel_layout_mask(self.bits()) }
+    }
+}

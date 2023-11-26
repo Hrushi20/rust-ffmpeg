@@ -431,6 +431,10 @@ impl Pixel {
     pub fn descriptor(self) -> Option<Descriptor> {
         Some(Descriptor { ptr: self.into() })
     }
+
+    pub fn mask(self) -> i32 {
+        unsafe { avutil_wasmedge::av_pix_format_mask(self.into()) }
+    }
 }
 
 impl Descriptor {
