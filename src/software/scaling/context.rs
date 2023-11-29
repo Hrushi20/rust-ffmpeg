@@ -131,7 +131,7 @@ impl Context {
         &self.output
     }
 
-    pub fn run(&self, input: &frame::Video, output: &frame::Video) -> Result<(), Error> {
+    pub fn run(&self, input: &frame::Video, output: &mut frame::Video) -> Result<(), Error> {
         if input.format() != self.input.format
             || input.width() != self.input.width
             || input.height() != self.input.height

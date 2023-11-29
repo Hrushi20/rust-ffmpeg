@@ -389,31 +389,6 @@ pub fn register_all() {
     }
 }
 
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-//
-//     #[test]
-//     fn test_error_roundtrip() {
-//         assert_eq!(Into::<c_int>::into(Error::from(ErrorCode::AVERROR_EOF as i32)), ErrorCode::AVERROR_EOF as i32);
-//         assert_eq!(
-//             Into::<c_int>::into(Error::from(AVERROR(EAGAIN))),
-//             AVERROR(EAGAIN)
-//         );
-//         assert_eq!(Error::from(AVERROR(EAGAIN)), Error::Other { errno: EAGAIN });
-//     }
-//
-//     #[cfg(any(target_os = "linux", target_os = "macos"))]
-//     #[test]
-//     fn test_posix_error_string() {
-//         assert_eq!(
-//             Error::from(AVERROR(EAGAIN)).to_string(),
-//             "Resource temporarily unavailable"
-//         )
-//     }
-// }
-//
-
 // LIBC ERROR CODES. LIBC Error codes not supporting wasm. Hardcoded it.
 pub const EBADF: i32 = 9;
 pub const EBUSY: i32 = 16;

@@ -74,23 +74,6 @@ impl Rational {
     }
 }
 
-// impl From<AVRational> for Rational {
-//     #[inline]
-//     fn from(value: AVRational) -> Rational {
-//         Rational(value.num, value.den)
-//     }
-// }
-
-// impl From<Rational> for AVRational {
-//     #[inline]
-//     fn from(value: Rational) -> AVRational {
-//         AVRational {
-//             num: value.0,
-//             den: value.1,
-//         }
-//     }
-// }
-
 impl From<f64> for Rational {
     #[inline]
     fn from(value: f64) -> Rational {

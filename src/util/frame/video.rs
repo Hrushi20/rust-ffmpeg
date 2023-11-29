@@ -23,7 +23,7 @@ impl Video {
     }
 
     #[inline]
-    pub unsafe fn alloc(&self, format: format::Pixel, width: u32, height: u32) {
+    pub unsafe fn alloc(&mut self, format: format::Pixel, width: u32, height: u32) {
         self.set_format(format);
         self.set_width(width);
         self.set_height(height);
@@ -61,7 +61,7 @@ impl Video {
     }
 
     #[inline]
-    pub fn set_format(&self, value: format::Pixel) {
+    pub fn set_format(&mut self, value: format::Pixel) {
         unsafe {
             avutil_wasmedge::av_frame_set_video_format(self.ptr(), value.into());
         }
@@ -106,7 +106,7 @@ impl Video {
     }
 
     #[inline]
-    pub fn set_width(&self, value: u32) {
+    pub fn set_width(&mut self, value: u32) {
         unsafe {
             avutil_wasmedge::av_frame_set_width(self.ptr(), value);
         }
@@ -121,7 +121,7 @@ impl Video {
     }
 
     #[inline]
-    pub fn set_height(&self, value: u32) {
+    pub fn set_height(&mut self, value: u32) {
         unsafe {
             avutil_wasmedge::av_frame_set_height(self.ptr(), value);
         }

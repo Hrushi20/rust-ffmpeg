@@ -158,12 +158,12 @@ fn output(){
 
     let chapter = ictx.chapter(0).unwrap();
     let metadata = ictx.metadata().to_owned();
-    octx.add_chapter(chapter.id(),chapter.time_base(),chapter.start(),chapter.end(),"Title");
+    octx.add_chapter(chapter.id(),chapter.time_base(),chapter.start(),chapter.end(),"Title").unwrap();
     octx.set_metadata(metadata);
-    octx.write_header(); // Ignore Terminal Warning.
+    octx.write_header().unwrap();
     let dict = octx.metadata().to_owned();
-    octx.write_header_with(dict);
-    octx.write_trailer();
+    octx.write_header_with(dict); // Already wrote the header
+    octx.write_trailer().unwrap();
 }
 
 #[test]
@@ -176,22 +176,23 @@ fn open_files(){
     let dict = Dictionary::new();
     // dict.set("name","Hrushi");
 
-    ffmpeg::format::output_with(&output_file,dict);
-    ffmpeg::format::output_as(&output_file,&*format);
+    ffmpeg::format::output_with(&output_file,dict).unwrap();
+    ffmpeg::format::output_as(&output_file,&*format).unwrap();
 
     let dict = Dictionary::new();
     let oformat = ffmpeg::format::output_as_with(&output_file,&*format,dict).unwrap().format();
 
     let oformat =  ffmpeg::format::format::Format::Output(oformat);
-    ffmpeg::format::open(&output_file,&oformat);
+    ffmpeg::format::open(&output_file,&oformat).unwrap();
 
     let dict = Dictionary::new();
-    ffmpeg::format::open_with(&output_file,&oformat,dict);
+    ffmpeg::format::open_with(&output_file,&oformat,dict).unwrap();
 
     let iformat = ffmpeg::format::input(&input_file).unwrap().format();
     let iformat =  ffmpeg::format::format::Format::Input(iformat);
-    ffmpeg::format::open(&input_file,&iformat);
+    ffmpeg::format::open(&input_file,&iformat).unwrap();
 
-    let dict = Dictionary::new();
-    ffmpeg::format::open_with(&input_file,&iformat,dict);
+    let mut dict = Dictionary::new();
+    dict.set("name","Hrushi");
+    ffmpeg::format::open_with(&input_file,&iformat,dict).unwrap();
 }

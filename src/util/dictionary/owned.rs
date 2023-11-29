@@ -109,7 +109,6 @@ impl<'a> DerefMut for Owned<'a> {
     }
 }
 
-// Can throw an error if Owned (Source Dictionary) is NULL(0).
 impl<'a> Clone for Owned<'a> {
     fn clone(&self) -> Self {
         let mut dictionary = Owned::new();

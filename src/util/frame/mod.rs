@@ -1,5 +1,6 @@
 // pub mod side_data;
 
+use std::io::empty;
 use std::mem::MaybeUninit;
 use std::ptr;
 
@@ -65,8 +66,10 @@ impl Frame {
     }
 
     #[inline(always)]
-    pub unsafe fn is_empty(&self) -> bool {
-        avutil_wasmedge::av_frame_isnull(self.ptr()) == 1
+    pub fn is_empty(&self) -> bool {
+        unsafe {
+            avutil_wasmedge::av_frame_isnull(self.ptr()) == 1
+        }
     }
 }
 
