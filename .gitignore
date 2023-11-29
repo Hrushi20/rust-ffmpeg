@@ -8,5 +8,3 @@ Cargo.lock
 *.swn
 
 generated.rs
-
-assets/*

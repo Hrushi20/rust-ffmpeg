@@ -2,13 +2,10 @@ extern crate ffmpeg_next as ffmpeg;
 
 use std::cmp::Ordering::{Equal, Less};
 use std::iter::FromIterator;
-use std::slice::from_mut;
 use ffmpeg::format::sample::Buffer;
 use ffmpeg::format::sample::Type::{Packed, Planar};
-use ffmpeg::frame::Video;
 use ffmpeg::log::{Flags, Level};
-use ffmpeg::media::Type;
-use ffmpeg::{ChannelLayout, Format, frame, Rational};
+use ffmpeg::{ChannelLayout, Rational};
 use ffmpeg::color::{Primaries, Range, Space, TransferCharacteristic};
 use ffmpeg::format::{Pixel, Sample};
 use utils::{get_audio_frame, get_video_frame};
@@ -73,20 +70,24 @@ fn av_pixel_fmt(){
     desc.log2_chroma_h();
     desc.log2_chroma_w();
     desc.nb_components();
+
+    ffmpeg::util::version();
+    ffmpeg::util::license();
+    ffmpeg::util::configuration();
 }
 
 #[test]
 fn color(){
-   let primaries = ffmpeg::util::color::Primaries::SMPTE170M;
+   let primaries = Primaries::SMPTE170M;
     primaries.name();
 
-    let range = ffmpeg::util::color::Range::MPEG;
+    let range = Range::MPEG;
     range.name();
 
-    let space = ffmpeg::util::color::Space::RGB;
+    let space = Space::RGB;
     space.name();
 
-    let trc = ffmpeg::util::color::TransferCharacteristic::GAMMA22;
+    let trc = TransferCharacteristic::GAMMA22;
     trc.name();
 }
 
@@ -101,17 +102,17 @@ fn log(){
 
 #[test]
 fn channel_layout(){
-   let ch = ffmpeg::util::channel_layout::ChannelLayout::_7POINT1_WIDE;
+   let ch = ChannelLayout::_7POINT1_WIDE;
    ch.name();
     ch.mask();
     ch.bits();
     ch.channels();
-    ffmpeg::util::channel_layout::ChannelLayout::default(4);
+    ChannelLayout::default(4);
 }
 
 #[test]
 fn time(){
-   let curr = ffmpeg::util::time::current();
+    ffmpeg::util::time::current();
     ffmpeg::util::time::is_monotonic();
     ffmpeg::util::time::sleep(1).unwrap();
     ffmpeg::util::time::relative();
