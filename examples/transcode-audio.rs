@@ -26,10 +26,10 @@ fn filter(
 
     {
         let mut out = filter.get("out").unwrap();
-
-        out.set_sample_format(encoder.format());
-        out.set_channel_layout(encoder.channel_layout());
-        out.set_sample_rate(encoder.rate());
+        //
+        // out.set_sample_format(encoder.format());
+        // out.set_channel_layout(encoder.channel_layout());
+        // out.set_sample_rate(encoder.rate());
     }
 
     filter.output("in", 0)?.input("out", 0)?.parse(spec)?;

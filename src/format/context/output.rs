@@ -50,7 +50,7 @@ impl Output {
         }
     }
 
-    pub fn write_header_with(self, options: Dictionary) -> Result<Dictionary, Error> {
+    pub fn write_header_with(&mut self, options: Dictionary) -> Result<Dictionary, Error> {
         unsafe {
             let opts = options.disown();
             let res = avformat_wasmedge::avformat_write_header(self.ptr(), opts);
