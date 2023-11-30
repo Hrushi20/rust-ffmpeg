@@ -1,5 +1,5 @@
 use std::marker::PhantomData;
-use std::mem::MaybeUninit;
+use std::mem::{MaybeUninit, size_of};
 use std::{ptr, slice};
 
 use software::scaling::types::SwsVector;
@@ -74,13 +74,13 @@ impl<'a> Vector<'a> {
     //     }
     // }
 
-    pub fn scale(&self, scalar: f64) {
+    pub fn scale(&mut self, scalar: f64) {
         unsafe {
             swscale_wasmedge::sws_scaleVec(self.ptr(), scalar);
         }
     }
 
-    pub fn normalize(&self, height: f64) {
+    pub fn normalize(&mut self, height: f64) {
         unsafe {
             swscale_wasmedge::sws_normalizeVec(self.ptr(), height);
         }
@@ -116,11 +116,11 @@ impl<'a> Vector<'a> {
 
     pub fn coefficients(&self) -> &[f64] {
         unsafe {
-            let length = swscale_wasmedge::sws_getCoeffVecLength(self.ptr()) as usize; // This length is in uint format
+            let length = swscale_wasmedge::sws_getCoeffVecLength(self.ptr()) as usize; // This length is in u8 format
 
             let coeff = vec![0; length];
             swscale_wasmedge::sws_getCoeff(self.ptr(), coeff.as_ptr(), length);
-            slice::from_raw_parts(coeff.as_ptr() as *const f64, length)
+            slice::from_raw_parts(coeff.as_ptr() as *const f64, length / size_of::<f64>()) // Convert Len back to f64
         }
     }
 

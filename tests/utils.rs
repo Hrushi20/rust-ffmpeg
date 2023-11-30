@@ -1,9 +1,12 @@
 extern crate ffmpeg_next as ffmpeg;
 
 use ffmpeg::frame::{Audio, Video};
+use ffmpeg::log::Level;
 use ffmpeg::media::Type;
 
 pub fn get_video_frame() -> Video {
+
+    ffmpeg::util::log::set_level(Level::Fatal);
 
     let input_file = String::from("assets/bunny.mp4");
     let mut ictx = ffmpeg::format::input(&input_file).unwrap();
@@ -31,6 +34,8 @@ pub fn get_video_frame() -> Video {
     return frame
 }
 pub fn get_audio_frame() -> Audio {
+
+    ffmpeg::util::log::set_level(Level::Fatal);
 
     let input_file = String::from("assets/mmw-deadzy.ogg");
     let mut ictx = ffmpeg::format::input(&input_file).unwrap();
