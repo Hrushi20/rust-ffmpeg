@@ -1,5 +1,4 @@
 use std::mem::MaybeUninit;
-use std::process::exit;
 use std::{mem, ptr};
 
 use avfilter_wasmedge;

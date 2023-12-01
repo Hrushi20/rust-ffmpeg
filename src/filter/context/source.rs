@@ -31,7 +31,6 @@ impl<'a> Source<'a> {
     }
 
     pub fn flush(&mut self) -> Result<(), Error> {
-        // Need to create a frame.
         unsafe { self.add(&Frame::wrap(mem::zeroed::<AVFrame>())) }
     }
 
