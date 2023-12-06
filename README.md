@@ -67,7 +67,11 @@ $ cargo run --release --example codec-info --  hdr
 
 ### Dump Frames
 ``` console
-$ cargo run --release --example dump-frames ./assets/bunny.mp4 
+$ cargo build --release --example dump-frames
+$ WASMEDGE_PLUGIN_PATH=/usr/local/lib/wasmedge/ wasmedge --dir ./. target/wasm32-wasi/release/examples/dump-frames.wasm ./assets/bunny.mp4
+    [mov,mp4,m4a,3gp,3g2,mj2 @ 0x159fd54f0] Referenced QT chapter track not found
+    [swscaler @ 0x1501a8000] No accelerated colorspace conversion found from yuv420p to rgb24.
+
 ```
 
 ### Metadata
