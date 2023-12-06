@@ -21,8 +21,7 @@
 ### Chapters
 ``` console 
  $ cargo run --release --example chapters ./assets/bunny.mp4 
- 
-     [mov,mp4,m4a,3gp,3g2,mj2 @ 0x144fd9ad0] Referenced QT chapter track not found
+    [mov,mp4,m4a,3gp,3g2,mj2 @ 0x144fd9ad0] Referenced QT chapter track not found
     Nb chapters: 1
     chapter id 0:
             time_base: 1/10000000
