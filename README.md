@@ -1,39 +1,150 @@
-[![crates.io](https://img.shields.io/crates/v/ffmpeg-next.svg)](https://crates.io/crates/ffmpeg-next)
-[![docs.rs](https://docs.rs/ffmpeg-next/badge.svg)](https://docs.rs/ffmpeg-next/)
-[![build](https://github.com/zmwangx/rust-ffmpeg/workflows/build/badge.svg)](https://github.com/zmwangx/rust-ffmpeg/actions)
+# Rust SDK for FFmpeg using WasmEdge Plugin.
 
-This is a fork of the abandoned [ffmpeg](https://crates.io/crates/ffmpeg) crate
-by [meh.](https://github.com/meh/rust-ffmpeg).
+## Introduction
 
-Currently supported FFmpeg versions: 3.4.x through 4.4.x.
+* **Easy to use**: Simple APIs to process Audio, Video files.
+* **Improved Performance**: Computation done on Host devices providing near native speed.
+* **Compatability**: SDK is similar to [rust-ffmpeg](https://github.com/zmwangx/rust-ffmpeg) crate. Hassle free integration.
+* **Version**: Supports FFmpeg [v6.0](https://github.com/FFmpeg/FFmpeg/tree/release/6.0)
 
-Build instructions can be found on the [wiki](https://github.com/zmwangx/rust-ffmpeg/wiki/Notes-on-building).
+### Status
+* [x] AVCodec 
+* [ ] AVDevice 
+* [x] AVFilter 
+* [x] AVFormat 
+* [x] SWResample
+* [x] SWScaling
+* [x] AVUtil 
 
-Documentation:
+## Examples
 
-- [docs.rs](https://docs.rs/ffmpeg-next/);
-- [FFmpeg user manual](https://ffmpeg.org/ffmpeg-all.html);
-- [FFmpeg Doxygen](https://ffmpeg.org/doxygen/trunk/).
+### Chapters
+``` console 
+ $ cargo run --release --example chapters ./assets/bunny.mp4 
+ 
+     [mov,mp4,m4a,3gp,3g2,mj2 @ 0x144fd9ad0] Referenced QT chapter track not found
+    Nb chapters: 1
+    chapter id 0:
+            time_base: 1/10000000
+            start: 0
+            end: 20000000
+            title: 
+    Added chapter with id 0 to output
 
-*Note on upgrading to v4.3.4 or later: v4.3.4 introduced automatic FFmpeg version detection, obsoleting feature
-flags `ffmpeg4`, `ffmpeg41`, `ffmpeg42` and `ffmpeg43`. If you manually specify any of these features, now is the time
-to remove them; if you use `ffmpeg43` through the `default` feature, it's still on for backward-compatibility but it has
-turned into a no-op, and you don't need to do anything. Deprecation plan: `ffmpeg43` will be dropped from default
-features come 4.4, and all these features will be removed come 5.0.*
+    Ouput: nb chapters: 1
+    chapter id 0:
+            time_base: 1/10000000
+            start: 0
+            end: 20000000
+            title: 
+```
 
-*See [CHANGELOG.md](CHANGELOG.md) for other information on version upgrades.*
+### Codec Info
 
-A word on versioning: major and minor versions of this crate track major and minor versions of FFmpeg, e.g. 4.2.x of
-this crate has been updated to support the 4.2.x series of FFmpeg. Patch level is reserved for changes to this crate and
-does not track FFmpeg patch versions. Since we can only freely bump the patch level, versioning of this crate differs
-from semver: minor versions may behave like semver major versions and introduce backward-incompatible changes; patch
-versions may behave like semver minor versions and introduce new APIs. Please peg the version you use accordingly.
+The below example is for hdr decoder/encoder
 
-**Please realize that this crate is in maintenance-only mode for the most part.** Which means I'll try my best to ensure
-the crate compiles against all release branches of FFmpeg 3.4 and later (only the latest patch release of each release
-branch is officially supported) and fix reported bugs, but if a new FFmpeg version brings new APIs that require
-significant effort to port to Rust, you might have to send me a PR (and just to be clear, I can't really guarantee I'll
-have the time to review). Any PR to improve existing API is unlikely to be merged, unfortunately.
+```console
+$ cargo run --release --example codec-info --  hdr
+    type: decoder
+             id: RADIANCE_HDR
+             name: hdr
+             description: HDR (Radiance RGBE format) image
+             medium: Video
+             capabilities: DR1 | FRAME_THREADS
+             rates: any
+             formats: any
+             max_lowres: 0
 
-🤝 **If you have significant, demonstrable experience in Rust and multimedia-related programming, please let me know,
-I'll be more than happy to invite you as a collaborator.** 🤝
+    type: encoder
+             id: RADIANCE_HDR
+             name: hdr
+             description: HDR (Radiance RGBE format) image
+             medium: Video
+             capabilities: DR1 | FRAME_THREADS
+             rates: any
+             formats: [GBRPF32LE]
+             max_lowres: 0
+```
+
+### Dump Frames
+``` console
+$ cargo run --release --example dump-frames ./assets/bunny.mp4 
+```
+
+### Metadata
+``` console
+$ cargo run --release --example metadata ./assets/bunny.mp4
+    major_brand: isom
+minor_version: 512
+compatible_brands: isomiso2avc1mp41
+title: Adding Chapters using FFMPEG
+artist: Hrushi20
+encoder: Lavf60.10.100
+Best video stream index: 0
+Best audio stream index: 1
+duration (seconds): 2.00
+stream index 0:
+        time_base: 1/15360
+        start_time: 0
+        duration (stream timebase): 30720
+        duration (seconds): 2.00
+        frames: 120
+        disposition: DEFAULT
+        discard: Default
+        rate: 60/1
+        medium: Video
+        id: H264
+        bit_rate: 4773892
+        max_rate: 0
+        delay: 0
+        video.width: 1920
+        video.height: 1080
+        video.format: YUV420P
+        video.has_b_frames: true
+        video.aspect_ratio: 1/1
+        video.color_space: Unspecified
+        video.color_range: Unspecified
+        video.color_primaries: Unspecified
+        video.color_transfer_characteristic: Unspecified
+        video.chroma_location: Left
+        video.references: 1
+        video.intra_dc_precision: 0
+stream index 1:
+        time_base: 1/48000
+        start_time: 0
+        duration (stream timebase): 96000
+        duration (seconds): 2.00
+        frames: 95
+        disposition: DEFAULT
+        discard: Default
+        rate: 0/0
+        medium: Audio
+        id: AAC
+        bit_rate: 391959
+        max_rate: 0
+        delay: 0
+        audio.rate: 48000
+        audio.channels: 6
+        audio.format: F32(Planar)
+        audio.frames: 0
+        audio.align: 0
+        audio.channel_layout: (empty)
+```
+
+### Remux 
+```console
+$ cargo run --release --example remux ./assets/bunny.mp4 ./assets/bunny.mkv
+    [mov,mp4,m4a,3gp,3g2,mj2 @ 0x152ed6890] Referenced QT chapter track not found
+```
+
+## Related Links
+
+- [WasmEdge](https://github.com/WasmEdge/WasmEdge)
+- [FFmpeg](https://github.com/FFmpeg/FFmpeg)
+- [WasmEdge FFmpeg Plugin]()
+
+## Notice
+This work is made possible by **[Zmwangx](https://github.com/zmwangx/rust-ffmpeg) work on [rust-ffmpeg](https://github.com/zmwangx/rust-ffmpeg)**.
+
+## License
+TODO
