@@ -146,6 +146,12 @@ $ cargo run --release --example remux ./assets/bunny.mp4 ./assets/bunny.mkv
 - [FFmpeg](https://github.com/FFmpeg/FFmpeg)
 - [WasmEdge FFmpeg Plugin]()
 
+## Future Work
+* SDK is backward compatible and older version of FFmepg can be supported. 
+* Support for FFmpeg [v6.1](https://github.com/zmwangx/rust-ffmpeg/pull/165)
+* Further [Enhancements](https://github.com/zmwangx/rust-ffmpeg/pulls)
+* Broken [Transcode-x264.rs](https://github.com/zmwangx/rust-ffmpeg/issues/118)
+
 ## Notice
 This work is made possible by **[Zmwangx](https://github.com/zmwangx/rust-ffmpeg) work on [rust-ffmpeg](https://github.com/zmwangx/rust-ffmpeg)**.
 
