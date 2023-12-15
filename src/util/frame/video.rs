@@ -326,7 +326,7 @@ impl Video {
     // }
 
     #[inline]
-    pub fn data(&self, index: usize) -> &[u8] {
+    pub fn data(&self, index: usize) -> Vec<u8> {
         if index >= self.planes() {
             panic!("out of bounds");
         }
@@ -335,7 +335,7 @@ impl Video {
             let size = self.stride(index) * self.plane_height(index) as usize;
             let data = vec![0; size];
             avutil_wasmedge::av_frame_data(self.ptr(), data.as_ptr(), data.len(), index as u32);
-            slice::from_raw_parts(data.as_ptr(), size)
+            data
         }
     }
 

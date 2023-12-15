@@ -140,7 +140,7 @@ impl Audio {
     }
 
     #[inline]
-    pub fn plane<T: Sample>(&self, index: usize) -> &[T] {
+    pub fn plane<T: Sample + Clone>(&self, index: usize) -> Vec<T> {
         if index >= self.planes() {
             panic!("out of bounds");
         }
@@ -151,10 +151,11 @@ impl Audio {
 
         unsafe {
             let size = self.samples() * size_of::<T>(); // (Read all data in u8 and later fetch the tuples.)
-            let data = vec![0; size];
+            let data = vec![0u8; size];
             avutil_wasmedge::av_frame_data(self.ptr(), data.as_ptr(), size, index as u32);
 
-            slice::from_raw_parts(data.as_ptr() as *const T, self.samples())
+            let vec = slice::from_raw_parts(data.as_ptr() as *const T, self.samples()).to_vec();
+            vec
         }
     }
 
@@ -174,16 +175,16 @@ impl Audio {
     // }
 
     #[inline]
-    pub fn data(&self, index: usize) -> &[u8] {
+    pub fn data(&self, index: usize) -> Vec<u8> {
         if index >= self.planes() {
             panic!("out of bounds");
         }
 
         unsafe {
             let size = avutil_wasmedge::av_frame_linesize(self.ptr(), index as u32) as usize;
-            let data = vec![0; size];
+            let data = vec![0u8; size];
             avutil_wasmedge::av_frame_data(self.ptr(), data.as_ptr(), size, index as u32);
-            slice::from_raw_parts(data.as_ptr(), size)
+            data
         }
     }
 
