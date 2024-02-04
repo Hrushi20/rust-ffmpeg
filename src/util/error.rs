@@ -49,6 +49,7 @@ pub enum Error {
     // WasmEdge ERRORS
     WasmEdgeMissingMemory,
     WasmEdgeNullStructId,
+    WasmEdgeUnImplementedFunc,
 
     /// For AVERROR(e) wrapping POSIX error codes, e.g. AVERROR(EAGAIN).
     Other {
@@ -88,6 +89,7 @@ impl From<i32> for Error {
             i if i == ErrorCode::AVERROR_HTTP_SERVER_ERROR as i32 => Error::HttpServerError,
             i if i == ErrorCode::WASMEDGE_MISSING_MEMORY as i32 => Error::WasmEdgeMissingMemory,
             i if i == ErrorCode::WASMEDGE_NULL_STRUCT_ID as i32 => Error::WasmEdgeNullStructId,
+            i if i == ErrorCode::WASMEDGE_UNIMPLEMENTED_FUNC as i32 => Error::WasmEdgeUnImplementedFunc,
             e => Error::Other {
                 errno: unsafe { avutil_wasmedge::AVUNERROR(e) },
             },
@@ -128,6 +130,7 @@ enum ErrorCode {
     // WASMEDGE Plugin ERROR CODES BELOW
     WASMEDGE_MISSING_MEMORY = -201,
     WASMEDGE_NULL_STRUCT_ID = -202,
+    WASMEDGE_UNIMPLEMENTED_FUNC = -203
 }
 
 impl From<Error> for i32 {
@@ -162,6 +165,7 @@ impl From<Error> for i32 {
             Error::HttpServerError => ErrorCode::AVERROR_HTTP_SERVER_ERROR as i32,
             Error::WasmEdgeMissingMemory => ErrorCode::WASMEDGE_MISSING_MEMORY as i32,
             Error::WasmEdgeNullStructId => ErrorCode::WASMEDGE_NULL_STRUCT_ID as i32,
+            Error::WasmEdgeUnImplementedFunc => ErrorCode::WASMEDGE_UNIMPLEMENTED_FUNC as i32,
             Error::Other { errno } => unsafe { avutil_wasmedge::AVERROR(errno) },
         }
     }
@@ -181,6 +185,7 @@ impl fmt::Display for Error {
             // WasmEdge Errors.
             Error::WasmEdgeMissingMemory => "WasmEdge Missing Memory Frame",
             Error::WasmEdgeNullStructId => "Struct Pointer missing for given Id",
+            Error::WasmEdgeUnImplementedFunc => "WasmEdge FFmpeg Function unimplemented",
             Error::Other { errno } => "Libc Error Code: ",
             _ => unsafe {
                 from_utf8_unchecked(

@@ -1,4 +1,4 @@
-use std::mem::size_of;
+use std::mem::{MaybeUninit, size_of};
 use std::ops::{Deref, DerefMut};
 use std::slice;
 
@@ -182,8 +182,8 @@ impl Audio {
 
         unsafe {
             let size = avutil_wasmedge::av_frame_linesize(self.ptr(), index as u32) as usize;
-            let data = vec![0u8; size];
-            avutil_wasmedge::av_frame_data(self.ptr(), data.as_ptr(), size, index as u32);
+            let mut data = vec![0u8; size];
+            avutil_wasmedge::av_frame_data(self.ptr(), data.as_mut_ptr(), size, index as u32);
             data
         }
     }

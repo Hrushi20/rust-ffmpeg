@@ -118,8 +118,8 @@ impl<'a> Vector<'a> {
         unsafe {
             let length = swscale_wasmedge::sws_getCoeffVecLength(self.ptr()) as usize; // This length is in u8 format
 
-            let coeff = vec![0u8; length];
-            swscale_wasmedge::sws_getCoeff(self.ptr(), coeff.as_ptr(), length);
+            let mut coeff = vec![0u8; length];
+            swscale_wasmedge::sws_getCoeff(self.ptr(), coeff.as_mut_ptr(), length);
             slice::from_raw_parts(coeff.as_ptr() as *const f64, length / size_of::<f64>()).to_vec() // Convert Len back to f64
         }
     }
